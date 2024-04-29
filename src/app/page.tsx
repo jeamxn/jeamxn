@@ -47,9 +47,6 @@ const links = [
     link: "mailto:admin@chicken-moo.com",
     icon: (
       <svg width="20" height="20" viewBox="0 0 25 25" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <mask id="mask0_854_17" maskUnits="userSpaceOnUse" x="0" y="0" width="25" height="25">
-          <rect x="0.447754" y="0.453369" width="24" height="24" fill="#D9D9D9"/>
-        </mask>
         <g mask="url(#mask0_854_17)">
           <path className="fill-text" d="M13.4728 2.05332L21.4978 6.85332C21.7978 7.03665 22.0311 7.28665 22.1978 7.60332C22.3644 7.91999 22.4478 8.25332 22.4478 8.60332V19.4533C22.4478 20.0033 22.2519 20.4742 21.8603 20.8658C21.4686 21.2575 20.9978 21.4533 20.4478 21.4533H4.44775C3.89775 21.4533 3.42692 21.2575 3.03525 20.8658C2.64359 20.4742 2.44775 20.0033 2.44775 19.4533V8.60332C2.44775 8.25332 2.53109 7.91999 2.69775 7.60332C2.86442 7.28665 3.09775 7.03665 3.39775 6.85332L11.4228 2.05332C11.7394 1.86999 12.0811 1.77832 12.4478 1.77832C12.8144 1.77832 13.1561 1.86999 13.4728 2.05332ZM12.4478 13.1033L20.2478 8.45332L12.4478 3.80332L4.64775 8.45332L12.4478 13.1033ZM11.4228 14.8283L4.44775 10.6533V19.4533H20.4478V10.6533L13.4728 14.8283C13.1561 15.0117 12.8144 15.1033 12.4478 15.1033C12.0811 15.1033 11.7394 15.0117 11.4228 14.8283Z" />
         </g>
@@ -60,45 +57,55 @@ const links = [
 
 const Home = () => {
   return (
-    <main className="flex flex-row items-center justify-center h-full p-4 w-full z-50">
-      <div className="w-full max-w-[40rem] aspect-[2/1] flex flex-col justify-stretch items-start h-max">
-        <div className="flex flex-row gap-6 w-full">
-          <div className="flex flex-col gap-1 items-start justify-start w-full">
-            <p className="text-4xl font-bold">최재민</p>
-            <p className="text-2xl text-text/40">Jeamin Choi</p>
-            {/* <p className="text-xl text-text/40">It&apos;s fun when you try something that no one can do.</p> */}
-            <p className="opacity-0">.</p>
-            <p className="text-base text-text/40 font-medium">활동 내역</p>
-            {
-              list.map((item, index) => (
-                <p key={index} className="text-base text-text/80">
+    <>
+      <div className=" absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-0 blur-3xl">
+        <svg width="626" height="626" viewBox="0 0 626 626" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect className="fill-background" width="626" height="626" rx="75"/>
+          <path d="M75 75H193C259.274 75 313 128.726 313 195V313H75V75Z" className="fill-text"/>
+          <path d="M313 75H551V194C551 259.722 497.722 313 432 313C366.278 313 313 259.722 313 194V75Z" className="fill-text"/>
+          <path d="M75 433C75 366.726 128.726 313 195 313H313V551H75V433Z" className="fill-text"/>
+          <path d="M313 313H551V551H433C366.726 551 313 497.274 313 431V313Z" className="fill-text"/>
+        </svg>
+      </div>
+      <main className="flex flex-row items-center justify-center h-full p-8 w-full z-50 bg-background/80">
+        <div className="w-full max-w-[40rem] aspect-[2/1] flex flex-col justify-stretch items-start h-max">
+          <div className="flex flex-row gap-6 w-full">
+            <div className="flex flex-col gap-1 items-start justify-start w-full">
+              <p className="text-4xl font-bold">최재민</p>
+              <p className="text-2xl text-text/40">Jeamin Choi</p>
+              <p className="text-xl text-text/40">It&apos;s fun when you try something that no one can do.</p>
+              <p className="opacity-0">.</p>
+              <p className="text-base text-text/40 font-medium">활동 내역</p>
+              {
+                list.map((item, index) => (
+                  <p key={index} className="text-base text-text/80">
                   -&nbsp;
-                  <Link href={item.link} className="cursor-pointer underline" target="_blank">{item.title}</Link>
+                    <Link href={item.link} className="cursor-pointer underline" target="_blank">{item.title}</Link>
                   &nbsp;{item.description}
-                </p>
+                  </p>
+                ))
+              }
+            </div>
+          </div>
+          <div className="h-full" />
+          <div className="flex flex-row items-center justify-end w-full gap-2">
+            <p className="mr-1">Links</p>
+            {
+              links.map((item, index) => (
+                <Link
+                  key={index}
+                  href={item.link}
+                  className="cursor-pointer p-2 -mx-2"
+                  target="_blank"
+                >
+                  {item.icon}
+                </Link>
               ))
             }
           </div>
-          <Image src="/IMG_7765.JPG" alt="profile" width={160} height={160} className="rounded-full" />
         </div>
-        <div className="h-full" />
-        <div className="flex flex-row items-center justify-end w-full gap-2">
-          <p className="mr-1">Links</p>
-          {
-            links.map((item, index) => (
-              <Link
-                key={index}
-                href={item.link}
-                className="cursor-pointer p-2 -mx-2"
-                target="_blank"
-              >
-                {item.icon}
-              </Link>
-            ))
-          }
-        </div>
-      </div>
-    </main>
+      </main>
+    </>
   );
 };
 
