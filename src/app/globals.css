@@ -19,6 +19,7 @@
 
 * {
   overscroll-behavior: none;
+  overflow: hidden;
 }
 
 @layer base {
