@@ -68,7 +68,7 @@ const Home = () => {
         </svg>
       </div>
       <main className="flex flex-row items-center justify-center h-full p-8 w-full z-50 bg-background/85">
-        <div className="w-full max-w-[40rem] aspect-[2/1] flex flex-col justify-stretch items-start h-max">
+        <div className="w-full max-w-[40rem] aspect-[2/1] flex flex-col justify-between items-start h-max">
           <div className="flex flex-row gap-6 w-full">
             <div className="flex flex-col gap-1 items-start justify-start w-full">
               <p className="text-4xl font-bold">최재민</p>
@@ -87,7 +87,6 @@ const Home = () => {
               }
             </div>
           </div>
-          <div className="h-full" />
           <div className="flex flex-row items-center justify-end w-full gap-2">
             <p className="mr-1">Links</p>
             {
