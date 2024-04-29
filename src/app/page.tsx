@@ -58,7 +58,7 @@ const links = [
 const Home = () => {
   return (
     <>
-      <div className="max-w-[100vw] overflow-hidden max-h-[100dvh] absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-0 blur-3xl">
+      <div className="max-w-[100vw] overflow-hidden max-h-[100vh] absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-0 blur-3xl">
         <svg width="626" height="626" viewBox="0 0 626 626" fill="none" xmlns="http://www.w3.org/2000/svg">
           <rect className="fill-background" width="626" height="626" rx="75"/>
           <path d="M75 75H193C259.274 75 313 128.726 313 195V313H75V75Z" className="fill-text"/>
