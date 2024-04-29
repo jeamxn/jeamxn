@@ -67,7 +67,7 @@ const Home = () => {
           <path d="M313 313H551V551H433C366.726 551 313 497.274 313 431V313Z" className="fill-text"/>
         </svg>
       </div>
-      <main className="flex flex-row items-center justify-center h-full p-8 w-full z-50 bg-background/80">
+      <main className="flex flex-row items-center justify-center h-full p-8 w-full z-50 bg-background/85">
         <div className="w-full max-w-[40rem] aspect-[2/1] flex flex-col justify-stretch items-start h-max">
           <div className="flex flex-row gap-6 w-full">
             <div className="flex flex-col gap-1 items-start justify-start w-full">
