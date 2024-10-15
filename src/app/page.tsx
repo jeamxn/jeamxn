@@ -118,7 +118,7 @@ const Home = () => {
                         >
                           {item.icon}
                           {/* <p className="text-base text-text/75 font-medium">{item.title}</p> */}
-                        </Link>
+                        </Link> 
                       ))
                     }
                   </div>
