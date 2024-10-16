@@ -87,7 +87,7 @@ const Home = () => {
               }
               <p className="opacity-0">.</p>
               <div className="flex flex-row gap-3">
-                <p className="mr-0 text-text/75">Links</p>
+                <p className="mr-0 text-base text-text/40 font-medium">Links</p>
                 <div className="flex flex-col items-start justify-start gap-0">
                   <div className="flex flex-row items-center justify-start gap-3">
                     <Link href="https://portfolio.jeamxn.dev/">
