@@ -2,7 +2,7 @@ FROM oven/bun:latest
 WORKDIR /app
 
 COPY . .
-RUN bun install --frozen-lockfile --production --ignore-scripts
+RUN bun install
 
 ENV NODE_ENV=production
 
