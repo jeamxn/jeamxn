@@ -1,9 +1,10 @@
 FROM oven/bun:latest
 WORKDIR /app
 
-COPY . .
+COPY package*.json .
 RUN bun install
 
+COPY . .
 ENV NODE_ENV=production
 
 EXPOSE 3000/tcp
