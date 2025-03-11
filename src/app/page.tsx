@@ -3,18 +3,18 @@ import Image from "next/image";
 import Link from "next/link";
 import React from "react";
 
-const list = [
-  {
-    title: "디미고인 풀 서비스",
-    description: "개발 및 관리 (2023 ~ )",
-    link: "https://github.com/jeamxn/dimigoin-pull-service",
-  },
-  {
-    title: "디미고 통합 로그인",
-    description: "개발 및 관리 (2024 ~ )",
-    link: "https://github.com/jeamxn/dimigoin-oauth",
-  }
-];
+// const list = [
+//   {
+//     title: "디미고인 풀 서비스",
+//     description: "개발 및 관리 (2023 ~ )",
+//     link: "https://github.com/jeamxn/dimigoin-pull-service",
+//   },
+//   {
+//     title: "디미고 통합 로그인",
+//     description: "개발 및 관리 (2024 ~ )",
+//     link: "https://github.com/jeamxn/dimigoin-oauth",
+//   }
+// ];
 
 const links = [
   {
@@ -75,7 +75,7 @@ const Home = () => {
               <p className="text-2xl text-text/40">Jeamin Choi</p>
               <p className="text-xl text-text/40">It&apos;s fun when you try something that no one can do.</p>
               <p className="opacity-0">.</p>
-              <p className="text-base text-text/40 font-medium">활동 내역</p>
+              {/* <p className="text-base text-text/40 font-medium">활동 내역</p>
               {
                 list.map((item, index) => (
                   <p key={index} className="text-base text-text/80">
@@ -84,7 +84,7 @@ const Home = () => {
                   &nbsp;{item.description}
                   </p>
                 ))
-              }
+              } */}
               <p className="opacity-0">.</p>
               <p className="mr-0 text-base text-text/40 font-medium">Links</p>
               <div className="flex flex-row items-center justify-start gap-3">
