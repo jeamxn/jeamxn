@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import React from "react";
 
@@ -8,6 +8,27 @@ import Providers from "@front/providers";
 export const metadata: Metadata = {
   title: "Jeamin Choi · 최재민",
   description: "Jeamin Choi's personal website",
+  openGraph: {
+    title: "Jeamin Choi · 최재민",
+    description: "Jeamin Choi's personal website",
+    url: "https://jeamxn.dev",
+    siteName: "Jeamin Choi · 최재민",
+    images: [
+      {
+        url: "https://jeamxn.dev/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "Jeamin Choi's personal website",
+      },
+    ],
+    locale: "ko_KR",
+    type: "website",
+  },
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1.0,
 };
 
 const RootLayout = ({
@@ -17,7 +38,6 @@ const RootLayout = ({
 }>) => {
   return (
     <html lang="ko" className="h-full w-full overflow-x-hidden">
-      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       <body className="antialiased bg-stone-50 dark:bg-stone-800 h-full w-full">
         <Providers>
           <Header />
