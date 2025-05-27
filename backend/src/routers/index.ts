@@ -1,15 +1,17 @@
 import Elysia from "elysia";
 
-import each from "./each";
-import list from "./list";
+import awardsRouter from "./awards";
+import projectsRouter from "./projects";
+import teamsRouter from "./teams";
 import update from "./update";
 
 const IndexRouter = new Elysia({
   name: "Index",
   prefix: "",
 })
-  .use(list)
-  .use(each)
-  .use(update);
+  .use(update)
+  .use(awardsRouter)
+  .use(projectsRouter)
+  .use(teamsRouter);
 
 export default IndexRouter;

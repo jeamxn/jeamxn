@@ -1,9 +1,10 @@
 import cron, { Patterns } from "@elysiajs/cron";
 import { Client } from "@notionhq/client";
-import { ImageBlockObjectResponse } from "@notionhq/client/build/src/api-endpoints";
 import dayjs from "dayjs";
 
-import { DataDB } from "@back/models/data";
+import awards from "@back/models/awards";
+import projects from "@back/models/projects";
+import teams from "@back/models/teams";
 
 export const run = async () => {
   try {
@@ -12,30 +13,58 @@ export const run = async () => {
     const notion = new Client({
       auth: Bun.env.NOTION_API_KEY,
     });
-    const databases = await notion.databases.query({
-      database_id: process.env.NOTION_DATABASE_ID_PROJECTS as string,
-    });
-    const data = (databases.results as any[]).map(async (page) => {
-      if (page.properties.No.type !== "number" || !page.cover) return;
-      const blocks = await notion.blocks.children.list({ block_id: page.id });
-      const images = (blocks.results as ImageBlockObjectResponse[]).map((block) => {
-        if (block.type !== "image") return;
-        if (block.image.type !== "file") return;
-        return block.image.file.url;
-      }).filter((url) => url !== undefined) as string[];
-      return {
-        id: page.id,
-        no: Number(page.properties.No.number),
-        name: page.properties.Name.title[0].plain_text,
-        tags: page.properties.Tags.multi_select.map((tag: any) => tag.name),
-        cover: page.cover.type === "external" ? page.cover.external.url : page.cover.file.url,
-        images: images,
-      };
-    }).filter((page) => page !== undefined);
-    const dataPromise = await Promise.all(data);
 
-    await DataDB.deleteMany({});
-    await DataDB.insertMany(dataPromise);
+    const awardsDB = await notion.databases.query({
+      database_id: Bun.env.NOTION_DB_AWARDS as string,
+    });
+    const awardsResponse = awardsDB.results.map((page) => {
+      return {
+        icon: (page as any).icon?.file.url,
+        url: (page as any).public_url,
+        name: (page as any).properties.name.title[0].plain_text,
+        host: (page as any).properties.host.multi_select.map((host: any) => host.name).join(", "),
+        organizer: (page as any).properties.organizer.multi_select.map((host: any) => host.name).join(", "),
+        by: (page as any).properties.by.rich_text[0].plain_text,
+        period: (page as any).properties.period.rich_text[0].plain_text,
+        when: (page as any).properties.when.date?.start || "",
+      };
+    });
+    await awards.db.deleteMany({});
+    await awards.db.insertMany(awardsResponse);
+
+    const projectsDB = await notion.databases.query({
+      database_id: Bun.env.NOTION_DB_PROJECTS as string,
+    });
+    const projectsResponse = projectsDB.results.map((page) => {
+      return {
+        icon: (page as any).icon?.file.url,
+        cover: (page as any).cover?.file.url,
+        priority: (page as any).properties.priority.number,
+        url: (page as any).public_url,
+        data: {
+          title: (page as any).properties.name.title[0].plain_text,
+          description: (page as any).properties.description.rich_text[0].plain_text,
+          startDate: (page as any).properties.start.date?.start || "",
+          endDate: (page as any).properties.end.date?.start || "",
+        }
+      };
+    });
+    await projects.db.deleteMany({});
+    await projects.db.insertMany(projectsResponse);
+
+    const teamsDB = await notion.databases.query({
+      database_id: Bun.env.NOTION_DB_TEAMS as string,
+    });
+    const teamsResponse = teamsDB.results.map((page) => {
+      return {
+        priority: (page as any).properties.priority.number,
+        url: (page as any).public_url,
+        icon: (page as any).icon?.file.url,
+        name: (page as any).properties.name.title[0].plain_text,
+      };
+    });
+    await teams.db.deleteMany({});
+    await teams.db.insertMany(teamsResponse);
 
     console.log("🐩 Notion done at:", dayjs().format("YYYY-MM-DD HH:mm:ss"));
   }
