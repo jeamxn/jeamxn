@@ -1,27 +1,35 @@
 {
-  "name": "jeamxndev",
-  "version": "0.1.0",
+  "name": "semoton",
   "private": true,
+  "version": "0.1.0",
+  "workspaces": [
+    "frontend",
+    "backend"
+  ],
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "next lint"
-  },
-  "dependencies": {
-    "react": "^18",
-    "react-dom": "^18",
-    "next": "14.2.2"
+    "frontend": "bun --cwd frontend",
+    "backend": "bun --cwd backend",
+    "dev": "concurrently --names \"FE,BE\" \"bun frontend dev\" \"bun backend dev\"",
+    "start": "concurrently --names \"FE,BE\" \"bun frontend start\" \"bun backend start\"",
+    "build": "bun frontend build",
+    "lint": "concurrently --names \"FE,BE\"\"bun frontend lint\" \"bun backend lint\""
   },
   "devDependencies": {
-    "@types/node": "^20",
-    "@types/react": "^18",
-    "@types/react-dom": "^18",
-    "eslint": "^8",
-    "eslint-config-next": "14.2.2",
-    "postcss": "^8",
-    "tailwindcss": "^3.4.1",
-    "tailwindcss-safe-area": "^0.5.1",
+    "@eslint/eslintrc": "^3",
+    "concurrently": "^9.1.2",
+    "eslint": "^9",
+    "eslint-config-next": "15.3.2",
+    "eslint-plugin-import": "^2.31.0",
+    "eslint-plugin-prefer-arrow": "^1.2.3",
+    "eslint-plugin-react": "^7.37.5",
+    "eslint-plugin-react-hooks": "^5.2.0",
     "typescript": "^5"
+  },
+  "dependencies": {
+    "@tanstack/react-query": "^5.77.2",
+    "@tanstack/react-query-devtools": "^5.77.2",
+    "axios": "^1.8.4",
+    "dayjs": "^1.11.13",
+    "jotai": "^2.12.4"
   }
 }
