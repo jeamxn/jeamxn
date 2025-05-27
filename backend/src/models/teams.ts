@@ -1,10 +1,10 @@
 import Elysia from "elysia";
 import mongoose from "mongoose";
 
-import { IDocument, Teams } from "@common/types/db";
+import { IDocument, Team } from "@common/types/db";
 
 const NAME = "teams";
-type TYPE = Teams;
+type TYPE = Team;
 
 const schema = new mongoose.Schema({
   priority: { type: Number },

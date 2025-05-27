@@ -1,10 +1,10 @@
 import Elysia from "elysia";
 import mongoose from "mongoose";
 
-import { IDocument, Projects } from "@common/types/db";
+import { IDocument, Project } from "@common/types/db";
 
 const NAME = "projects";
-type TYPE = Projects;
+type TYPE = Project;
 
 const schema = new mongoose.Schema({
   icon: { type: String },

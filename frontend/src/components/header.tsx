@@ -38,7 +38,7 @@ const Header = () => {
   }, [setHeight]);
 
   return (
-    <div className="fixed top-0 left-0 z-50 bg-stone-50/50 backdrop-blur-lg w-full">
+    <div className="fixed top-0 left-0 z-50 bg-stone-50/50 dark:bg-stone-800/50 backdrop-blur-lg w-full">
       <div className="px-10 py-6 flex flex-row items-center justify-between" ref={headerRef}>
         <div className="flex flex-row items-center gap-8">
           <button 
@@ -89,7 +89,7 @@ const Header = () => {
               <p className="underline">Github</p>
             </button>
           </Link>
-          <Link href="ilto:admin@chicken-moo.com">
+          <Link href="mailto:me@jeamxn.dev">
             <button className="flex flex-row items-center gap-1 cursor-pointer">
               <svg className="w-5 h-5" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <g mask="url(#mask0_476_188)">

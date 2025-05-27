@@ -3,7 +3,7 @@ export type IDocument<T> = Document<ObjectId, any, T> & T & {
   _id: any;
 };
 
-export interface Awards {
+export interface Award {
   icon: string;
   url: string;
   name: string;
@@ -14,7 +14,7 @@ export interface Awards {
   when: string;
 }
 
-export interface Projects {
+export interface Project {
   icon: string;
   cover: string;
   priority: number;
@@ -27,7 +27,7 @@ export interface Projects {
   };
 }
 
-export interface Teams {
+export interface Team {
   priority: number;
   url: string;
   icon: string;

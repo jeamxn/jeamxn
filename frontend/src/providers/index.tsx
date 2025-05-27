@@ -3,13 +3,16 @@
 import React from "react";
 
 import JotaiProvider from "./jotaiProvider";
+import ReactQueryProvider from "./ReactQueryProvider";
 import ViewportProvider from "./viewportProvider";
 
 const Providers = ({ children }: { children: React.ReactNode }) => {
   return (
     <JotaiProvider>
       <ViewportProvider>
-        {children}
+        <ReactQueryProvider>
+          {children}
+        </ReactQueryProvider>
       </ViewportProvider>
     </JotaiProvider>
   );
