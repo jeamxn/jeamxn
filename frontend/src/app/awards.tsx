@@ -1,4 +1,3 @@
-import Image from "next/image";
 import React from "react";
 
 import { Award } from "@common/types/db";
@@ -23,7 +22,7 @@ const Awards = ({
                 </td>
                 <td>
                   <div className="flex flex-row items-center justify-start gap-5">
-                    <Image width={100} height={100} alt="Award Icon" src={award.icon} className="w-14 h-14 bg-stone-200 rounded-2xl grayscale-100" />
+                    <img alt="Award Icon" src={award.icon} className="w-14 h-14 bg-stone-200 rounded-2xl grayscale-100" />
                     <div className="flex flex-col gap-2">
                       <p className="text-xl">{award.name}</p>
                       <p className="opacity-65">— {award.period}</p>

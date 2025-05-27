@@ -1,4 +1,3 @@
-import Image from "next/image";
 import Link from "next/link";
 import React from "react";
 
@@ -28,11 +27,9 @@ const Projects = ({
                   "group overflow-hidden cursor-pointer"
                 ].join(" ")}
               >
-                <Image
+                <img
                   src={project.cover}
                   alt="Project Cover"
-                  width={1000}
-                  height={1000}
                   className="w-full h-full object-cover rounded-2xl loading-background absolute top-0 left-0 -z-10"
                 />
                 <div className="w-full h-full bg-stone-800/50 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-all duration-300 ease-out flex flex-col items-start justify-end p-4">
