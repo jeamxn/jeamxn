@@ -3,7 +3,7 @@
 import { useAtomValue } from "jotai";
 import React from "react";
 
-import { dynamicSizeAtom, dynamicSizeWithoutHeaderAtom } from "@front/utils/states";
+import { dynamicSizeAtom, headerHeightAtom } from "@front/utils/states";
 
 const greetings = [
   "안녕하세요!",      // 한국어
@@ -35,8 +35,8 @@ const greetings = [
 ];
 
 const Home = () => {
-  const dynamicSizeWithoutHeader = useAtomValue(dynamicSizeWithoutHeaderAtom);
   const dynamicSize = useAtomValue(dynamicSizeAtom);
+  const headerHeight = useAtomValue(headerHeightAtom);
   const [greetId, setGreetId] = React.useState(0);
 
   React.useEffect(() => {
@@ -50,7 +50,7 @@ const Home = () => {
     <div className="w-full">
       <div
         className="px-10 relative flex flex-col items-start justify-start"
-        style={{ ...dynamicSizeWithoutHeader }}
+        style={{ ...dynamicSize }}
       >
         <div className="h-full w-full flex flex-col items-start justify-between gap-16 py-20">
           <div />
@@ -78,9 +78,10 @@ const Home = () => {
           <button
             className="flex flex-row items-center justify-center gap-2"
             onClick={() => {
+              const _this = document.getElementById("about");
+              if (!_this) return;
               window.scrollTo({
-                // top: document.documentElement.scrollHeight,
-                top: document.getElementById("about")?.offsetTop || 0,
+                top: _this.offsetTop - headerHeight,
                 behavior: "smooth",
               });
             }}
@@ -99,7 +100,7 @@ const Home = () => {
       </div>
       
       <div
-        className="w-full bg-stone-300 dark:bg-stone-300 py-16 px-12 flex flex-col gap-2 items-start justify-start"
+        className="w-full bg-stone-200 dark:bg-stone-300 py-20 px-12 flex flex-col gap-2 items-start justify-start"
         id="about"
       >
         <p className="text-4xl">About Me</p>
@@ -112,8 +113,47 @@ const Home = () => {
         </p>
       </div>
 
+      
+      <div className="px-12 py-20 flex flex-col items-start justify-start gap-12" id="awards">
+        <p className="text-4xl text-center w-full">List of Awards</p>
+        <div className="flex flex-col gap-8 w-full">
+
+          <div className="w-full flex flex-row items-center justify-between gap-6">
+            <div className="flex flex-row items-center justify-start gap-6">
+              {/* <img alt="Award Icon" src="/award.png" className="w-14 h-14 bg-stone-200 rounded-2xl" /> */}
+              <div className="flex flex-col gap-2">
+                <p className="text-xl">제2회 청소년 메이커 경진대회 : YOUTH MAKER 최우수상</p>
+                <p className="opacity-65">— 2023. 10. 14.</p>
+              </div>
+            </div>
+            <div className="flex flex-col gap-2 items-start">
+              <div className="flex flex-row gap-2 items-center justify-center">
+                <p className="opacity-50">주최</p>
+                <p className="">시립수서청소년센터, 서울디지털재단</p>
+              </div>
+              <div className="flex flex-row gap-2 items-center justify-center">
+                <p className="opacity-50">주관</p>
+                <p className="">고려대학교 KU-3DS</p>
+              </div>
+            </div>
+            <div className="flex flex-col gap-2 items-start">
+              <p className="opacity-50">Organization</p>
+              <button>
+                <div className="flex flex-row gap-3 items-center justify-center">
+                  <img alt="Award Icon" src="/award.png" className="w-8 h-8 bg-stone-200 rounded-lg" />
+                  <p className="">LUNA</p>
+                </div>
+              </button>
+            </div>
+            {/* <div /> */}
+            <div />
+          </div>
+        </div>
+      </div>
+
+
       <div
-        className="w-full bg-stone-100 dark:bg-stone-700 py-16 px-12 flex flex-col gap-4 items-start justify-start"
+        className="w-full bg-stone-200 dark:bg-stone-700 py-20 px-12 flex flex-col gap-4 items-start justify-start"
         id="about"
       >
         <div className="flex flex-col gap-2 w-full">
@@ -121,7 +161,7 @@ const Home = () => {
           <p className="text-xl">저는 이렇게 생각하고 개발해요</p>
         </div>
         <div className="w-full flex flex-col items-start justify-start gap-6">
-          <div className="bg-white dark:bg-stone-900 rounded-2xl p-6 w-full flex flex-col gap-2">
+          <div className="bg-stone-50 dark:bg-stone-900 rounded-2xl p-6 w-full flex flex-col gap-2">
             <p className="text-xl">1. <b>사용자에게 자연스러운 흐름</b>을 추구해요</p>
             <div>
               <p>기능보다 먼저 보는 건, 사용자가 어디서 불편을 느낄지예요.</p>
@@ -129,7 +169,7 @@ const Home = () => {
               <p>그래서 저는 늘, <b>설명하지 않아도 쓸 수 있는 서비스</b>를 만드는 걸 목표로 해요.</p>
             </div>
           </div>
-          <div className="bg-white dark:bg-stone-900 rounded-2xl p-6 w-full flex flex-col gap-2">
+          <div className="bg-stone-50 dark:bg-stone-900 rounded-2xl p-6 w-full flex flex-col gap-2">
             <p className="text-xl">2. <b>느껴지는 속도</b>를 중요하게 생각해요</p>
             <div>
               <p>기술 스택이나 구조보다 먼저, <b>사용자가 실제로 체감하는 쾌적함</b>에 집중해요.</p>
@@ -137,7 +177,7 @@ const Home = () => {
               <p>빠른 웹은 단순한 성능이 아니라, <b>유저의 시간에 대한 예의</b>라고 생각해요.</p>
             </div>
           </div>
-          <div className="bg-white dark:bg-stone-900 rounded-2xl p-6 w-full flex flex-col gap-2">
+          <div className="bg-stone-50 dark:bg-stone-900 rounded-2xl p-6 w-full flex flex-col gap-2">
             <p className="text-xl">3. <b>불필요한 고민을 줄이는 구조</b>를 추구해요</p>
             <div>
               <p>Next.js 프로젝트를 짤 때는, <b>읽기 쉽고 확장하기 편한 구조</b>를 먼저 고민해요.</p>
@@ -150,9 +190,11 @@ const Home = () => {
         
       </div>
 
-      <div style={{ ...dynamicSize }} className="flex items-center justify-center">
-        
+      <div className="px-12 py-20 flex flex-col items-start justify-start gap-12" id="projects">
+        <p className="text-4xl text-center w-full">Lastes Projects</p>
+
       </div>
+
 
 
 
