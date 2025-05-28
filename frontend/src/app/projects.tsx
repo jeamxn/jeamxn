@@ -1,5 +1,6 @@
 import Link from "next/link";
 import React from "react";
+import { useMediaQuery } from "react-responsive";
 
 import { Project } from "@common/types/db";
 
@@ -9,29 +10,37 @@ const Projects = ({
   projects: Project[];
 }) => {
   const [onlyLeast, setOnlyLeast] = React.useState(true);
+
+  const lv1 = useMediaQuery({ minWidth: 1024 });
+  const lv2 = useMediaQuery({ minWidth: 768 });
+
   return (
-    <div className="px-12 py-20 flex flex-col items-start justify-start gap-12 transition-all" id="projects">
+    <div className="px-12 py-20 max-sm:px-6 max-sm:py-12 flex flex-col items-start justify-start gap-12 transition-all" id="projects">
       <p className="text-4xl text-center w-full">Lastes Projects</p>
       <div className="flex flex-row flex-wrap items-stretch justify-center gap-2 overflow-x-auto w-full">
         {
           projects.slice(
             0,
-            onlyLeast ? 6 : projects.length
+            onlyLeast ?
+              lv1 ? 6 : lv2 ? 4 : 3
+              : projects.length
           ).map((project, index) => (
-            <Link href={project.url} className="w-[30%] aspect-video" target="_blank" key={index}>
+            <Link href={project.url} className="w-[32%] max-lg:w-[48%] max-md:w-full aspect-video" target="_blank" key={index}>
               <div
                 key={index}
                 className={[
-                  "flex w-full h-full rounded-2xl bg-center bg-cover bg-no-repeat mb-4",
-                  "grayscale-100 relative hover:grayscale-0 transition-all duration-300 ease-out",
+                  "flex w-full h-full rounded-2xl bg-center bg-cover bg-no-repeat",
+                  "relative",
                   "group overflow-hidden cursor-pointer"
                 ].join(" ")}
               >
-                <img
-                  src={project.cover}
-                  alt="Project Cover"
-                  className="w-full h-full object-cover rounded-2xl loading-background absolute top-0 left-0 -z-10"
-                />
+                <div className="absolute w-full h-full top-0 left-0 -z-10 loading-background dark:loading-background-dark">
+                  <img
+                    src={project.cover}
+                    alt="Project Cover"
+                    className="w-full h-full object-cover rounded-2xl grayscale-100 group-hover:grayscale-0 transition-all duration-300 ease-out"
+                  />
+                </div>
                 <div className="w-full h-full bg-stone-800/50 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-all duration-300 ease-out flex flex-col items-start justify-end p-4">
                   <p className="!text-stone-100 text-3xl">{project.data.title}</p>
                   <p className="!text-stone-100">{project.data.description}</p>

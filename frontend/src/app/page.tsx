@@ -4,6 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useAtomValue } from "jotai";
 import Link from "next/link";
 import React from "react";
+import { useMediaQuery } from "react-responsive";
 
 import type { Award, Project, Team } from "@common/types/db";
 
@@ -48,6 +49,7 @@ const Home = () => {
   const dynamicSize = useAtomValue(dynamicSizeAtom);
   const headerHeight = useAtomValue(headerHeightAtom);
   const [greetId, setGreetId] = React.useState(0);
+  const isDesktop = useMediaQuery({ minWidth: 1024 });
 
   React.useEffect(() => {
     let interval = setInterval(() => {
@@ -84,40 +86,40 @@ const Home = () => {
   return (
     <div className="w-full">
       <div
-        className="px-10 relative flex flex-col items-start justify-start"
-        style={{ ...dynamicSize }}
+        className="px-10 relative flex flex-col items-start justify-start max-md:h-screen"
+        style={isDesktop ? dynamicSize : {}}
       >
         <div className="h-full w-full flex flex-col items-start justify-between gap-16 py-20">
           <div />
-          <div />
-          <div className="flex flex-row items-center gap-10">
+          <div className="max-sm:hidden" />
+          <div className="flex flex-row items-center gap-10 max-sm:gap-5">
             <button>
               <div className="flex flex-col items-start gap-1">
-                <p className="text-5xl font-extralight">+{projects.length}</p>
-                <p>프로젝트 서비스</p>
+                <p className="text-5xl max-sm:text-3xl font-extralight">+{projects.length}</p>
+                <p className="text-start max-sm:text-sm">프로젝트 서비스</p>
               </div>
             </button>
             <button>
               <div className="flex flex-col items-start gap-1">
-                <p className="text-5xl font-extralight">+{teams.length}</p>
-                <p>관련 활동 경험</p>
+                <p className="text-5xl max-sm:text-3xl font-extralight">+{teams.length}</p>
+                <p className="text-start max-sm:text-sm">관련 활동 경험</p>
               </div>
             </button>
             <button>
               <div className="flex flex-col items-start gap-1">
-                <p className="text-5xl font-extralight">+{awards.length}</p>
-                <p>수상 및 인증</p>
+                <p className="text-5xl max-sm:text-3xl font-extralight">+{awards.length}</p>
+                <p className="text-start max-sm:text-sm">수상 및 인증</p>
               </div>
             </button>
           </div>
           <div className="flex flex-col gap-3">
-            <p className="text-9xl font-extralight">{greetings[greetId]}</p>
-            <p className="text-2xl">— 행복한 개발자, 최재민입니다!</p>
+            <p className="text-9xl font-extralight max-sm:text-5xl max-md:text-7xl">{greetings[greetId]}</p>
+            <p className="text-2xl max-sm:text-xl">— 행복한 개발자, 최재민입니다!</p>
           </div>
           <div />
           <div />
           <button
-            className="flex flex-row items-center justify-center gap-2"
+            className="flex flex-row items-center justify-center gap-2 max-md:hidden"
             onClick={() => {
               const _this = document.getElementById("about");
               if (!_this) return;
@@ -135,8 +137,8 @@ const Home = () => {
         </div>
         <img
           src="/jeamxn.png"
-          alt="Jeamxn Logo"
-          className="grayscale-100 w-4xl absolute bottom-0 right-0"
+          alt="Jeamxn pic"
+          className="grayscale-100 w-5xl absolute bottom-0 right-0 max-xl:w-3xl max-lg:w-2xl max-md:w-xl"
         />
       </div>
       
@@ -145,13 +147,13 @@ const Home = () => {
       <Dp />
       <Projects projects={projects} />
 
-      <div className="w-full px-28 py-20 bg-stone-800 dark:bg-stone-300 flex flex-row justify-between">
-        <p className="text-7xl whitespace-nowrap !text-stone-300 dark:!text-stone-700">Contact</p>
-        <p className="flex-grow mx-4 text-7xl !text-stone-600 dark:!text-stone-400 whitespace-nowrap overflow-hidden">
+      <div className="w-full px-[7vw] py-[5vw] bg-stone-800 dark:bg-stone-300 flex flex-row justify-between">
+        <p className="text-[5vw] whitespace-nowrap !text-stone-300 dark:!text-stone-700">Contact</p>
+        <p className="flex-grow mx-4 text-[5vw] !text-stone-600 dark:!text-stone-400 whitespace-nowrap overflow-hidden">
           ..........................................................................................
         </p>
         <Link href="mailto:me@jeamxn.dev">
-          <p className="hover:underline text-7xl whitespace-nowrap !text-stone-300 dark:!text-stone-700">me@jeamxn.dev</p>
+          <p className="hover:underline text-[5vw] whitespace-nowrap !text-stone-300 dark:!text-stone-700">me@jeamxn.dev</p>
         </Link>
       </div> 
     </div>
