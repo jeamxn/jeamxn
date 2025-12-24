@@ -9,9 +9,9 @@
   "scripts": {
     "frontend": "bun --cwd frontend",
     "backend": "bun --cwd backend",
-    "dev": "concurrently --names \"FE,BE\" \"bun frontend dev\" \"bun backend dev\"",
-    "start": "concurrently --names \"FE,BE\" \"bun frontend start\" \"bun backend start\"",
-    "build": "bun frontend build",
+    "dev": "concurrently --names \"FE,BE\" \"bun --env-file=.env frontend dev\" \"bun --env-file=.env backend dev\"",
+    "start": "concurrently --names \"FE,BE\" \"bun --env-file=.env frontend start\" \"bun --env-file=.env backend start\"",
+    "build": "bun --env-file=.env frontend build",
     "lint": "concurrently --names \"FE,BE\"\"bun frontend lint\" \"bun backend lint\""
   },
   "devDependencies": {
