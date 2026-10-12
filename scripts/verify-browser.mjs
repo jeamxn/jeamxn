@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import fs from "node:fs/promises";
 import path from "node:path";
 import { chromium } from "playwright";
+import { portfolio } from "../packages/core/dist/index.js";
 
 const base = process.env.QA_BASE_URL ?? "http://127.0.0.1:5410";
 const output = path.resolve(process.env.QA_OUTPUT ?? "test-results/browser");
@@ -11,7 +12,7 @@ if (process.env.QA_BROWSER_PATH) options.executablePath = process.env.QA_BROWSER
 const browser = await chromium.launch(options);
 const report = [];
 try {
-  for (const width of [390, 768, 1440]) {
+  for (const width of (process.env.QA_WIDTHS ?? "390,768,1440").split(",").map(Number)) {
     const context = await browser.newContext({
       viewport: { width, height: 900 },
       reducedMotion: "reduce",
@@ -22,14 +23,12 @@ try {
     for (const route of [
       "/",
       "/about",
-      "/work/ara",
-      "/work/dipull",
-      "/work/pfct",
-      "/work/multinet",
-      "/work/ttililing",
-      "/work/yun",
+      "/work",
+      ...portfolio.projects.map((project) => `/work/${project.slug}`),
       "/resume",
-      "/activity/kt-sat-ax",
+      ...portfolio.activities
+        .filter((activity) => activity.slug)
+        .map((activity) => `/activity/${activity.slug}`),
     ]) {
       const response = await page.goto(base + route, { waitUntil: "networkidle" });
       assert.equal(response?.status(), 200, `${route} status`);
@@ -81,7 +80,19 @@ try {
       }
       assert.deepEqual(errors, [], `${route} browser errors`);
       const name = route === "/" ? "home" : route.slice(1).replaceAll("/", "-");
-      await page.screenshot({ path: path.join(output, `${name}-${width}.png`), fullPage: true });
+      if (
+        [
+          "/",
+          "/about",
+          "/work",
+          "/work/ara",
+          "/work/dipull",
+          "/work/pfct",
+          "/resume",
+          "/activity/kt-sat-ax",
+        ].includes(route)
+      )
+        await page.screenshot({ path: path.join(output, `${name}-${width}.png`), fullPage: true });
       report.push({ route, width, ...metrics, pageErrors: errors.length });
     }
     await context.close();
@@ -118,7 +129,16 @@ try {
   await context.close();
   await fs.writeFile(path.join(output, "report.json"), JSON.stringify(report, null, 2));
   console.log(
-    JSON.stringify({ passed: true, routeChecks: 30, output, pdfBytes: bytes.length }, null, 2),
+    JSON.stringify(
+      {
+        passed: true,
+        routeChecks: report.filter((item) => item.route).length,
+        output,
+        pdfBytes: bytes.length,
+      },
+      null,
+      2,
+    ),
   );
 } finally {
   await browser.close();

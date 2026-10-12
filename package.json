@@ -8,7 +8,7 @@
   },
   "scripts": {
     "dev": "turbo dev --filter=@jeamxn/server --filter=@jeamxn/web",
-    "build": "turbo build",
+    "build": "turbo build && node scripts/generate-sitemap.mjs",
     "typecheck": "turbo typecheck",
     "lint": "biome check --error-on-warnings . && node scripts/check-boundary.mjs",
     "lint:fix": "biome check --write .",

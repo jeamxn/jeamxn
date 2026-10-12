@@ -11,7 +11,7 @@ export function ActivityPage({ activity }: { activity: Activity }) {
           이력과 활동 <Icon name="arrow-right" size={18} />
         </Link>
         <p className="activity-meta">
-          {activity.organization} · {activity.period}
+          {activity.organization} / {activity.period}
         </p>
         <h1>{activity.title}</h1>
       </header>

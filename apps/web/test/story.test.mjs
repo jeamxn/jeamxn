@@ -5,7 +5,7 @@ import { createServer } from "vite";
 
 let vite;
 before(async () => {
-  vite = await createServer({ server: { middlewareMode: true }, appType: "custom" });
+  vite = await createServer({ server: { middlewareMode: true, hmr: false }, appType: "custom" });
 });
 after(async () => vite?.close());
 

@@ -7,6 +7,18 @@ export const storySectionSchema = z.object({
   paragraphs: z.array(z.string()).min(1),
 });
 export type StorySection = z.infer<typeof storySectionSchema>;
+export const projectScreenSchema = z.object({
+  id: z.string(),
+  title: z.string(),
+  description: z.string(),
+  src: z.string(),
+  width: z.number().positive(),
+  height: z.number().positive(),
+  alt: z.string(),
+  caption: z.string(),
+  device: z.enum(["desktop", "mobile"]),
+});
+export type ProjectScreen = z.infer<typeof projectScreenSchema>;
 export const projectSchema = z.object({
   slug: z.string(),
   name: z.string(),
@@ -23,7 +35,11 @@ export const projectSchema = z.object({
   highlights: z.array(z.object({ title: z.string(), body: z.string() })),
   links: z.array(linkSchema),
   featured: z.boolean(),
+  collection: z.enum(["personal", "school", "company", "collaboration", "opensource"]).optional(),
+  recordType: z.enum(["product", "experiment", "learning", "contribution"]).optional(),
+  resumeSelected: z.boolean().optional(),
   sections: z.array(storySectionSchema).optional(),
+  screens: z.array(projectScreenSchema).optional(),
   lead: z.string().optional(),
   cover: z
     .object({ width: z.number(), height: z.number(), caption: z.string(), alt: z.string() })
@@ -61,6 +77,7 @@ export const portfolioSchema = z.object({
       period: z.string(),
       description: z.string(),
       slug: z.string().optional(),
+      featured: z.boolean().optional(),
       lead: z.string().optional(),
       sections: z.array(storySectionSchema).optional(),
     }),

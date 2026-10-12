@@ -76,6 +76,28 @@ test("actual Nest health, public portfolio and keyless local FAQ are truthful", 
     "local",
   );
 });
+test("actual public FAQ request discovers all work records", async () => {
+  const response = await ask(local.base, "전체 작업 기록을 보고 싶습니다");
+  assert.equal(response.status, 201);
+  const chat = await response.json();
+  assert.equal(chat.sources[0].href, "/work");
+  const portfolio = await (await fetch(`${local.base}/portfolio`)).json();
+  assert.ok(chat.answer.includes(`${portfolio.projects.length}개`));
+});
+test("new public primary subjects reach exact sections through the actual Nest API", async () => {
+  for (const [question, href, body] of [
+    ["ara TTS는 어떻게 만들었나요?", "/work/ara#speech-and-voice-settings", /자동 읽기/],
+    ["PFCT 빌드캐시를 어떻게 구현했나요?", "/work/pfct#build-and-deployment-workflow", /BuildKit/],
+    ["PFCT 상담 서비스는 어떻게 만들었나요?", "/work/pfct#consultation-domain", /Django/],
+    ["PFCT 예약큐는 어떻게 구현했나요?", "/work/pfct#workflow-queues-and-resume", /BullMQ/],
+  ]) {
+    const response = await ask(local.base, question);
+    assert.equal(response.status, 201);
+    const chat = await response.json();
+    assert.equal(chat.sources[0].href, href, question);
+    assert.match(chat.answer, body);
+  }
+});
 test("Origin and fetch-site checks fail closed, without attacker Host trust or wildcard CORS", async () => {
   for (const origin of ["https://evil.example", "null", "https://jeamxn.dev.evil.example"])
     assert.equal(
@@ -370,12 +392,18 @@ test("PDF embeds freely licensed Korean font, real extractable Hangul, multipage
   assert.match(text, /최재민/);
   assert.match(text, /경력/);
   assert.match(text, /한국디지털미디어고등학교/);
-  assert.match(text, /아이디어 · 공동 개발/);
+  assert.match(text, /아이디어 \/ 공동 개발/);
   assert.match(text, /실험 단계/);
   assert.match(text, /졸업 후 후배 인계/);
   assert.match(text, /수상/);
-  assert.match(text, /PFCT에서 만든 제품/);
+  assert.match(text, /대표 작업 \/ PFCT/);
   assert.match(text, /KT SAT/);
+  assert.match(text, /모든 작업 기록/);
+  assert.ok(
+    doc.context
+      .enumerateIndirectObjects()
+      .some(([, object]) => object.toString().includes("https://jeamxn.dev/work)")),
+  );
   assert.match(text, /Skill|도구|報告|보고서/);
   assert.ok(
     doc.context

@@ -107,3 +107,13 @@ Valkey quota volume은 같은 project를 유지하면 재사용됩니다. rollba
 추가 보강 검증: 같은 날 self-only CSP 헤더를 HTML/API/asset404 응답에 적용하고 재빌드했습니다. 390/768/1440px의 15route와 FAQ dialog·PDF를 실제 Chrome으로 확인했으며 CSP 차단 없이 통과했습니다(후속 PDF70,361B). production의 offscreen native lazy 이미지는 viewport로 스크롤하고 decode를 완료한 뒤 검사해야 합니다. CI도 production 컨테이너를 대상으로 이 브라우저 회귀를 실행하도록 구성했습니다.
 
 참고: [Dokploy Compose Domains 공식 문서](https://docs.dokploy.com/docs/core/docker-compose/domains). 로컬 Compose 검증은 실제 Dokploy의 네트워크 변환/TLS 설정 검증을 대신하지 않습니다.
+
+## Product media cache
+
+Product screenshots are addressed by content-hash filenames produced from
+`packages/core/asset/screens.json` by `node scripts/version-media.mjs`.
+The same screenshot URL must never be reused for changed bytes. `/images/*.<hash>.webp`
+is immutable; legacy non-versioned image paths must revalidate. HTML is no-cache.
+This prevents a new page from selecting an old assembled screenshot retained in a
+browser's one-hour cache. Already-fresh old URLs cannot be recalled by changing
+headers alone; changing the page's selected URL is the required transition.

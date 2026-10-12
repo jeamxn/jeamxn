@@ -21,6 +21,7 @@ const questions = [
   "어떤 경험이 있나요?",
   "PFCT 회의 기능은 어떻게 만들었나요?",
   "KT SAT 강연에서 무엇을 전하고 싶었나요?",
+  "전체 작업 기록을 보고 싶습니다",
 ];
 
 export function AssistantPanel({
@@ -71,6 +72,12 @@ export function AssistantPanel({
   }, [messages, loading, error]);
 
   function localAnswer(question: string): ChatResponse {
+    if (question === questions[5])
+      return {
+        mode: "local",
+        answer: `공개 작업 기록은 ${data.projects.length}개입니다. 제품 / 실험 / 학습 / 기여를 구분해 모았으며, 모든 기록이 출시된 제품이라는 뜻은 아닙니다. 전체 기록에서 이름과 기술을 검색하고 분류별로 살펴볼 수 있습니다.`,
+        sources: [{ label: "모든 작업 기록", href: "/work" }],
+      };
     const ara = data.projects.find((p) => p.slug === "ara");
     if (question === questions[1] && ara)
       return {
@@ -106,20 +113,30 @@ export function AssistantPanel({
     if (question === questions[2])
       return {
         answer: data.experience
-          .map((item) => `${item.period} · ${item.company} ${item.team}\n${item.description}`)
+          .map((item) => `${item.period} / ${item.company} ${item.team}\n${item.description}`)
           .join("\n\n"),
         sources: [{ label: "전체 이력", href: "/resume" }],
         mode: "local",
       };
     if (question === questions[0])
       return {
-        answer: data.projects
-          .filter((p) => p.featured)
-          .map((p) => `${p.name}: ${p.summary}`)
-          .join("\n\n"),
-        sources: data.projects
-          .filter((p) => p.featured)
-          .map((p) => ({ label: p.name, href: `/work/${p.slug}` })),
+        answer: [
+          ...data.projects.filter((p) => p.featured).map((p) => `${p.name}: ${p.summary}`),
+          ...data.activities
+            .filter((item) => item.featured)
+            .map((item) => `${item.organization}: ${item.description}`),
+        ].join("\n\n"),
+        sources: [
+          ...data.projects
+            .filter((p) => p.featured)
+            .map((p) => ({ label: p.name, href: `/work/${p.slug}` })),
+          ...data.activities
+            .filter((item) => item.featured && item.slug)
+            .map((item) => ({
+              label: `${item.organization} 강연`,
+              href: `/activity/${item.slug}`,
+            })),
+        ],
         mode: "local",
       };
     return {
@@ -127,6 +144,7 @@ export function AssistantPanel({
         "지금은 서버 연결 없이, 미리 정리한 공개 질문만 안내합니다. 위의 질문을 선택하거나 소개와 프로젝트 이야기를 살펴보세요. 직접 이야기를 나누고 싶다면 이메일을 보내주세요.",
       sources: [
         { label: "소개", href: "/about" },
+        { label: "모든 작업 기록", href: "/work" },
         { label: "이력", href: "/resume" },
       ],
       mode: "local",
@@ -221,8 +239,8 @@ export function AssistantPanel({
           : status.mode === "ai"
             ? "AI가 공개된 소개와 프로젝트를 바탕으로 답합니다."
             : offline
-              ? "포트폴리오 안내 · 미리 정리한 질문에서 답합니다."
-              : "포트폴리오 안내 · AI가 아닌 공개 자료 검색입니다."}
+              ? "포트폴리오 안내 / 미리 정리한 질문에서 답합니다."
+              : "포트폴리오 안내 / AI가 아닌 공개 자료 검색입니다."}
         {status?.mode === "ai" && <span>질문은 AI 제공자에게 전송됩니다.</span>}
         {offline && <span>서버 연결이 없어 미리 정리한 질문을 안내합니다.</span>}
       </div>
@@ -233,7 +251,7 @@ export function AssistantPanel({
             <br />
             어떤 제품을 만들었는지.
           </p>
-          <span>궁금한 곳부터 살펴보세요. 개인·회사 비공개 내용은 답변에 사용하지 않습니다.</span>
+          <span>궁금한 곳부터 살펴보세요. 개인 / 회사 비공개 내용은 답변에 사용하지 않습니다.</span>
         </div>
         {messages.length === 0 && (
           <div className="suggestions">
@@ -354,7 +372,7 @@ export function AssistantPanel({
         </div>
         <div className="assistant-form-bottom">
           <p id="assistant-form-help">
-            {input.length}/{MAX_INPUT} · 개인정보는 입력하지 마세요.
+            {input.length}/{MAX_INPUT} / 개인정보는 입력하지 마세요.
           </p>
           <button type="button" onClick={reset} disabled={loading || messages.length === 0}>
             새 대화

@@ -74,14 +74,26 @@ for (const width of [390, 768, 1440]) {
       ? portfolio.projects.find((item) => `/work/${item.slug}` === route)
       : portfolio.activities.find((item) => `/activity/${item.slug}` === route);
     if (source?.cover && "image" in source) {
-      const image = page.locator(".work-page > .project-scene img");
-      assert.equal(await image.getAttribute("width"), String(source.cover.width));
-      assert.equal(await image.getAttribute("height"), String(source.cover.height));
-      assert.equal(await image.getAttribute("alt"), source.cover.alt);
-      assert.equal(
-        await page.locator(".work-page > .project-scene figcaption").textContent(),
-        source.cover.caption,
+      const firstScreen = source.screens?.[0];
+      const expected = firstScreen ?? source.cover;
+      const image = page.locator(
+        firstScreen ? ".screen-current img" : ".work-page > .project-scene img",
       );
+      assert.equal(await image.getAttribute("width"), String(expected.width));
+      assert.equal(await image.getAttribute("height"), String(expected.height));
+      assert.equal(await image.getAttribute("alt"), expected.alt);
+      assert.equal(
+        await page
+          .locator(
+            firstScreen
+              ? ".screen-current .screen-caption"
+              : ".work-page > .project-scene figcaption",
+          )
+          .textContent(),
+        expected.caption,
+      );
+      if (firstScreen)
+        assert.equal(await page.locator(".screen-thumbnail").count(), source.screens.length);
       const geometry = await image.evaluate((element) => {
         const box = element.getBoundingClientRect();
         return {
@@ -107,6 +119,16 @@ for (const width of [390, 768, 1440]) {
         assert.equal(await page.locator(".story-contents a").count(), source.sections.length);
     }
     if (route === "/") {
+      assert.equal(await page.locator(".selected-work > .featured").count(), 4);
+      assert.deepEqual(
+        await page.locator(".selected-work > .featured .project-name h3").allTextContents(),
+        ["ara", "Dipull", "PFCT", "KT SAT"],
+      );
+      assert.equal(await page.locator(".other-work .rotation-batch .work-row").count(), 3);
+      assert.equal(
+        Number(await page.locator(".work-rotation").getAttribute("data-record-count")),
+        portfolio.projects.filter((project) => !project.featured).length,
+      );
       assert.equal(await page.locator(".home-company-stories article").count(), 3);
       assert.ok(await page.locator('.home-company a[href="/work/pfct"]').count());
       assert.ok((await page.locator(".home-company").textContent()).length > 500);

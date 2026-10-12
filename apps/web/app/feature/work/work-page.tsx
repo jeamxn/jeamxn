@@ -2,17 +2,19 @@ import type { Project } from "@jeamxn/contract";
 import { Icon } from "@jeamxn/icon";
 import { Link } from "react-router";
 import { safeHref } from "~/shared/lib/meta";
-import { projectMedia } from "~/shared/lib/project-media";
+import { projectMedia, projectScreens } from "~/shared/lib/project-media";
+import { ProductGallery } from "~/shared/widget/product-gallery";
 import { ProjectScene } from "~/shared/widget/project-scene";
 import { StoryReader } from "~/shared/widget/story-reader";
 
 export function WorkPage({ project, next }: { project: Project; next?: Project }) {
   const media = projectMedia[project.slug];
+  const screens = projectScreens(project);
   return (
     <article className="work-page container">
       <header className="work-heading">
-        <Link to="/#work" className="text-link back-link">
-          만든 제품 <Icon name="arrow-right" size={18} />
+        <Link to="/work" className="text-link back-link">
+          모든 작업 기록 <Icon name="arrow-right" size={18} />
         </Link>
         <div className="work-title-line">
           <h1 translate="no">{project.name}</h1>
@@ -29,16 +31,27 @@ export function WorkPage({ project, next }: { project: Project; next?: Project }
             <dd>{project.role}</dd>
           </div>
           <div>
-            <dt>현재 상태</dt>
+            <dt>기록 상태</dt>
             <dd>{project.status}</dd>
           </div>
         </dl>
       </header>
-      {project.image ? <ProjectScene project={project} priority /> : null}
+      {project.image && !screens.length ? (
+        <ProjectScene key={project.slug} project={project} priority />
+      ) : null}
       <div className="case-intro">
         {project.lead && <p className="case-lead">{project.lead}</p>}
         <p className="case-summary">{project.summary}</p>
       </div>
+      {screens.length > 0 && (
+        <ProductGallery
+          key={project.slug}
+          name={project.name}
+          screens={screens}
+          heading={media?.heading}
+          description={media?.description}
+        />
+      )}
       {project.sections?.length ? (
         <StoryReader sections={project.sections} />
       ) : (
@@ -66,28 +79,6 @@ export function WorkPage({ project, next }: { project: Project; next?: Project }
           )}
         </>
       )}
-      {media && (
-        <section className="product-gallery" aria-labelledby="gallery-title">
-          <div className="gallery-intro">
-            <h2 id="gallery-title">{media.heading}</h2>
-            <p>{media.description}</p>
-          </div>
-          <div className={`gallery-images gallery-images--${project.slug}`}>
-            {media.items.map((item) => (
-              <figure key={item.src}>
-                <img
-                  src={item.src}
-                  alt={item.alt}
-                  width={item.width}
-                  height={item.height}
-                  loading="lazy"
-                />
-                <figcaption>{item.caption}</figcaption>
-              </figure>
-            ))}
-          </div>
-        </section>
-      )}
       {media?.video && (
         <figure className="product-video">
           <video
@@ -113,7 +104,7 @@ export function WorkPage({ project, next }: { project: Project; next?: Project }
         </figure>
       )}
       <section className="work-tools">
-        <h2>제품에 사용한 기술</h2>
+        <h2>사용한 기술</h2>
         <ul className="tags">
           {project.tags.map((tag) => (
             <li key={tag} translate="no">

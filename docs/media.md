@@ -12,19 +12,25 @@ public repository.
 | --- | --- | ---: | --- |
 | `portrait.webp` | 1800 × 1200 | 93,228 | Selected personal portrait; unchanged |
 | `portrait-small.webp` | 720 × 480 | 27,618 | Smaller portrait srcset; unchanged |
-| `ara-preview.webp` | 1440 × 900 | 48,876 | Original full ara shell, conversation and document pane |
-| `ara-editor.webp` | 1440 × 900 | 51,160 | Original full ara shell and canvas editor route |
-| `dipull-preview.webp` | 1440 × 900 | 49,452 | Original Dipull desktop laundry route, root layout and providers |
-| `dipull-home.webp` | 390 × 844 | 25,206 | Original responsive home route |
-| `dipull-laundry.webp` | 390 × 844 | 34,640 | Original responsive laundry route |
-| `dipull-wakeup.webp` | 390 × 844 | 14,548 | Original responsive wake-up song route |
+| `ara-preview.844644383862.webp` | 1440 × 900 | 48,876 | 대화와 문서함 |
+| `ara-documents.bcd796303d6c.webp` | 1440 × 900 | 19,064 | 문서함 |
+| `ara-page.b0348ac625fc.webp` | 1440 × 900 | 32,218 | 문서 편집 |
+| `ara-editor.a63855ae9467.webp` | 1440 × 900 | 51,160 | 캔버스 편집 |
+| `ara-canvas-properties.6c0bb34ef737.webp` | 1440 × 900 | 49,166 | 요소 속성 |
+| `ara-canvas-timeline.e85de6798ac6.webp` | 1440 × 900 | 55,590 | 타임라인과 키프레임 |
+| `dipull-home.65921cd1a596.webp` | 390 × 844 | 25,206 | 홈 · 식단과 시간표 |
+| `dipull-preview.caa2f749a413.webp` | 1440 × 900 | 49,452 | 세탁 신청 현황 |
+| `dipull-reservation.d99ba6fd0256.webp` | 390 × 844 | 26,936 | 세탁기와 시간 선택 |
+| `dipull-dryer.29250f0f609a.webp` | 390 × 844 | 31,314 | 건조기 신청 |
+| `dipull-wakeup.6bbb76c98f8b.webp` | 390 × 844 | 14,548 | 기상송 목록 |
+| `dipull-wakeup-search.51c90c07851f.webp` | 390 × 844 | 11,902 | 기상송 검색 |
+| `dipull-wakeup-my.edf565b709d7.webp` | 390 × 844 | 7,894 | 내 기상송 신청 |
+| `dipull-stay.df6bc6946014.webp` | 390 × 844 | 17,060 | 잔류 신청 |
+| `dipull-stay-seats.387f07070516.webp` | 1440 × 900 | 41,484 | 잔류 좌석 선택 |
 
-The six product captures total 223,882 bytes. Each file is one browser
-viewport from one original application route: no collage, decorative
-frame, invented shell, added test heading, CSS geometry override, crop,
-or resampling of the previous screenshots. Explicitly reserve the native
-aspect ratios in the website. Mobile screenshots retain the original
-scrollable viewport and bottom navigation, not the whole offscreen page.
+Revision 3 has **six ara screens and nine Dipull screens**, 481,870 bytes in total. Canonical public filenames above are content-addressed; the integration step copies each frozen working raster to its SHA-256-suffixed name. The private manifest gives the corresponding unversioned working filenames and full hashes. The earlier mobile `dipull-laundry.webp` remains an unused historical working capture, not another gallery entry.
+
+Each file is one browser viewport from one original application route: no collage, decorative frame, invented shell, CSS geometry override, crop, or resampling of the prior screenshots. Native 1440 × 900 desktop and 390 × 844 mobile proportions are retained. Mobile captures retain original scroll and navigation; they do not claim to show all offscreen contents.
 
 Suggested accessible descriptions:
 
@@ -146,6 +152,21 @@ optimized-detection files are `portrait-face.json` and
 - The capture does not establish that the historical product operates today.
   Analytics/ads/external scripts are blocked before leaving the browser.
 
+
+### Revision 3: actual distinct workflows
+
+- **ara document listing:** the original `/drive/personal` listing, root shell, folder tree and five schema-valid document nodes. The real chat-panel close button is used.
+- **ara page editor:** `/drive/<synthetic page id>` uses original TipTap `PageEditor`, heading and list input rules. Text is typed into the real contenteditable, not an injected HTML mock. The loopback WebSocket server exchanges y-protocols frames for an initially empty page Y.Doc. The `실시간` label means this local fixture connection, not persisted production editing or multi-person collaboration.
+- **ara element properties:** the original canvas layer row selects a text element; the real timeline-close and chat-panel-close controls are used. Native size/position/typography controls remain visible.
+- **ara timeline:** the original `넣기` control applies a fade-in, producing a genuine local opacity track; the `키프레임 있는 것만` filter is enabled, and the real sidebar is collapsed to give the timeline room. This is local editor interaction, not an AI tool run, exported animation or shipped customer result. No audio is present.
+- **Dipull reservation:** the original modal chooses 세탁기 1호 and 오후 8시 00분. The final `신청하기` button is enabled, but never pressed. Other synthetic reservations leave this slot free; no write is forwarded.
+- **Dipull dryer:** proper dryer machine codes/names and typed reservation rows are returned; it is not a washer page with its heading renamed.
+- **Dipull song search/my-list:** the original search input and Enter action call local fixture responses for `산책`; original cards display three invented results. The user's one synthetic request is shown in the actual `/wakeup/my` route. Read-only POST endpoints are explicitly mocked; no real YouTube search/audio/image, song registration or vote occurs.
+- **Dipull stay:** the real `교실잔류` control sets the reason in the native form, without submitting. The original `/stay/apply` seat-modal is opened, its actual 14 × 18 Studyroom component receives normal synthetic allowed/occupied seats, and A2 is selected without confirming/submitting a reservation. The native chart is larger than the original 512px content column and scrolls in both directions; the screenshot truthfully shows its currently visible section, not a resized fake full chart.
+- All account/owner identities are synthetic and internally consistent. Occupied seats use ordinary invented names, not live school records. The existing portrait/cover bytes are unchanged by this child task.
+
+The request that prompted revision 3 attached an old three-phone montage with opaque white vertical strips and a misplaced floating menu. That montage and its CSS harness are **not** reused. The revised gallery contains independent original-app viewports. The portfolio integration separately versions image URLs to avoid reusing the old cache key; this media task does not claim the user's cache was conclusively diagnosed.
+
 ## Typeface and publication boundary
 
 ara's native Wanted Sans (OFL-1.1) is loaded locally. Its canvas fixture uses
@@ -180,7 +201,7 @@ application server-side identity read is the local fixture. External browser
 requests are intercepted before network access; original ara ports 3000/
 5273, personal sessions, and company/parent APIs are not touched.
 
-All six captures passed: page/console errors 0, HTTP failures 0, broken
+The earlier six captures passed: page/console errors 0, HTTP failures 0, broken
 images 0, body horizontal overflow 0, nonempty SVG/text, native fonts loaded,
 WebP decoding successful, no EXIF, nonblank pixel entropy. Actual canvas
 filmstrip and Dipull navigation interactions passed. The canvas right pane
@@ -206,3 +227,21 @@ fallback. No fake new video or actual AI execution is claimed.
 Owned temporary dev/Next/WebSocket processes are stopped after handoff;
 private files remain for review/reproduction. No git commit, push, branch
 switch, merge, real DB change or deployment was made.
+
+
+### Revision 3 technical evidence and limits
+
+Private proof is under `/tmp/jeamxn-gallery-v3/` on the company Mac:
+
+- `screens-manifest.json`: by-slug `ProjectScreen[]`, unversioned working sources, exact native dimensions, feature descriptions, alt/captions and device type
+- `assets-qa.json`: all 15 gallery WebP bytes, full SHA-256, dimensions, successful decode, EXIF absence and pixel entropy
+- `qa-final.json`: exact final successful captures' DOM/font/image/error/request data; earlier successful original captures are carried forward with their original v2 evidence
+- `composed-hit-qa.json`: five representative live routes, point sampling via `elementFromPoint`, effective modal visibility and actual loaded font faces; unexpected high-z-index tall overlay count 0 and hidden-modal painted-control count 0
+- `ocr-all.txt`: Apple Vision locally recognizes slide title/text, document headings, laundry form selections, song/search headings and actual seat labels from the raster
+- `harness.mjs`, `capture-new.mjs`, `capture-more.mjs`, `capture-last.mjs`: private transport fixture and real interaction steps; exploratory failures are retained in logs, not represented as successful delivery
+
+All final new captures have page/console errors 0, HTTP failures 0, broken images 0, body horizontal overflow 0, and native fonts loaded. The real reservation button is enabled after a free slot is selected. The local page is genuinely editable. The canvas opacity track is genuinely created through the original editor. Original hidden modal controls remain unpainted through ancestor opacity/display; the one seat-selection modal is intentionally open and interactive.
+
+All **15 exact public rasters**, including unchanged v2 covers, were decoded and inspected column-by-column: no contiguous span ≥25px has >90% near-pure-white pixels (RGB >250) down the full-height column. This specifically checks the old opaque-white vertical-bar symptom; it is not a general computer-vision declaration of beauty. All rasters have positive image entropy and no EXIF. OCR is supplemental and misses some small glyphs. Native scrolling/truncated offscreen content is not claimed to be fully visible.
+
+These are technical/structural checks, **not direct human visual approval**. No image was sent to an external vision service, and this agent cannot directly view the generated raster through the available tools. The parent/user still reviews composition and readability. Frozen sources were handed to the parent for content-hash copies; no further media regeneration is intended after that handoff.

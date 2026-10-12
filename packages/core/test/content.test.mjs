@@ -9,7 +9,7 @@ test("public content validates and the assistant receives only the same public o
   assert.equal(new Set(portfolio.projects.map((p) => p.slug)).size, portfolio.projects.length);
   assert.deepEqual(
     portfolio.projects.filter((p) => p.featured).map((p) => p.slug),
-    ["ara", "dipull"],
+    ["ara", "dipull", "pfct"],
   );
 });
 test("public assets and links are safe and disclosure scope is explicit", () => {
@@ -51,4 +51,38 @@ test("KT SAT story includes practical instruction, human responsibility and the 
   assert.ok(story.length > 2000);
   assert.doesNotMatch(story, /추천으로 임직원 대상 생성형 AI와 업무 활용 강연을 진행했습니다/);
   assert.doesNotMatch(story, /이직.{0,20}(예정|예상)|기밀|api.?key|010-/i);
+});
+
+test("product screens have byte-versioned URLs and correct native dimensions", () => {
+  for (const slug of ["ara", "dipull"]) {
+    const project = portfolio.projects.find((item) => item.slug === slug);
+    assert.ok(project.screens.length >= (slug === "ara" ? 6 : 9));
+    assert.equal(new Set(project.screens.map((screen) => screen.id)).size, project.screens.length);
+    assert.ok(project.screens.some((screen) => screen.src === project.image));
+    assert.ok(project.cover.width >= project.cover.height);
+    for (const screen of project.screens) {
+      assert.match(screen.src, /^\/images\/[a-z0-9-]+\.[a-f0-9]{12}\.webp$/);
+      assert.ok(screen.width > 0 && screen.height > 0);
+      assert.match(screen.caption, /가상 데이터/);
+      assert.doesNotMatch(screen.title, /몽타주|화면 모음/);
+    }
+  }
+});
+
+test("public copy uses straight apostrophes and spaced slashes instead of middle dots", () => {
+  const text = createPublicKnowledge();
+  assert.doesNotMatch(text, /[‘’·]/u);
+  assert.match(text, /일정 \/ 회의실/u);
+});
+
+test("representatives are ara, Dipull, PFCT and KT SAT without treating a talk as an app", () => {
+  assert.deepEqual(
+    portfolio.projects.filter((project) => project.featured).map((project) => project.slug),
+    ["ara", "dipull", "pfct"],
+  );
+  assert.deepEqual(
+    portfolio.activities.filter((activity) => activity.featured).map((activity) => activity.slug),
+    ["kt-sat-ax"],
+  );
+  assert.equal(portfolio.projects.filter((project) => !project.featured).length, 83);
 });

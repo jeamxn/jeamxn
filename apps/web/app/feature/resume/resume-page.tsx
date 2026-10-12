@@ -31,6 +31,9 @@ export function ResumePage({ data }: { data: Portfolio }) {
         </a>
       </div>
       <p className="resume-profile">{data.profile.intro}</p>
+      <Link className="text-link resume-archive-link" to="/work">
+        이력서는 주요 작업을 모았습니다. 모든 작업 기록 보기 <Icon name="arrow-right" size={18} />
+      </Link>
       <section className="resume-section">
         <h2>경험</h2>
         <div>
@@ -53,7 +56,7 @@ export function ResumePage({ data }: { data: Portfolio }) {
         <h2>주요 작업</h2>
         <div>
           {data.projects
-            .filter((p) => p.featured || p.slug === "pfct")
+            .filter((p) => p.resumeSelected === true || p.featured || p.slug === "pfct")
             .map((project) => (
               <article className="resume-item" key={project.slug}>
                 <p className="resume-date">{project.period}</p>
@@ -86,7 +89,7 @@ export function ResumePage({ data }: { data: Portfolio }) {
               <div>
                 <h3>{item.school}</h3>
                 <p>
-                  {item.major} · {item.note}
+                  {item.major} / {item.note}
                 </p>
               </div>
             </article>
@@ -110,7 +113,10 @@ export function ResumePage({ data }: { data: Portfolio }) {
                     item.title
                   )}
                 </h3>
-                <p className="resume-role">{item.organization}</p>
+                <p className="resume-role">
+                  {item.featured ? "대표 작업 / " : ""}
+                  {item.organization}
+                </p>
                 <p>{item.description}</p>
                 {item.slug && (
                   <Link className="text-link resume-story-link" to={`/activity/${item.slug}`}>
@@ -123,7 +129,7 @@ export function ResumePage({ data }: { data: Portfolio }) {
         </div>
       </section>
       <section className="resume-section">
-        <h2>수상 · 자격 · 참가</h2>
+        <h2>수상 / 자격 / 참가</h2>
         <div>
           {data.awards.map((item) => (
             <article className="resume-item resume-item--compact" key={item.title}>
@@ -136,7 +142,7 @@ export function ResumePage({ data }: { data: Portfolio }) {
                     ? "수상"
                     : item.kind === "participation"
                       ? "참가"
-                      : "자격 · 인증"}
+                      : "자격 / 인증"}
                 </span>
               </div>
             </article>

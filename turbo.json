@@ -27,7 +27,8 @@
     "RESUME_FONT_PATH",
     "TRUST_PROXY_HOPS",
     "VALKEY_URL",
-    "WEB_PORT"
+    "WEB_PORT",
+    "QA_WIDTHS"
   ],
   "tasks": {
     "build": {

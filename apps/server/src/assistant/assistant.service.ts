@@ -1,8 +1,14 @@
 import type { AssistantStatus, ChatRequest, ChatResponse } from "@jeamxn/contract";
-import { createPublicKnowledge } from "@jeamxn/core";
 import { Inject, Injectable } from "@nestjs/common";
 import { CONFIG, type ServerConfig } from "#shared/config";
-import { curatedReply, inScope, publicPortfolio, refusal, safeAnswer } from "./assistant.policy.js";
+import {
+  curatedReply,
+  inScope,
+  publicKnowledgeForQuestion,
+  publicPortfolio,
+  refusal,
+  safeAnswer,
+} from "./assistant.policy.js";
 
 const UPSTREAM_LIMIT = 65536;
 @Injectable()
@@ -10,8 +16,8 @@ export class AssistantService {
   constructor(@Inject(CONFIG) private readonly config: ServerConfig) {}
   status(): AssistantStatus {
     return this.config.ai.enabled && this.config.ai.key
-      ? { mode: "ai", label: "공개 포트폴리오 AI 안내 · 질문은 AI 제공자에게 전송됩니다" }
-      : { mode: "local", label: "공개 포트폴리오 FAQ 안내 · AI가 연결되어 있지 않습니다" };
+      ? { mode: "ai", label: "공개 포트폴리오 AI 안내 / 질문은 AI 제공자에게 전송됩니다" }
+      : { mode: "local", label: "공개 포트폴리오 FAQ 안내 / AI가 연결되어 있지 않습니다" };
   }
   async chat(input: ChatRequest): Promise<ChatResponse> {
     const question = input.messages.at(-1)?.content ?? "";
@@ -46,7 +52,7 @@ export class AssistantService {
             },
             {
               role: "system",
-              content: `PUBLIC_PORTFOLIO_DATA_START\n${createPublicKnowledge()}\nPUBLIC_PORTFOLIO_DATA_END`,
+              content: `PUBLIC_PORTFOLIO_DATA_START\n${publicKnowledgeForQuestion(question)}\nPUBLIC_PORTFOLIO_DATA_END`,
             },
             // Client-supplied assistant turns are not treated as trusted claims.
             {

@@ -1,7 +1,10 @@
 import type { Portfolio } from "@jeamxn/contract";
 import { enrichActivity } from "./activities.js";
+import { additionalProjects } from "./additional-projects.js";
+import { normalizePublicCopy } from "./copy.js";
 import { enrichMedia } from "./media.js";
 import { enrichExperience, enrichProject } from "./projects.js";
+import { enrichSupplementalStories } from "./supplemental-stories.js";
 
 const basePortfolio: Portfolio = {
   profile: {
@@ -16,7 +19,7 @@ const basePortfolio: Portfolio = {
     about: [
       "안녕하세요. 제품을 만드는 최재민입니다. 어릴 때부터 무언가 만드는 것을 좋아했습니다. 컴퓨터에서는 손으로 만들기 어려운 것도 직접 구현하고, 인터넷을 통해 다른 사람에게 건넬 수 있다는 점이 매력적이었습니다.",
       "중학교 원격수업 때 시간표에 Teams 바로가기와 시종 기능을 붙였습니다. 반장들에게 수업 링크를 모아달라고 부탁했고, 친구들이 실제로 사용하는 서비스를 처음 경험했습니다. 고등학교에서는 반 안에서 쓰던 서비스가 교내 생활을 위한 Dipull로 확장됐습니다.",
-      "지금은 PFCT에서 동료들이 사용하는 운영·AI 제품을 만들고, 고등학교 때부터 함께 활동한 박성민과 사이드프로젝트 ara를 개발합니다. 둘 다 아이디어를 내고 구현하며 테스트합니다. 서로 다른 강점을 보태 더 쓰기 좋은 제품을 만드는 과정이 즐겁습니다.",
+      "지금은 PFCT에서 동료들이 사용하는 운영 / AI 제품을 만들고, 고등학교 때부터 함께 활동한 박성민과 사이드프로젝트 ara를 개발합니다. 둘 다 아이디어를 내고 구현하며 테스트합니다. 서로 다른 강점을 보태 더 쓰기 좋은 제품을 만드는 과정이 즐겁습니다.",
       "좋은 아이디어를 떠올리는 것만큼, 왜 필요한지 설명하고 함께 만들 사람을 설득하는 과정도 좋아합니다. 혼자 모든 기술을 잘하는 사람보다는 서로의 강점을 보태 제품을 완성하는 사람이 되고 싶습니다. 상대를 존중하면서도 제안한 방향을 함께 실현하는 방법을 계속 배웁니다.",
       "필요한 것이 생기면 먼저 만들어 봅니다. 하나를 완성하며 필요한 기술을 찾고, 직접 사용하다가 불편을 발견하면 다시 고칩니다. 학교에서 친구들과 쓰던 시간표와 Dipull, 회사의 어드민과 Lily, 친구와 만드는 ara까지 이어지는 저의 습관입니다.",
       "기술 하나로 저를 설명하기보다는, 필요한 것을 배우고 사람들과 함께 제품으로 완성하는 사람으로 기억되고 싶습니다.",
@@ -26,13 +29,16 @@ const basePortfolio: Portfolio = {
   projects: [
     {
       slug: "ara",
+      collection: "personal",
+      recordType: "product",
+      resumeSelected: true,
       name: "ara",
       subtitle: "직접 쓰는 에이전트를, 함께 더 나은 작업공간으로.",
       summary:
         "AI와 대화하고, 문서를 함께 고치고, 도구로 일을 이어가는 작업공간을 친구와 만들고 있습니다.",
       period: "2026 — 현재",
       category: "AI workspace",
-      role: "아이디어 · 공동 개발 · 테스트",
+      role: "아이디어 / 공동 개발 / 테스트",
       status: "두 사람이 사용하는 실험 단계",
       tags: ["TypeScript", "NestJS", "React Router", "Yjs", "AI"],
       image: "/images/ara-preview.webp",
@@ -40,8 +46,8 @@ const basePortfolio: Portfolio = {
       featured: true,
       overview: [
         "고등학교 입학 무렵 디스코드에서 만난 박성민과는 처음에는 각자 만들며 경쟁했습니다. 학생회장 투표 사이트에서 개발과 운영을 나누며 함께 작업하기 시작했고, 지금도 서로의 강점을 보태 제품을 만듭니다.",
-        "여러 AI 에이전트를 직접 사용하며 대화의 연속성, 기록 활용, 공급자 종속성 등 아쉬운 점을 나눴습니다. 그러다 ‘우리가 원하는 것을 직접 만들어보자’는 제안에서 ara가 시작됐습니다.",
-        "둘 다 아이디어·개발·테스트에 참여합니다. 성민은 아키텍처·확장성·운영에, 저는 기능 아이디어와 추진에 상대적으로 강점이 있습니다. 현재는 두 사람이 직접 사용하는 실험 단계이며, 일반 사용자용 제품과 셀프호스팅 기업용 제품으로의 확장을 목표로 합니다.",
+        "여러 AI 에이전트를 직접 사용하며 대화의 연속성, 기록 활용, 공급자 종속성 등 아쉬운 점을 나눴습니다. 그러다 '우리가 원하는 것을 직접 만들어보자'는 제안에서 ara가 시작됐습니다.",
+        "둘 다 아이디어 / 개발 / 테스트에 참여합니다. 성민은 아키텍처 / 확장성 / 운영에, 저는 기능 아이디어와 추진에 상대적으로 강점이 있습니다. 현재는 두 사람이 직접 사용하는 실험 단계이며, 일반 사용자용 제품과 셀프호스팅 기업용 제품으로의 확장을 목표로 합니다.",
       ],
       highlights: [
         {
@@ -50,7 +56,7 @@ const basePortfolio: Portfolio = {
         },
         {
           title: "생성에서 직접 편집까지",
-          body: "앱랫과 협업 캔버스, 문서 변환과 모션·미디어 기능을 연결했습니다. AI가 만든 결과를 사람이 같은 작업공간에서 고치고 활용할 수 있는 경험을 함께 개선합니다.",
+          body: "앱랫과 협업 캔버스, 문서 변환과 모션 / 미디어 기능을 연결했습니다. AI가 만든 결과를 사람이 같은 작업공간에서 고치고 활용할 수 있는 경험을 함께 개선합니다.",
         },
         {
           title: "직접 쓰면서 발견하는 다음 기능",
@@ -61,21 +67,24 @@ const basePortfolio: Portfolio = {
     },
     {
       slug: "dipull",
+      collection: "school",
+      recordType: "product",
+      resumeSelected: true,
       name: "Dipull",
       subtitle: "반에서 쓰던 서비스가, 학교의 생활 도구가 되었습니다.",
       summary:
-        "학교에서 직접 겪은 불편을 해결한 인트라넷. 생활신청·예약·계정을 연결하고 후배들이 참여할 수 있도록 열었습니다.",
+        "학교에서 직접 겪은 불편을 해결한 인트라넷. 생활신청 / 예약 / 계정을 연결하고 후배들이 참여할 수 있도록 열었습니다.",
       period: "2022 — 2025",
       category: "School service",
-      role: "초기 기획·개발 · 기여 커뮤니티",
-      status: "졸업 후 후배 인계 · 현재 운영 상태 미확인",
+      role: "초기 기획 / 개발 / 기여 커뮤니티",
+      status: "졸업 후 후배 인계 / 현재 운영 상태 미확인",
       tags: ["Next.js", "TypeScript", "MongoDB", "OAuth"],
       image: "/images/dipull-preview.webp",
       color: "#e2e5db",
       featured: true,
       overview: [
-        "Dipull의 시작은 반 안에서 사용하던 LeagueOfDimi였습니다. 교내 디미고인 서비스가 멈추면서 기상송과 세탁 예약 같은 일상 기능을 쓸 수 없게 됐고, 기존 서비스에 학교에서 필요한 기능을 더해 ‘디미고인 풀 서비스’로 확장했습니다.",
-        "학생이자 사용자로 직접 겪은 불편을 해결하며 신청·예약·계정 등의 기능을 개발했습니다. 초기 제품은 제가 만들었고, 고3 때 후배에게 이어줄 준비를 하면서 디스코드 기여 커뮤니티를 열었습니다.",
+        "Dipull의 시작은 반 안에서 사용하던 LeagueOfDimi였습니다. 교내 디미고인 서비스가 멈추면서 기상송과 세탁 예약 같은 일상 기능을 쓸 수 없게 됐고, 기존 서비스에 학교에서 필요한 기능을 더해 '디미고인 풀 서비스'로 확장했습니다.",
+        "학생이자 사용자로 직접 겪은 불편을 해결하며 신청 / 예약 / 계정 등의 기능을 개발했습니다. 초기 제품은 제가 만들었고, 고3 때 후배에게 이어줄 준비를 하면서 디스코드 기여 커뮤니티를 열었습니다.",
         "재학 당시 Google Analytics에서 하루 약 200명이 방문하는 것을 확인했다고 기억합니다. 이 수치는 당시 관찰 기준이며 현재 이용자 수는 아닙니다. 졸업 뒤에는 후배에게 이어주었으며 현재 운영 상태는 별도로 확인하지 않았습니다.",
       ],
       highlights: [
@@ -99,29 +108,35 @@ const basePortfolio: Portfolio = {
     },
     {
       slug: "pfct",
+      collection: "company",
+      recordType: "product",
+      resumeSelected: true,
       name: "PFCT",
       subtitle: "동료들이 일하는 화면을 하나로.",
-      summary: "공통 어드민과 DPD 대시보드, 사내 AI Lily의 기능을 개발·개선했습니다.",
+      summary: "공통 어드민과 DPD 대시보드, 사내 AI Lily의 기능을 개발 / 개선했습니다.",
       period: "2024 — 현재",
       category: "Operations & AI",
-      role: "풀스택 · AI 개발",
+      role: "풀스택 / AI 개발",
       status: "회사 공동 프로젝트",
       tags: ["Bun", "Elysia", "Next.js", "Python", "AI"],
       image: "",
       color: "#dcdad5",
-      featured: false,
+      featured: true,
       overview: [
         "현장실습과 인턴을 거쳐 대학 진학 뒤 PFCT에 재합류했습니다. 실제 사용자가 있는 제품을 계속 만들고 전문성을 가진 동료들과 함께 일하고 싶었습니다.",
-        "초기 통합 어드민의 스택 선정·구현·PR 리뷰·워크플로를 맡았고, 이후 운영 대시보드와 사내 AI 기능을 개발했습니다. 회사 제품의 기여는 동료의 담당과 구분합니다.",
+        "초기 통합 어드민의 스택 선정 / 구현 / PR 리뷰 / 워크플로를 맡았고, 이후 운영 대시보드와 사내 AI 기능을 개발했습니다. 회사 제품의 기여는 동료의 담당과 구분합니다.",
       ],
       highlights: [],
       links: [],
     },
     {
       slug: "multinet",
+      collection: "personal",
+      recordType: "product",
+      resumeSelected: true,
       name: "MultiNet",
       subtitle: "기다리는 다운로드를, 여러 회선으로.",
-      summary: "Ubuntu 서버 이미지 다운로드가 느려 시작한 Go CLI·데스크톱 다운로더입니다.",
+      summary: "Ubuntu 서버 이미지 다운로드가 느려 시작한 Go CLI / 데스크톱 다운로더입니다.",
       period: "2026",
       category: "Desktop & network",
       role: "개발",
@@ -139,6 +154,9 @@ const basePortfolio: Portfolio = {
     },
     {
       slug: "ttililing",
+      collection: "collaboration",
+      recordType: "product",
+      resumeSelected: true,
       name: "띠리링",
       subtitle: "전화가 부담스러운 친구들을 위한 연습.",
       summary: "전화에 부담을 느낀 팀원들의 경험에서 시작한 AI 통화연습 앱입니다.",
@@ -160,12 +178,15 @@ const basePortfolio: Portfolio = {
     },
     {
       slug: "yun",
+      collection: "personal",
+      recordType: "product",
+      resumeSelected: true,
       name: "YUN Architects",
       subtitle: "건축 프로젝트를 보여주는 작은 갤러리.",
-      summary: "부모님 건축사사무소의 소개·프로젝트 갤러리 사이트를 제작하고 리뉴얼했습니다.",
+      summary: "부모님 건축사사무소의 소개 / 프로젝트 갤러리 사이트를 제작하고 리뉴얼했습니다.",
       period: "2022 — 2025",
       category: "Website",
-      role: "사이트 제작 · 리뉴얼",
+      role: "사이트 제작 / 리뉴얼",
       status: "가족 사이트 프로젝트",
       tags: ["Next.js", "Notion CMS"],
       image: "",
@@ -184,7 +205,7 @@ const basePortfolio: Portfolio = {
       team: "AX Squad",
       role: "Fullstack & AI Developer",
       period: "2026.01 — 현재",
-      description: "사내 AI Lily와 운영 제품의 기능을 개발·개선합니다.",
+      description: "사내 AI Lily와 운영 제품의 기능을 개발 / 개선합니다.",
     },
     {
       company: "PFCT",
@@ -198,7 +219,7 @@ const basePortfolio: Portfolio = {
       team: "UX Squad",
       role: "인턴",
       period: "2025.01 — 2025.02",
-      description: "고객 이벤트·웹뷰·쿠폰 및 어드민 기능을 개발했습니다.",
+      description: "고객 이벤트 / 웹뷰 / 쿠폰 및 어드민 기능을 개발했습니다.",
     },
     {
       company: "PFCT",
@@ -238,10 +259,10 @@ const basePortfolio: Portfolio = {
       description: "학교 생활과 학생 자치 활동에 참여했습니다.",
     },
     {
-      title: "LUNA · JUST",
+      title: "LUNA / JUST",
       organization: "디미고 창업동아리",
       period: "2022 — 2025",
-      description: "팀 프로젝트와 개발·아이디어 논의에 참여했습니다.",
+      description: "팀 프로젝트와 개발 / 아이디어 논의에 참여했습니다.",
     },
   ],
   awards: [
@@ -253,7 +274,7 @@ const basePortfolio: Portfolio = {
     },
     {
       title: "Hello New() World 우수상",
-      organization: "신세계아이앤씨 · 교육부 · 함께하는재단",
+      organization: "신세계아이앤씨 / 교육부 / 함께하는재단",
       year: "2022",
       kind: "award",
     },
@@ -266,11 +287,11 @@ const basePortfolio: Portfolio = {
     {
       title: "Junction Asia 참가",
       organization: "Junction",
-      year: "2022 · 2023",
+      year: "2022 / 2023",
       kind: "participation",
     },
     {
-      title: "정보기기운용기능사 · 프로그래밍기능사",
+      title: "정보기기운용기능사 / 프로그래밍기능사",
       organization: "한국산업인력공단",
       year: "2026",
       kind: "certification",
@@ -290,9 +311,11 @@ const basePortfolio: Portfolio = {
   ],
 };
 
-export const portfolio: Portfolio = {
+export const portfolio: Portfolio = normalizePublicCopy({
   ...basePortfolio,
-  projects: basePortfolio.projects.map((project) => enrichMedia(enrichProject(project))),
+  projects: [...basePortfolio.projects, ...additionalProjects].map((project) =>
+    enrichMedia(enrichSupplementalStories(enrichProject(project))),
+  ),
   experience: basePortfolio.experience.map(enrichExperience),
   activities: basePortfolio.activities.map(enrichActivity),
-};
+});

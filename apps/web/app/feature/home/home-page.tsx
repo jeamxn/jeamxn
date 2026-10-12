@@ -3,9 +3,16 @@ import { Icon } from "@jeamxn/icon";
 import { Link } from "react-router";
 import { Portrait } from "~/shared/widget/portrait";
 import { ProjectScene } from "~/shared/widget/project-scene";
+import { OtherWork } from "./other-work";
 
 export function HomePage({ data, onAsk }: { data: Portfolio; onAsk: () => void }) {
   const { profile } = data;
+  const lecture = data.activities.find(
+    (activity) => activity.slug === "kt-sat-ax" && activity.featured,
+  );
+  const lectureStories = ["judgment", "workflow", "responsibility"].flatMap(
+    (id) => lecture?.sections?.find((section) => section.id === id) ?? [],
+  );
   const pfct = data.projects.find((project) => project.slug === "pfct");
   const companyStories = ["admin-foundation", "dpd-workspace", "meeting-workflow"].flatMap(
     (id) => pfct?.sections?.find((section) => section.id === id) ?? [],
@@ -30,7 +37,7 @@ export function HomePage({ data, onAsk }: { data: Portfolio; onAsk: () => void }
           </h1>
           <p className="hero-intro">{profile.intro}</p>
           <a className="text-link" href="#work">
-            만든 제품 살펴보기 <Icon name="arrow-down" size={20} />
+            대표 작업 살펴보기 <Icon name="arrow-down" size={20} />
           </a>
         </div>
         <Portrait src={profile.portrait} className="hero-portrait" priority />
@@ -64,7 +71,8 @@ export function HomePage({ data, onAsk }: { data: Portfolio; onAsk: () => void }
           </p>
         </div>
         {data.projects
-          .filter((p) => p.featured)
+          .filter((p) => p.featured && p.slug !== "pfct")
+          .sort((a, b) => ["ara", "dipull"].indexOf(a.slug) - ["ara", "dipull"].indexOf(b.slug))
           .map((project) => (
             <article className={`featured featured--${project.slug}`} key={project.slug}>
               <Link
@@ -92,17 +100,18 @@ export function HomePage({ data, onAsk }: { data: Portfolio; onAsk: () => void }
             </article>
           ))}
         {pfct && (
-          <section className="home-company" aria-labelledby="company-story-title">
-            <div className="home-company-heading">
-              <p>
-                {pfct.period} · {pfct.role}
-              </p>
-              <h3 id="company-story-title">
-                {pfct.name}에서
-                <br />
-                동료들과 만든 제품
-              </h3>
-              <p className="home-company-lead">{pfct.lead ?? pfct.summary}</p>
+          <article className="featured featured--pfct home-company" aria-label="PFCT 대표 작업">
+            <div className="featured-copy home-company-heading">
+              <p className="project-period">{pfct.period}</p>
+              <Link to="/work/pfct" className="project-name">
+                <h3 translate="no">{pfct.name}</h3>
+                <span className="round-arrow">
+                  <Icon name="arrow-up-right" size={27} />
+                </span>
+              </Link>
+              <p className="project-subtitle">동료들과, 실제로 쓰는 제품을 만듭니다.</p>
+              <p className="project-summary">{pfct.lead ?? pfct.summary}</p>
+              <p className="project-role">{pfct.role}</p>
               <Link className="text-link" to="/work/pfct">
                 PFCT의 전체 이야기 <Icon name="arrow-right" size={20} />
               </Link>
@@ -120,40 +129,42 @@ export function HomePage({ data, onAsk }: { data: Portfolio; onAsk: () => void }
                 </article>
               ))}
             </div>
-          </section>
+          </article>
         )}
-        <div className="other-work">
-          <h3>그리고 이런 것들을 만들었습니다.</h3>
-          {data.projects
-            .filter((p) => !p.featured && p.slug !== "pfct")
-            .map((project) => (
-              <Link to={`/work/${project.slug}`} className="work-row" key={project.slug}>
-                <span className="work-row-name" translate="no">
-                  {project.name}
+        {lecture && (
+          <article className="featured featured--kt-sat" aria-label="KT SAT 대표 작업">
+            <div className="featured-copy">
+              <p className="project-period">{lecture.period}</p>
+              <Link to={`/activity/${lecture.slug}`} className="project-name">
+                <h3 translate="no">KT SAT</h3>
+                <span className="round-arrow">
+                  <Icon name="arrow-up-right" size={27} />
                 </span>
-                <span className="work-row-summary">{project.summary}</span>
-                <span className="work-row-period">{project.period}</span>
-                <Icon name="arrow-up-right" size={23} />
               </Link>
-            ))}
-        </div>
+              <p className="project-subtitle">{lecture.title}</p>
+              <p className="project-summary">{lecture.lead ?? lecture.description}</p>
+              <p className="project-role">임직원 AX 기초 강연 / 강연 준비 / 발표</p>
+              <Link className="text-link" to={`/activity/${lecture.slug}`}>
+                강연 이야기 읽기 <Icon name="arrow-right" size={20} />
+              </Link>
+            </div>
+            <div className="home-lecture-stories">
+              {lectureStories.map((section) => (
+                <article key={section.id}>
+                  <h4>
+                    <Link to={`/activity/${lecture.slug}#${section.id}`}>
+                      {section.title}
+                      <Icon name="arrow-up-right" size={20} />
+                    </Link>
+                  </h4>
+                  <p>{section.paragraphs[0]}</p>
+                </article>
+              ))}
+            </div>
+          </article>
+        )}
+        <OtherWork projects={data.projects} />
       </section>
-      {data.activities.find((item) => item.slug === "kt-sat-ax") && (
-        <section className="home-activity container">
-          {data.activities
-            .filter((item) => item.slug === "kt-sat-ax")
-            .map((item) => (
-              <Link to={`/activity/${item.slug}`} key={item.slug}>
-                <span>{item.organization}에서 나눈 이야기</span>
-                <h2>{item.title}</h2>
-                <p>{item.description}</p>
-                <span className="text-link">
-                  강연 이야기 읽기 <Icon name="arrow-right" size={20} />
-                </span>
-              </Link>
-            ))}
-        </section>
-      )}
       <section className="home-about container">
         <div>
           <h2>

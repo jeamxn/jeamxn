@@ -30,6 +30,8 @@ jobs:
       - run: pnpm typecheck
       - run: pnpm lint
       - run: pnpm test
+      - run: node scripts/verify-media.mjs
+      - run: node scripts/verify-copy.mjs
       - name: Validate Dokploy and local Compose
         run: |
           docker compose -f docker-compose.yml config -q
@@ -75,6 +77,10 @@ jobs:
           curl --fail --silent http://127.0.0.1:5412/api/health
           pnpm test:e2e
           QA_OUTPUT=test-results/stories node scripts/verify-stories.mjs
+          QA_OUTPUT=test-results/gallery node apps/web/test/gallery-browser.mjs
+          QA_OUTPUT=test-results/archive node apps/web/test/archive-browser.mjs
+          QA_OUTPUT=test-results/home-rotation node apps/web/test/home-rotation-browser.mjs
+          node scripts/verify-media-cache.mjs
       - name: Container diagnostics on failure
         if: failure()
         run: docker compose -f docker-compose.yml -f infra/compose.local.yml logs --tail=100

@@ -32,7 +32,7 @@ export function AboutPage({ data }: { data: Portfolio }) {
             <div className="about-education" key={item.school}>
               <h3>{item.school}</h3>
               <p>
-                {item.major} · {item.period} · {item.note}
+                {item.major} / {item.period} / {item.note}
               </p>
             </div>
           ))}

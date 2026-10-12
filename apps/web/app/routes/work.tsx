@@ -22,9 +22,9 @@ export default function Work() {
   ) : (
     <div className="container missing-page">
       <h1>이 프로젝트는 찾지 못했습니다.</h1>
-      <p>주소를 확인하거나, 만든 제품 목록에서 다시 살펴보세요.</p>
-      <Link className="button button--solid" to="/#work">
-        만든 제품 보기
+      <p>주소를 확인하거나, 작업 기록에서 다시 살펴보세요.</p>
+      <Link className="button button--solid" to="/work">
+        모든 작업 기록 보기
       </Link>
     </div>
   );

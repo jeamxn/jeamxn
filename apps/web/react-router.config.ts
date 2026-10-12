@@ -1,3 +1,4 @@
+import { portfolio } from "@jeamxn/core";
 import type { Config } from "@react-router/dev/config";
 
 export default {
@@ -5,13 +6,11 @@ export default {
   prerender: [
     "/",
     "/about",
-    "/work/ara",
-    "/work/dipull",
-    "/work/pfct",
-    "/work/multinet",
-    "/work/ttililing",
-    "/work/yun",
-    "/activity/kt-sat-ax",
+    "/work",
     "/resume",
+    ...portfolio.projects.map((project) => `/work/${project.slug}`),
+    ...portfolio.activities.flatMap((activity) =>
+      activity.slug ? [`/activity/${activity.slug}`] : [],
+    ),
   ],
 } satisfies Config;

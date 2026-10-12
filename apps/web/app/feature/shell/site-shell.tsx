@@ -27,7 +27,7 @@ export function SiteShell({
           jeamxn<span aria-hidden="true">*</span>
         </Link>
         <nav className="desktop-nav" aria-label="주 메뉴">
-          <NavLink to="/#work">만든 제품</NavLink>
+          <NavLink to="/work">작업 기록</NavLink>
           <NavLink to="/about">소개</NavLink>
           <NavLink to="/resume">이력</NavLink>
         </nav>
@@ -105,8 +105,8 @@ export function SiteShell({
           </button>
         </div>
         <nav id="mobile-menu" aria-label="모바일 주 메뉴">
-          <Link to="/#work" onClick={() => setMenuOpen(false)}>
-            만든 제품
+          <Link to="/work" onClick={() => setMenuOpen(false)}>
+            작업 기록
             <Icon name="arrow-up-right" />
           </Link>
           <Link to="/about" onClick={() => setMenuOpen(false)}>
