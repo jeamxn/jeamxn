@@ -3,5 +3,6 @@ export default [
   index("routes/home.tsx"),
   route("about", "routes/about.tsx"),
   route("work/:slug", "routes/work.tsx"),
+  route("activity/:slug", "routes/activity.tsx"),
   route("resume", "routes/resume.tsx"),
 ] satisfies RouteConfig;

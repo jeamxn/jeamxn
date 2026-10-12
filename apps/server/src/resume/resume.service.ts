@@ -46,7 +46,7 @@ class ResumeLayout {
     return lines;
   }
   text(text: string, size = 10.4, color = INK, gap = 6) {
-    const lineHeight = size * 1.65;
+    const lineHeight = size * 1.55;
     for (const line of this.wrap(text, size, PAGE.width - PAGE.margin * 2)) {
       this.ensure(lineHeight);
       this.y -= lineHeight;
@@ -155,21 +155,30 @@ export class ResumeService {
       );
     layout.section("학력");
     for (const item of data.education)
-      layout.item(item.school, `${item.period} · ${item.major}`, item.note);
+      layout.text(`${item.school} · ${item.major} · ${item.period} · ${item.note}`, 9.4, INK, 6);
     layout.nextPage();
+    const pfct = data.projects.find((item) => item.slug === "pfct");
+    if (pfct) {
+      layout.section("PFCT에서 만든 제품");
+      layout.text(pfct.summary, 9.4, INK, 5);
+      for (const highlight of pfct.highlights.slice(0, 3))
+        layout.text(`${highlight.title}: ${highlight.body}`, 9.4, INK, 5);
+      layout.link("기여와 상세 사례", "https://jeamxn.dev/work/pfct");
+    }
     layout.section("대표 프로젝트");
     for (const project of data.projects.filter((item) => item.featured)) {
       layout.item(project.name, `${project.period} · ${project.role}`, project.summary);
       layout.text(project.status, 9.1, MUTED, 6);
       // Resume is a compact projection of the same public data, not the full case
-      // study transcript. Keep status/contribution distinctions and two key stories.
-      for (const highlight of project.highlights.slice(0, 2))
+      // study transcript. PFCT contributions share this page with one representative
+      // decision from each side project; the full narratives stay on the website.
+      for (const highlight of project.highlights.slice(0, 1))
         layout.item(highlight.title, "", highlight.body);
       layout.link("상세 이야기", `https://jeamxn.dev/work/${project.slug}`);
     }
     layout.nextPage();
     layout.section("다른 작업");
-    for (const project of data.projects.filter((item) => !item.featured)) {
+    for (const project of data.projects.filter((item) => !item.featured && item.slug !== "pfct")) {
       layout.text(
         `${project.name} · ${project.period} · ${project.role} · ${project.status}\n${project.summary}`,
         9.4,
@@ -178,8 +187,13 @@ export class ResumeService {
       );
     }
     layout.section("활동");
-    for (const item of data.activities)
-      layout.text(`${item.title} · ${item.organization} · ${item.period}`, 9.4, INK, 5);
+    for (const item of data.activities) {
+      layout.text(`${item.title} · ${item.organization} · ${item.period}`, 9.4, INK, 4);
+      if (item.slug) {
+        layout.text(item.description, 9.4, INK, 3);
+        layout.link("강연의 생각과 내용", `https://jeamxn.dev/activity/${item.slug}`);
+      }
+    }
     layout.section("수상 · 참여 · 자격");
     for (const item of data.awards) {
       const kind = { award: "수상", participation: "참가", certification: "자격·인증" }[item.kind];

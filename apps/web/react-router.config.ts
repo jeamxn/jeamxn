@@ -11,6 +11,7 @@ export default {
     "/work/multinet",
     "/work/ttililing",
     "/work/yun",
+    "/activity/kt-sat-ax",
     "/resume",
   ],
 } satisfies Config;

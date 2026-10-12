@@ -50,10 +50,10 @@ export function ResumePage({ data }: { data: Portfolio }) {
         </div>
       </section>
       <section className="resume-section">
-        <h2>대표 프로젝트</h2>
+        <h2>주요 작업</h2>
         <div>
           {data.projects
-            .filter((p) => p.featured)
+            .filter((p) => p.featured || p.slug === "pfct")
             .map((project) => (
               <article className="resume-item" key={project.slug}>
                 <p className="resume-date">{project.period}</p>
@@ -100,9 +100,23 @@ export function ResumePage({ data }: { data: Portfolio }) {
             <article className="resume-item" key={item.title}>
               <p className="resume-date">{item.period}</p>
               <div>
-                <h3>{item.title}</h3>
+                <h3>
+                  {item.slug ? (
+                    <Link to={`/activity/${item.slug}`}>
+                      {item.title}
+                      <Icon name="arrow-up-right" size={18} />
+                    </Link>
+                  ) : (
+                    item.title
+                  )}
+                </h3>
                 <p className="resume-role">{item.organization}</p>
                 <p>{item.description}</p>
+                {item.slug && (
+                  <Link className="text-link resume-story-link" to={`/activity/${item.slug}`}>
+                    강연을 준비한 생각과 내용 <Icon name="arrow-right" size={17} />
+                  </Link>
+                )}
               </div>
             </article>
           ))}

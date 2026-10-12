@@ -183,6 +183,19 @@ test("fake OpenAI-compatible AI receives only public knowledge; output links and
   assert.equal(captured.input.model, "fake-test-model");
   assert.equal(captured.input.max_completion_tokens, 800);
   assert.ok(captured.input.messages[1].content.includes("PUBLIC_PORTFOLIO_DATA_START"));
+  const knowledge = captured.input.messages[1].content;
+  for (const publicTopic of [
+    "meeting-workflow",
+    "dpd-workspace",
+    "erp-expense-tools",
+    "monitoring-tools",
+    "purpose",
+    "community-and-handoff",
+    "kt-sat-ax",
+    "responsibility",
+  ])
+    assert.ok(knowledge.includes(publicTopic), `AI public input omitted ${publicTopic}`);
+  assert.ok(knowledge.length < 60000, "public knowledge exceeds the curated input budget");
   assert.doesNotMatch(
     JSON.stringify(captured.input),
     /test-only-no-paid-vendor|pfct\.kr|interview|AdminUserActionLog/,
@@ -357,10 +370,23 @@ test("PDF embeds freely licensed Korean font, real extractable Hangul, multipage
   assert.match(text, /최재민/);
   assert.match(text, /경력/);
   assert.match(text, /한국디지털미디어고등학교/);
-  assert.match(text, /아이디어 · 공동 개발 · 테스트/);
+  assert.match(text, /아이디어 · 공동 개발/);
   assert.match(text, /실험 단계/);
   assert.match(text, /졸업 후 후배 인계/);
   assert.match(text, /수상/);
+  assert.match(text, /PFCT에서 만든 제품/);
+  assert.match(text, /KT SAT/);
+  assert.match(text, /Skill|도구|報告|보고서/);
+  assert.ok(
+    doc.context
+      .enumerateIndirectObjects()
+      .some(([, object]) => object.toString().includes("https://jeamxn.dev/work/pfct")),
+  );
+  assert.ok(
+    doc.context
+      .enumerateIndirectObjects()
+      .some(([, object]) => object.toString().includes("https://jeamxn.dev/activity/kt-sat-ax")),
+  );
   assert.doesNotMatch(text, /전화번호|pfct\.kr/);
   const objects = doc.context.enumerateIndirectObjects();
   assert.ok(objects.some(([, object]) => object.toString().includes("/FontFile2")));
@@ -403,9 +429,9 @@ test("startup and PDF font failures are controlled without leaked filesystem pat
 
 test("public purpose, collaboration, interests and education FAQs are supported without inventing details", async () => {
   const purpose = await (await ask(local.base, "ara purpose 아이디어가 뭔가요?")).json();
-  assert.match(purpose.answer, /purpose 필드/);
-  assert.match(purpose.answer, /아이디어는 제가 제안/);
-  assert.match(purpose.answer, /성민이 맡았/);
+  assert.match(purpose.answer, /purpose/);
+  assert.match(purpose.answer, /제 아이디어/);
+  assert.match(purpose.answer, /성민이 구현/);
   const friend = await (await ask(local.base, "친구 성민과 각각 어떤 강점이 있나요?")).json();
   assert.match(friend.answer, /아키텍처/);
   assert.match(friend.answer, /추진/);
@@ -417,4 +443,56 @@ test("public purpose, collaboration, interests and education FAQs are supported 
   const school = await (await ask(local.base, "기계공학과 학력 알려주세요")).json();
   assert.match(school.answer, /경희대학교/);
   assert.match(school.answer, /휴학/);
+});
+
+test("detailed public FAQs answer the requested section and use real story anchors", async () => {
+  const data = await (await fetch(`${local.base}/portfolio`)).json();
+  for (const [question, path, pattern] of [
+    ["KT SAT 강연의 의사결정과 판단 관점은?", "/activity/kt-sat-ax", /판단|재료|사람의 몫/],
+    ["KT SAT 강연에서 맥락을 어떻게 설명했나요?", "/activity/kt-sat-ax", /맥락|목적|제약/],
+    ["KT SAT 강연의 도구와 Skill 예시는?", "/activity/kt-sat-ax", /Skill|Tool|메일|보고서/],
+    [
+      "KT SAT 강연에서 결과 검증은 어떻게 다뤘나요?",
+      "/activity/kt-sat-ax",
+      /숫자|출처|검증|내 이름/,
+    ],
+    ["PFCT에서 회의 기능에 어떤 기여를 했나요?", "/work/pfct", /회의|녹음/],
+    ["PFCT DPD 대시보드는 어떤 작업인가요?", "/work/pfct", /DPD|연체/],
+    ["PFCT ERP는 어떻게 만들었나요?", "/work/pfct", /ERP|업무/],
+    ["PFCT monitoring 개선은 무엇인가요?", "/work/pfct", /모니터링|monitoring|경보/],
+    ["ara purpose 진행 문구는 왜 바꿨나요?", "/work/ara", /purpose/],
+    ["Dipull을 후배에게 어떻게 인계했나요?", "/work/dipull", /후배|인계|졸업/],
+  ]) {
+    const response = await (await ask(local.base, question)).json();
+    assert.equal(response.mode, "local");
+    assert.match(response.answer, pattern);
+    assert.ok(response.answer.length <= 3600);
+    const source = response.sources[0];
+    assert.ok(
+      source.href.startsWith(`${path}#`),
+      `${question}: missing section anchor ${source.href}`,
+    );
+    const collection = path.startsWith("/activity/") ? data.activities : data.projects;
+    const story = collection.find((item) => path.endsWith(`/${item.slug}`));
+    assert.ok(story.sections.some((section) => source.href.endsWith(`#${section.id}`)));
+  }
+});
+
+test("KT viewpoints and audience questions select the exact curated story rather than the invitation", async () => {
+  const viewpoint = await (await ask(local.base, "KT SAT 강연에서 어떤 생각을 전했나요?")).json();
+  assert.match(viewpoint.answer, /판단|재료/);
+  assert.match(viewpoint.answer, /목적|맥락/);
+  assert.deepEqual(
+    viewpoint.sources.map((source) => source.href),
+    ["/activity/kt-sat-ax#judgment", "/activity/kt-sat-ax#brief"],
+  );
+  for (const [question, id] of [
+    ["강연에서 도구와 Skill은 어떻게 설명했나요?", "workflow"],
+    ["KT SAT 강연에서 질문 반응은 어땠나요?", "conversation"],
+    ["KT SAT 강연은 어떻게 맡게 되었나요?", "invitation"],
+    ["KT SAT 강연의 직책자와 리더에게 한 이야기는?", "judgment"],
+  ]) {
+    const reply = await (await ask(local.base, question)).json();
+    assert.equal(reply.sources[0].href, `/activity/kt-sat-ax#${id}`);
+  }
 });

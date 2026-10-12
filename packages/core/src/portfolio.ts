@@ -1,6 +1,9 @@
 import type { Portfolio } from "@jeamxn/contract";
+import { enrichActivity } from "./activities.js";
+import { enrichMedia } from "./media.js";
+import { enrichExperience, enrichProject } from "./projects.js";
 
-export const portfolio: Portfolio = {
+const basePortfolio: Portfolio = {
   profile: {
     name: "최재민",
     nameEn: "Jeamin Choi",
@@ -14,6 +17,8 @@ export const portfolio: Portfolio = {
       "안녕하세요. 제품을 만드는 최재민입니다. 어릴 때부터 무언가 만드는 것을 좋아했습니다. 컴퓨터에서는 손으로 만들기 어려운 것도 직접 구현하고, 인터넷을 통해 다른 사람에게 건넬 수 있다는 점이 매력적이었습니다.",
       "중학교 원격수업 때 시간표에 Teams 바로가기와 시종 기능을 붙였습니다. 반장들에게 수업 링크를 모아달라고 부탁했고, 친구들이 실제로 사용하는 서비스를 처음 경험했습니다. 고등학교에서는 반 안에서 쓰던 서비스가 교내 생활을 위한 Dipull로 확장됐습니다.",
       "지금은 PFCT에서 동료들이 사용하는 운영·AI 제품을 만들고, 고등학교 때부터 함께 활동한 박성민과 사이드프로젝트 ara를 개발합니다. 둘 다 아이디어를 내고 구현하며 테스트합니다. 서로 다른 강점을 보태 더 쓰기 좋은 제품을 만드는 과정이 즐겁습니다.",
+      "좋은 아이디어를 떠올리는 것만큼, 왜 필요한지 설명하고 함께 만들 사람을 설득하는 과정도 좋아합니다. 혼자 모든 기술을 잘하는 사람보다는 서로의 강점을 보태 제품을 완성하는 사람이 되고 싶습니다. 상대를 존중하면서도 제안한 방향을 함께 실현하는 방법을 계속 배웁니다.",
+      "필요한 것이 생기면 먼저 만들어 봅니다. 하나를 완성하며 필요한 기술을 찾고, 직접 사용하다가 불편을 발견하면 다시 고칩니다. 학교에서 친구들과 쓰던 시간표와 Dipull, 회사의 어드민과 Lily, 친구와 만드는 ara까지 이어지는 저의 습관입니다.",
       "기술 하나로 저를 설명하기보다는, 필요한 것을 배우고 사람들과 함께 제품으로 완성하는 사람으로 기억되고 싶습니다.",
     ],
     interests: ["F1", "T1", "인디밴드 음악"],
@@ -126,7 +131,8 @@ export const portfolio: Portfolio = {
       color: "#d4d8df",
       featured: false,
       overview: [
-        "파일을 여러 네트워크에 나누어 받고, 작업 재분배와 이어받기를 지원하는 도구입니다. CLI 엔진과 데스크톱 UI를 연결했습니다.",
+        "Ubuntu 서버 이미지를 내려받는데 오래 걸리는 것이 답답해서 만들었습니다. 하나의 파일을 여러 네트워크로 나누어 받으면 어떨까 하는 필요에서 시작한 다운로더입니다.",
+        "Go로 다운로드 엔진과 CLI를 만들고, Wails로 데스크톱 UI를 연결했습니다. 파일을 나누어 받는 것뿐 아니라 회선별 진행 상태에 따라 작업을 재분배하고, 중단된 작업을 이어받는 흐름을 구현했습니다. 제가 직접 사용할 도구였기 때문에 기능의 출발점과 테스트 기준도 실제 다운로드 과정이었습니다.",
       ],
       highlights: [],
       links: [{ label: "GitHub", href: "https://github.com/jeamxn/multinet-dl" }],
@@ -145,7 +151,9 @@ export const portfolio: Portfolio = {
       color: "#e8ded8",
       featured: false,
       overview: [
-        "가상의 상황에서 음성으로 AI와 대화하고 연습하도록 만들었습니다. 당시에는 응답 지연이 있었지만, 팀원들은 직접 말하며 대화하는 경험을 신기해했습니다. 치료 효과를 검증한 제품은 아닙니다.",
+        "팀원들이 전화가 오면 긴장하고 받기 어렵다고 이야기했습니다. 실제 전화에서 바로 연습하기에는 부담이 있으니, 온라인에서 먼저 익숙해질 수 있으면 어떨까 하는 생각으로 시작했습니다. 저는 React Native 클라이언트를 개발했습니다.",
+        "가상의 통화 상황에서 사용자의 음성을 받아 AI의 응답을 다시 음성으로 들려주는 흐름을 만들었습니다. 당시에는 한마디를 말한 뒤 답이 돌아오기까지 기다려야 하는 것이 가장 큰 어려움이었습니다. 대화에서는 기능이 동작하는 것만큼 응답을 기다리는 시간도 중요하다는 문제를 직접 겪었습니다.",
+        "지금보다 음성 AI가 낯설었던 때라, 팀원들은 직접 말하며 AI와 대화하는 경험을 신기해했습니다. 통화 연습을 위한 팀 프로젝트이며 불안 완화나 치료 효과를 검증한 서비스는 아닙니다.",
       ],
       highlights: [],
       links: [{ label: "GitHub", href: "https://github.com/jeamxn/ttililing-app" }],
@@ -214,7 +222,8 @@ export const portfolio: Portfolio = {
       title: "AX 기초 강연",
       organization: "KT SAT",
       period: "2026.07",
-      description: "추천으로 임직원 대상 생성형 AI와 업무 활용 강연을 진행했습니다.",
+      description:
+        "KT SAT 임직원에게 AI를 판단의 재료와 실제 업무 도구로 활용하는 방법을 설명했습니다.",
     },
     {
       title: "IT부 부장",
@@ -279,4 +288,11 @@ export const portfolio: Portfolio = {
       kind: "certification",
     },
   ],
+};
+
+export const portfolio: Portfolio = {
+  ...basePortfolio,
+  projects: basePortfolio.projects.map((project) => enrichMedia(enrichProject(project))),
+  experience: basePortfolio.experience.map(enrichExperience),
+  activities: basePortfolio.activities.map(enrichActivity),
 };

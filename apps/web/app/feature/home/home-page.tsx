@@ -6,6 +6,10 @@ import { ProjectScene } from "~/shared/widget/project-scene";
 
 export function HomePage({ data, onAsk }: { data: Portfolio; onAsk: () => void }) {
   const { profile } = data;
+  const pfct = data.projects.find((project) => project.slug === "pfct");
+  const companyStories = ["admin-foundation", "dpd-workspace", "meeting-workflow"].flatMap(
+    (id) => pfct?.sections?.find((section) => section.id === id) ?? [],
+  );
   const headlineLines = profile.headline
     .replace(/,\s*/u, ",\n")
     .replace(/ (\S+)$/u, "\n$1")
@@ -87,10 +91,41 @@ export function HomePage({ data, onAsk }: { data: Portfolio; onAsk: () => void }
               </div>
             </article>
           ))}
+        {pfct && (
+          <section className="home-company" aria-labelledby="company-story-title">
+            <div className="home-company-heading">
+              <p>
+                {pfct.period} · {pfct.role}
+              </p>
+              <h3 id="company-story-title">
+                {pfct.name}에서
+                <br />
+                동료들과 만든 제품
+              </h3>
+              <p className="home-company-lead">{pfct.lead ?? pfct.summary}</p>
+              <Link className="text-link" to="/work/pfct">
+                PFCT의 전체 이야기 <Icon name="arrow-right" size={20} />
+              </Link>
+            </div>
+            <div className="home-company-stories">
+              {companyStories.map((section) => (
+                <article key={section.id}>
+                  <h4>
+                    <Link to={`/work/pfct#${section.id}`}>
+                      {section.title}
+                      <Icon name="arrow-up-right" size={20} />
+                    </Link>
+                  </h4>
+                  <p>{section.paragraphs[0]}</p>
+                </article>
+              ))}
+            </div>
+          </section>
+        )}
         <div className="other-work">
           <h3>그리고 이런 것들을 만들었습니다.</h3>
           {data.projects
-            .filter((p) => !p.featured)
+            .filter((p) => !p.featured && p.slug !== "pfct")
             .map((project) => (
               <Link to={`/work/${project.slug}`} className="work-row" key={project.slug}>
                 <span className="work-row-name" translate="no">
@@ -103,6 +138,22 @@ export function HomePage({ data, onAsk }: { data: Portfolio; onAsk: () => void }
             ))}
         </div>
       </section>
+      {data.activities.find((item) => item.slug === "kt-sat-ax") && (
+        <section className="home-activity container">
+          {data.activities
+            .filter((item) => item.slug === "kt-sat-ax")
+            .map((item) => (
+              <Link to={`/activity/${item.slug}`} key={item.slug}>
+                <span>{item.organization}에서 나눈 이야기</span>
+                <h2>{item.title}</h2>
+                <p>{item.description}</p>
+                <span className="text-link">
+                  강연 이야기 읽기 <Icon name="arrow-right" size={20} />
+                </span>
+              </Link>
+            ))}
+        </section>
+      )}
       <section className="home-about container">
         <div>
           <h2>
@@ -117,7 +168,7 @@ export function HomePage({ data, onAsk }: { data: Portfolio; onAsk: () => void }
           </Link>
         </div>
         <div className="home-about-copy">
-          <p>{profile.about[3]}</p>
+          <p>{profile.about.at(-1)}</p>
           <p>함께 일하는 동료에게, 학교의 친구에게, 그리고 제가 직접 쓰고 싶은 제품을 만듭니다.</p>
           <button type="button" className="ask-inline" onClick={onAsk}>
             <Icon name="chat" size={22} />

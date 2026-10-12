@@ -4,6 +4,7 @@ import { Link } from "react-router";
 import { safeHref } from "~/shared/lib/meta";
 import { projectMedia } from "~/shared/lib/project-media";
 import { ProjectScene } from "~/shared/widget/project-scene";
+import { StoryReader } from "~/shared/widget/story-reader";
 
 export function WorkPage({ project, next }: { project: Project; next?: Project }) {
   const media = projectMedia[project.slug];
@@ -34,26 +35,36 @@ export function WorkPage({ project, next }: { project: Project; next?: Project }
         </dl>
       </header>
       {project.image ? <ProjectScene project={project} priority /> : null}
-      <section className="work-story">
-        <h2>어떻게 시작했나요?</h2>
-        <div>
-          {project.overview.map((paragraph) => (
-            <p key={paragraph}>{paragraph}</p>
-          ))}
-        </div>
-      </section>
-      {project.highlights.length > 0 && (
-        <section className="work-highlights">
-          <h2>만들며 고민한 것들</h2>
-          <div>
-            {project.highlights.map((highlight) => (
-              <div className="highlight" key={highlight.title}>
-                <h3>{highlight.title}</h3>
-                <p>{highlight.body}</p>
+      <div className="case-intro">
+        {project.lead && <p className="case-lead">{project.lead}</p>}
+        <p className="case-summary">{project.summary}</p>
+      </div>
+      {project.sections?.length ? (
+        <StoryReader sections={project.sections} />
+      ) : (
+        <>
+          <section className="work-story">
+            <h2>이 프로젝트의 이야기</h2>
+            <div>
+              {project.overview.map((paragraph) => (
+                <p key={paragraph}>{paragraph}</p>
+              ))}
+            </div>
+          </section>
+          {project.highlights.length > 0 && (
+            <section className="work-highlights">
+              <h2>만들며 고민한 것들</h2>
+              <div>
+                {project.highlights.map((highlight) => (
+                  <div className="highlight" key={highlight.title}>
+                    <h3>{highlight.title}</h3>
+                    <p>{highlight.body}</p>
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
-        </section>
+            </section>
+          )}
+        </>
       )}
       {media && (
         <section className="product-gallery" aria-labelledby="gallery-title">
@@ -71,36 +82,34 @@ export function WorkPage({ project, next }: { project: Project; next?: Project }
                   height={item.height}
                   loading="lazy"
                 />
-                <figcaption>가상 데이터로 재구성한 화면</figcaption>
+                <figcaption>{item.caption}</figcaption>
               </figure>
             ))}
           </div>
         </section>
       )}
-      {project.slug === "ara" && (
+      {media?.video && (
         <figure className="product-video">
           <video
             controls
             playsInline
             preload="none"
-            poster="/images/ara-preview.webp"
-            width="1440"
-            height="900"
-            aria-label="가상 데이터로 만든 ara 제품 예시 영상"
+            poster={media.video.poster}
+            width={media.video.width}
+            height={media.video.height}
+            aria-label={media.video.alt}
           >
-            <source src="/images/ara-demo.mp4" type="video/mp4" />
+            <source src={media.video.src} type="video/mp4" />
             <track
               kind="captions"
-              src="/captions/ara-demo.vtt"
+              src={media.video.captions}
               srcLang="ko"
               label="한국어 설명"
               default
             />
             이 브라우저는 영상을 지원하지 않습니다. 위의 제품 예시 화면을 살펴보세요.
           </video>
-          <figcaption>
-            가상 데이터로 재구성한 무음 화면 예시 · 재생 버튼을 눌러 살펴볼 수 있습니다.
-          </figcaption>
+          <figcaption>{media.video.caption}</figcaption>
         </figure>
       )}
       <section className="work-tools">

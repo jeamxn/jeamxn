@@ -58,3 +58,35 @@ shared cache outside this root, so the local lint did not see that generated dat
 Explicit `!**/.turbo` exclusion now prevents linting generated cache in either
 checkout topology. Reproduced locally with deliberately unformatted cache JSON;
 source lint remains strict. Remote run is rechecked after the corrective commit.
+
+## Content and capture revision after user review
+
+User rejected thin PFCT/ara/Dipull stories and unnatural assembled captures.
+This revision does not treat technical browser success as editorial or visual approval.
+
+- Re-read the90-answer interview and original company/ara/Dipull work evidence.
+- PFCT8, ara7 and Dipull5 long-form case sections, with real context, contribution,
+  design decisions and collaboration boundaries, rather than credential-sized descriptions.
+- Actual KT SAT presentation PDF text read locally (130 and175-page exports).
+  New6-section talk story covers the speaker's judgment/leadership view, instruction,
+  Skill/Tool workflow and verification/security; original private slides not published.
+- Shared core schemas retain each complete paragraph for web and grounded FAQ.
+  The PDF stays a concise3-page projection with PFCT work and a real talk summary.
+- Replace fabricated outer ara chrome/partial-component arrangement and Dipull three-phone
+  montage with the complete original applications in isolated synthetic-data environments.
+- New captures1440×900 for full app views,390×844 for natural mobile routes.
+  Cover/gallery use actual dimensions and no forced crop; old video is removed.
+- Direct paid vendor calls, main merge and Dokploy production deployment remain out of scope.
+
+Private provenance and claim maps are kept in `/tmp/jeamxn-content-revision/`;
+product capture setup stays outside the repository in `/tmp/jeamxn-media-v2/`.
+
+Final revision2 local checks: build8/8, typecheck14/14, strict lint84files,
+51boundary sources. Core4 and web6 tests pass. Dedicated empty Valkey run
+passes server16/16 including the new thought/topic FAQ paths and two-replica
+quota. Actual rebuilt Compose preview passes30route checks and12deep-story
+checks at390/768/1440. Three-page Korean PDF is70,391B and includes PFCT
+contribution and talk content/links. Mounted hidden Dipull modal controls
+have effective opacity0; development controls are removed in the isolated
+capture copy. The canvas's actual pane-close button leaves its native52px
+strip and no empty greeting panel. No forced image crop.

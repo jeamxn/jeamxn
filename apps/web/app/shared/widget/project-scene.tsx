@@ -10,13 +10,15 @@ export function ProjectScene({
 }) {
   const [failed, setFailed] = useState(false);
   return (
-    <figure className={`project-scene project-scene--${project.slug}`}>
+    <figure
+      className={`project-scene project-scene--${project.slug}${project.cover ? " project-scene--natural" : ""}`}
+    >
       {project.image && !failed ? (
         <img
           src={project.image}
-          alt={`${project.name}의 가상 데이터 제품 예시 화면`}
-          width={project.slug === "ara" ? 1920 : 1440}
-          height={project.slug === "ara" ? 1200 : 1000}
+          alt={project.cover?.alt ?? `${project.name}의 가상 데이터 제품 예시 화면`}
+          width={project.cover?.width ?? (project.slug === "ara" ? 1920 : 1440)}
+          height={project.cover?.height ?? (project.slug === "ara" ? 1200 : 1000)}
           loading={priority ? "eager" : "lazy"}
           onError={() => setFailed(true)}
         />
@@ -31,7 +33,7 @@ export function ProjectScene({
           </span>
         </div>
       )}
-      <figcaption>가상 데이터로 재구성한 화면</figcaption>
+      <figcaption>{project.cover?.caption ?? "가상 데이터로 재구성한 화면"}</figcaption>
     </figure>
   );
 }

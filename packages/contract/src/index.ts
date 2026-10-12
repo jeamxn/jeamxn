@@ -1,6 +1,12 @@
 import { z } from "zod";
 
 export const linkSchema = z.object({ label: z.string(), href: z.string() });
+export const storySectionSchema = z.object({
+  id: z.string(),
+  title: z.string(),
+  paragraphs: z.array(z.string()).min(1),
+});
+export type StorySection = z.infer<typeof storySectionSchema>;
 export const projectSchema = z.object({
   slug: z.string(),
   name: z.string(),
@@ -17,6 +23,11 @@ export const projectSchema = z.object({
   highlights: z.array(z.object({ title: z.string(), body: z.string() })),
   links: z.array(linkSchema),
   featured: z.boolean(),
+  sections: z.array(storySectionSchema).optional(),
+  lead: z.string().optional(),
+  cover: z
+    .object({ width: z.number(), height: z.number(), caption: z.string(), alt: z.string() })
+    .optional(),
 });
 export type Project = z.infer<typeof projectSchema>;
 export const experienceSchema = z.object({
@@ -49,6 +60,9 @@ export const portfolioSchema = z.object({
       organization: z.string(),
       period: z.string(),
       description: z.string(),
+      slug: z.string().optional(),
+      lead: z.string().optional(),
+      sections: z.array(storySectionSchema).optional(),
     }),
   ),
   awards: z.array(
@@ -61,6 +75,7 @@ export const portfolioSchema = z.object({
   ),
 });
 export type Portfolio = z.infer<typeof portfolioSchema>;
+export type Activity = Portfolio["activities"][number];
 export const chatMessageSchema = z.object({
   role: z.enum(["user", "assistant"]),
   content: z.string().min(1).max(1800),

@@ -29,6 +29,7 @@ try {
       "/work/ttililing",
       "/work/yun",
       "/resume",
+      "/activity/kt-sat-ax",
     ]) {
       const response = await page.goto(base + route, { waitUntil: "networkidle" });
       assert.equal(response?.status(), 200, `${route} status`);
@@ -117,7 +118,7 @@ try {
   await context.close();
   await fs.writeFile(path.join(output, "report.json"), JSON.stringify(report, null, 2));
   console.log(
-    JSON.stringify({ passed: true, routeChecks: 27, output, pdfBytes: bytes.length }, null, 2),
+    JSON.stringify({ passed: true, routeChecks: 30, output, pdfBytes: bytes.length }, null, 2),
   );
 } finally {
   await browser.close();

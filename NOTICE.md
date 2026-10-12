@@ -12,7 +12,7 @@ No proprietary source or the references' licensed typefaces are redistributed.
   metadata, not a synthetic person or third-party stock photo.
 - Product media: original authorized UI rendered with synthetic content in isolated
   fixtures. See `docs/media.md` for precise source, license and limitations. The
-  screenshots/video do not depict private user records or production AI executions.
+  screenshots do not depict private user records or production AI executions.
 
 Third-party runtime/build libraries retain their respective licenses in installed
 packages and are managed with a frozen pnpm lockfile.

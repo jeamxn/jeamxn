@@ -1,11 +1,16 @@
 import assert from "node:assert/strict";
 import { mkdir, writeFile } from "node:fs/promises";
+import { portfolio } from "@jeamxn/core";
 import { chromium } from "playwright";
 
 const output = process.env.QA_OUTPUT ?? "/tmp/jeamxn-renewal/web-qa";
 const base = process.env.QA_BASE ?? "http://localhost:5410";
 await mkdir(output, { recursive: true });
-const browser = await chromium.launch({ channel: "chrome", headless: true });
+const browser = await chromium.launch(
+  process.env.QA_BROWSER_PATH
+    ? { executablePath: process.env.QA_BROWSER_PATH, headless: true }
+    : { channel: "chrome", headless: true },
+);
 const results = [];
 const faults = [];
 for (const width of [390, 768, 1440]) {
@@ -24,6 +29,7 @@ for (const width of [390, 768, 1440]) {
     "/work/multinet",
     "/work/ttililing",
     "/work/yun",
+    "/activity/kt-sat-ax",
     "/resume",
   ]) {
     await page.goto(`${base}${route}`, { waitUntil: "networkidle" });
@@ -64,8 +70,61 @@ for (const width of [390, 768, 1440]) {
     );
     assert.deepEqual(measurements.imageFailures, [], `${route} broken images`);
     if (route === "/") assert.equal(measurements.heroAnimation, "none");
+    const source = route.startsWith("/work/")
+      ? portfolio.projects.find((item) => `/work/${item.slug}` === route)
+      : portfolio.activities.find((item) => `/activity/${item.slug}` === route);
+    if (source?.cover && "image" in source) {
+      const image = page.locator(".work-page > .project-scene img");
+      assert.equal(await image.getAttribute("width"), String(source.cover.width));
+      assert.equal(await image.getAttribute("height"), String(source.cover.height));
+      assert.equal(await image.getAttribute("alt"), source.cover.alt);
+      assert.equal(
+        await page.locator(".work-page > .project-scene figcaption").textContent(),
+        source.cover.caption,
+      );
+      const geometry = await image.evaluate((element) => {
+        const box = element.getBoundingClientRect();
+        return {
+          displayed: box.width / box.height,
+          actual: element.naturalWidth / element.naturalHeight,
+        };
+      });
+      assert.ok(
+        Math.abs(geometry.displayed - geometry.actual) < 0.015,
+        `${route} cover was stretched or cropped`,
+      );
+    }
+    if (source?.sections?.length) {
+      assert.equal(await page.locator(".story-section").count(), source.sections.length);
+      assert.equal(await page.locator(".story-section h2").count(), source.sections.length);
+      for (const section of source.sections) {
+        const block = page.locator(`.story-section[id="${section.id}"]`);
+        for (const paragraph of section.paragraphs)
+          assert.ok((await block.textContent()).includes(paragraph), `${route} missing prose`);
+      }
+      assert.equal(await page.locator(".story-body details").count(), 0);
+      if (source.sections.length >= 3)
+        assert.equal(await page.locator(".story-contents a").count(), source.sections.length);
+    }
+    if (route === "/") {
+      assert.equal(await page.locator(".home-company-stories article").count(), 3);
+      assert.ok(await page.locator('.home-company a[href="/work/pfct"]').count());
+      assert.ok((await page.locator(".home-company").textContent()).length > 500);
+      assert.ok(await page.locator('a[href="/activity/kt-sat-ax"]').count());
+    }
+    if (route === "/resume") assert.ok(await page.locator('a[href="/activity/kt-sat-ax"]').count());
     results.push({ width, route, ...measurements });
-    if (["/", "/about", "/work/ara", "/work/dipull", "/resume"].includes(route))
+    if (
+      [
+        "/",
+        "/about",
+        "/work/ara",
+        "/work/dipull",
+        "/work/pfct",
+        "/activity/kt-sat-ax",
+        "/resume",
+      ].includes(route)
+    )
       await page.screenshot({
         path: `${output}/${route.replaceAll("/", "-") || "home"}-${width}.png`,
         fullPage: true,

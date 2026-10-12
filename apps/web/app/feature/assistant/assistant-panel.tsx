@@ -15,7 +15,13 @@ type Message = {
   sources?: ChatResponse["sources"];
   mode?: ChatResponse["mode"];
 };
-const questions = ["어떤 제품을 만들고 있나요?", "ara는 어떻게 시작했나요?", "어떤 경험이 있나요?"];
+const questions = [
+  "어떤 제품을 만들고 있나요?",
+  "ara는 어떻게 시작했나요?",
+  "어떤 경험이 있나요?",
+  "PFCT 회의 기능은 어떻게 만들었나요?",
+  "KT SAT 강연에서 무엇을 전하고 싶었나요?",
+];
 
 export function AssistantPanel({
   open,
@@ -68,10 +74,35 @@ export function AssistantPanel({
     const ara = data.projects.find((p) => p.slug === "ara");
     if (question === questions[1] && ara)
       return {
-        answer: ara.overview[1],
-        sources: [{ label: "ara 이야기", href: "/work/ara" }],
+        answer: ara.sections?.[0]?.paragraphs.join("\n\n") ?? ara.overview[0],
+        sources: [
+          {
+            label: "ara 이야기",
+            href: `/work/ara${ara.sections?.[0] ? `#${ara.sections[0].id}` : ""}`,
+          },
+        ],
         mode: "local",
       };
+    if (question === questions[3]) {
+      const section = data.projects
+        .find((item) => item.slug === "pfct")
+        ?.sections?.find((item) => /meeting|회의/.test(`${item.id} ${item.title}`));
+      if (section)
+        return {
+          answer: section.paragraphs.join("\n\n"),
+          sources: [{ label: section.title, href: `/work/pfct#${section.id}` }],
+          mode: "local",
+        };
+    }
+    if (question === questions[4]) {
+      const talk = data.activities.find((item) => item.slug === "kt-sat-ax");
+      if (talk)
+        return {
+          answer: [talk.lead, talk.description].filter(Boolean).join("\n\n"),
+          sources: [{ label: "KT SAT 강연 이야기", href: `/activity/${talk.slug}` }],
+          mode: "local",
+        };
+    }
     if (question === questions[2])
       return {
         answer: data.experience
