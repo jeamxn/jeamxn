@@ -11,7 +11,8 @@
       "!**/public",
       "!**/asset",
       "!test-results",
-      "!playwright-report"
+      "!playwright-report",
+      "!**/.turbo"
     ]
   },
   "formatter": {

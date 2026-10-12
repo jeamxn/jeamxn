@@ -49,3 +49,12 @@ separate checks, not inferred from local build success.
 Test logs/captures live outside tracked content in `/tmp/jeamxn-renewal` and ignored
 `test-results/`. No API keys, raw interview or undecided private career information
 are used in either public content or the assistant knowledge.
+
+## Remote CI correction
+
+The first GitHub verification run built and typechecked successfully but linted
+Turbo's generated `.turbo/cache/*-meta.json` files. In a worktree Turbo used its
+shared cache outside this root, so the local lint did not see that generated data.
+Explicit `!**/.turbo` exclusion now prevents linting generated cache in either
+checkout topology. Reproduced locally with deliberately unformatted cache JSON;
+source lint remains strict. Remote run is rechecked after the corrective commit.
