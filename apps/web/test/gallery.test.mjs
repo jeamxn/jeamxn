@@ -6,7 +6,12 @@ import { createServer } from "vite";
 
 let vite;
 before(async () => {
-  vite = await createServer({ server: { middlewareMode: true, hmr: false }, appType: "custom" });
+  vite = await createServer({
+    configFile: false,
+    resolve: { tsconfigPaths: true },
+    server: { middlewareMode: true, hmr: false, ws: false },
+    appType: "custom",
+  });
 });
 after(async () => vite?.close());
 

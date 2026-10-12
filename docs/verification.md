@@ -202,3 +202,39 @@ Rebuilt local production Compose then passed the three-second browser suite:
 exact2900/3000ms boundary, progress animation3000ms, wall-clock3001ms,
 400ms transition, all83records/28batches at3widths, stable height, keyboard,
 reading/manual/reduced-motion/offscreen pause. This is the current interval.
+
+## CI target correction after revision6
+
+Run38228842304 passed the273route checks,12long-story checks and6gallery scenarios
+on actual Linux production containers. It then failed because the archive harness
+read only the legacy `QA_BASE` name and ignored CI's `QA_BASE_URL`, selecting the
+local-development default at port5410. This was a regression-target configuration
+error, not a passing final CI run. Earlier archive invocations that set only
+QA_BASE_URL exercised the live dev page at5410, not the Compose page; those results
+must not be described as production-archive evidence.
+
+The archive harness now prefers QA_BASE_URL, retains QA_BASE as a legacy fallback,
+and uses installed Playwright Chromium rather than a Chrome channel. CI also enables
+the static HTML/metadata assertions explicitly. The corrected suite is rerun with
+QA_BASE pointed at a closed port and QA_BASE_URL at the healthy production Compose
+port5412, so accidentally using the old endpoint fails immediately. Its report now
+records the actual base URL. The subsequent home/cached-media suites are checked
+under the same standard CI endpoint/browser configuration before pushing.
+
+The corrected production-target archive run also exposed a genuine hydration bug:
+opening/reloading `/work?q=...`, collection/type filters or name sort served full
+static `/work` HTML, while the first client render immediately applied the query.
+React reported recoverable418errors. The archive now uses a server/hydration snapshot
+of the unfiltered static view and applies URL parameters after hydration without
+rewriting the URL. This is not suppressHydrationWarning or swallowed page errors.
+An SSR regression checks identical first-render markup for all six query variants,
+and production-browser checks directly open and reload those URLs at three widths,
+verify the exact filtered/order result and require pageerror to stay empty.
+
+Corrected-target evidence on2026-10-12: default installed Playwright Chromium156
+(no executable override), QA_BASE=closed port1 and QA_BASE_URL=production5412,
+86static/details plus six direct-query-and-reload variants at390/768/1440px passed
+with pageerror0. Subsequent home83record sweep/3second progress and real3002ms
+advance, and old-cache/new-hash regression passed under the same browser/target.
+Web17tests now include the SSR first-render case. Their Vite servers run without
+application plugins or WebSocket servers, avoiding concurrent typegen/socket races.

@@ -28,7 +28,8 @@
     "TRUST_PROXY_HOPS",
     "VALKEY_URL",
     "WEB_PORT",
-    "QA_WIDTHS"
+    "QA_WIDTHS",
+    "QA_STATIC_CHECK"
   ],
   "tasks": {
     "build": {

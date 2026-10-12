@@ -2,15 +2,15 @@ import assert from "node:assert/strict";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { portfolio } from "@jeamxn/core";
 import { chromium } from "playwright";
+import { archiveRecords } from "../app/shared/lib/work-archive.ts";
 
-const base = process.env.QA_BASE ?? "http://localhost:5410";
+const base = process.env.QA_BASE_URL ?? process.env.QA_BASE ?? "http://127.0.0.1:5410";
 const output = process.env.QA_OUTPUT ?? "/tmp/jeamxn-catalog-v4/archive-qa";
 await mkdir(output, { recursive: true });
-const browser = await chromium.launch(
-  process.env.QA_BROWSER_PATH
-    ? { executablePath: process.env.QA_BROWSER_PATH, headless: true }
-    : { channel: "chrome", headless: true },
-);
+const browser = await chromium.launch({
+  headless: true,
+  ...(process.env.QA_BROWSER_PATH ? { executablePath: process.env.QA_BROWSER_PATH } : {}),
+});
 const results = [];
 const errors = [];
 try {
@@ -64,7 +64,45 @@ try {
     await page.getByRole("button", { name: "검색과 필터 지우기" }).click();
     await page.evaluate(() => window.scrollTo(0, 0));
     await page.screenshot({ path: `${output}/archive-${width}.png`, fullPage: false });
-    results.push({ width, count: portfolio.projects.length, ...measurements });
+    // Query-specific initial requests all receive the same static /work HTML.
+    // URL state must survive hydration/reload without React recoverable errors.
+    for (const query of [
+      "q=aRa",
+      "collection=school",
+      "type=experiment",
+      "sort=name",
+      "collection=personal&type=learning&sort=name",
+      "q=missing-hydration-record",
+    ]) {
+      const expected = archiveRecords(portfolio.projects, new URLSearchParams(query));
+      await page.goto(`${base}/work?${query}`, { waitUntil: "networkidle" });
+      assert.equal(await page.locator(".archive-record").count(), expected.length, query);
+      assert.deepEqual(
+        await page
+          .locator(".archive-record")
+          .evaluateAll((links) => links.map((link) => link.getAttribute("href"))),
+        expected.map((project) => `/work/${project.slug}`),
+        query,
+      );
+      assert.equal(
+        await page.getByRole("searchbox").inputValue(),
+        new URLSearchParams(query).get("q") ?? "",
+      );
+      const beforeReload = page.url();
+      await page.reload({ waitUntil: "networkidle" });
+      assert.equal(page.url(), beforeReload);
+      assert.equal(
+        await page.locator(".archive-record").count(),
+        expected.length,
+        `reload ${query}`,
+      );
+    }
+    results.push({
+      width,
+      count: portfolio.projects.length,
+      directQueryChecks: 6,
+      ...measurements,
+    });
     await page.close();
   }
   const page = await browser.newPage({ viewport: { width: 390, height: 1000 } });
@@ -105,7 +143,7 @@ try {
     JSON.stringify({ results, routeCount: portfolio.projects.length, errors }, null, 2),
   );
   console.log(
-    JSON.stringify({ pass: true, results, routeCount: portfolio.projects.length, errors }),
+    JSON.stringify({ pass: true, base, results, routeCount: portfolio.projects.length, errors }),
   );
 } finally {
   await browser.close();

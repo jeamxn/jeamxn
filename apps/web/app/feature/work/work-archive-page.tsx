@@ -1,5 +1,6 @@
 import type { Portfolio } from "@jeamxn/contract";
 import { Icon } from "@jeamxn/icon";
+import { useSyncExternalStore } from "react";
 import { Link, useSearchParams } from "react-router";
 import {
   archiveRecords,
@@ -9,11 +10,24 @@ import {
   recordTypes,
 } from "~/shared/lib/work-archive";
 
+const emptySearch = new URLSearchParams();
+const subscribeToHydration = () => () => {};
+const clientHydrationSnapshot = () => true;
+const serverHydrationSnapshot = () => false;
+
 export function WorkArchivePage({ data }: { data: Portfolio }) {
-  const [params, setParams] = useSearchParams();
+  const [urlParams, setParams] = useSearchParams();
+  // Static /work HTML cannot know the visitor's query string. Match that exact
+  // first render during hydration, then apply the real URL without rewriting it.
+  const hydrated = useSyncExternalStore(
+    subscribeToHydration,
+    clientHydrationSnapshot,
+    serverHydrationSnapshot,
+  );
+  const params = hydrated ? urlParams : emptySearch;
   const records = archiveRecords(data.projects, params);
   const update = (key: string, value: string) => {
-    const next = new URLSearchParams(params);
+    const next = new URLSearchParams(urlParams);
     if (value) next.set(key, value);
     else next.delete(key);
     setParams(next, { replace: true, preventScrollReset: true });
