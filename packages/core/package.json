@@ -1,0 +1,27 @@
+{
+  "name": "@jeamxn/core",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsup src/index.ts --format esm --dts --external react",
+    "dev": "tsup src/index.ts --format esm --dts --external react --watch",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "test": "node --test test/*.test.mjs"
+  },
+  "dependencies": {
+    "@jeamxn/contract": "workspace:*"
+  },
+  "devDependencies": {
+    "tsup": "^8.5.1",
+    "typescript": "~6.0.3"
+  }
+}

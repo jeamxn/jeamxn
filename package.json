@@ -1,36 +1,24 @@
 {
-  "name": "semoton",
+  "name": "jeamxn",
   "private": true,
-  "version": "0.1.0",
-  "workspaces": [
-    "frontend",
-    "backend"
-  ],
+  "type": "module",
+  "packageManager": "pnpm@10.33.0",
+  "engines": {
+    "node": ">=24"
+  },
   "scripts": {
-    "frontend": "bun --cwd frontend",
-    "backend": "bun --cwd backend",
-    "dev": "concurrently --names \"FE,BE\" \"bun --env-file=.env frontend dev\" \"bun --env-file=.env backend dev\"",
-    "start": "concurrently --names \"FE,BE\" \"bun --env-file=.env frontend start\" \"bun --env-file=.env backend start\"",
-    "build": "bun --env-file=.env frontend build",
-    "lint": "concurrently --names \"FE,BE\"\"bun frontend lint\" \"bun backend lint\""
+    "dev": "turbo dev --filter=@jeamxn/server --filter=@jeamxn/web",
+    "build": "turbo build",
+    "typecheck": "turbo typecheck",
+    "lint": "biome check --error-on-warnings . && node scripts/check-boundary.mjs",
+    "lint:fix": "biome check --write .",
+    "test": "turbo test",
+    "test:e2e": "node scripts/verify-browser.mjs"
   },
   "devDependencies": {
-    "@eslint/eslintrc": "^3",
-    "concurrently": "^9.1.2",
-    "eslint": "^9",
-    "eslint-config-next": "15.3.2",
-    "eslint-plugin-import": "^2.31.0",
-    "eslint-plugin-prefer-arrow": "^1.2.3",
-    "eslint-plugin-react": "^7.37.5",
-    "eslint-plugin-react-hooks": "^5.2.0",
-    "typescript": "^5"
-  },
-  "dependencies": {
-    "@tanstack/react-query": "^5.77.2",
-    "@tanstack/react-query-devtools": "^5.77.2",
-    "axios": "^1.8.4",
-    "dayjs": "^1.11.13",
-    "jotai": "^2.12.4",
-    "react-responsive": "^10.0.1"
+    "@biomejs/biome": "^2.5.7",
+    "turbo": "2.10.8",
+    "typescript": "~6.0.3",
+    "playwright": "^1.63.0"
   }
 }

@@ -1,0 +1,5 @@
+# Optional LOCAL override, not the file selected in Dokploy.
+services:
+  web:
+    ports:
+      - '127.0.0.1:${JEAMXN_HTTP_PORT:-5412}:8080'
