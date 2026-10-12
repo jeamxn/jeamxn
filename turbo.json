@@ -1,0 +1,53 @@
+{
+  "$schema": "https://turborepo.com/schema.json",
+  "globalDependencies": ["pnpm-lock.yaml"],
+  "globalPassThroughEnv": [
+    "AI_API_KEY",
+    "AI_BASE_URL",
+    "AI_CONCURRENCY",
+    "AI_DAILY_LIMIT",
+    "AI_ENABLED",
+    "AI_GLOBAL_DAILY_LIMIT",
+    "AI_GLOBAL_LIMIT",
+    "AI_MODEL",
+    "AI_PEER_LIMIT",
+    "AI_REQUIRE_VALKEY",
+    "AI_TIMEOUT_MS",
+    "JEAMXN_DEV_API_URL",
+    "JEAMXN_FONT_PATH",
+    "JEAMXN_PUBLIC_ORIGIN",
+    "JEAMXN_TEST_VALKEY_URL",
+    "NODE_ENV",
+    "PDF_TEST_OUTPUT",
+    "PORT",
+    "QA_BASE",
+    "QA_BASE_URL",
+    "QA_BROWSER_PATH",
+    "QA_OUTPUT",
+    "RESUME_FONT_PATH",
+    "TRUST_PROXY_HOPS",
+    "VALKEY_URL",
+    "WEB_PORT",
+    "QA_WIDTHS",
+    "QA_STATIC_CHECK"
+  ],
+  "tasks": {
+    "build": {
+      "dependsOn": ["^build"],
+      "outputs": ["dist/**", "build/**"]
+    },
+    "typecheck": {
+      "dependsOn": ["^build"],
+      "outputs": []
+    },
+    "test": {
+      "dependsOn": ["^build", "build"],
+      "cache": false
+    },
+    "dev": {
+      "dependsOn": ["^build"],
+      "cache": false,
+      "persistent": true
+    }
+  }
+}

@@ -1,0 +1,98 @@
+name: Verify portfolio
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: portfolio-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      AI_ENABLED: 'false'
+      CI: 'true'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.33.0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24.16.0
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm build
+      - run: pnpm typecheck
+      - run: pnpm lint
+      - run: pnpm test
+      - run: node scripts/verify-media.mjs
+      - run: node scripts/verify-copy.mjs
+      - name: Validate Dokploy and local Compose
+        run: |
+          docker compose -f docker-compose.yml config -q
+          docker compose -f docker-compose.yml -f infra/compose.local.yml config -q
+  images:
+    needs: verify
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      AI_ENABLED: 'false'
+      JEAMXN_PUBLIC_ORIGIN: http://127.0.0.1:5412
+      QA_BASE_URL: http://127.0.0.1:5412
+      QA_OUTPUT: test-results/browser
+      COMPOSE_PROJECT_NAME: jeamxn-portfolio-ci
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.33.0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24.16.0
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      # Jobs have independent filesystems; the browser harness imports core dist.
+      - run: pnpm build
+      - run: pnpm exec playwright install --with-deps chromium
+      - uses: docker/setup-buildx-action@v3
+      - name: Build and load runtime targets (no push, no secrets)
+        uses: docker/bake-action@v6
+        with:
+          files: docker-compose.yml
+          push: false
+          set: |
+            *.cache-from=type=gha
+            *.cache-to=type=gha,mode=max
+            *.output=type=docker
+            web.tags=jeamxn-portfolio-ci-web:latest
+            server.tags=jeamxn-portfolio-ci-server:latest
+            valkey.tags=jeamxn-portfolio-ci-valkey:latest
+      - name: Start isolated production containers
+        run: docker compose -f docker-compose.yml -f infra/compose.local.yml up --no-build -d --wait --wait-timeout 90
+      - name: Production HTTP smoke and actual browser regression
+        run: |
+          curl --fail --silent http://127.0.0.1:5412/api/health
+          pnpm test:e2e
+          QA_OUTPUT=test-results/stories node scripts/verify-stories.mjs
+          QA_OUTPUT=test-results/gallery node apps/web/test/gallery-browser.mjs
+          QA_STATIC_CHECK=true QA_OUTPUT=test-results/archive node apps/web/test/archive-browser.mjs
+          QA_OUTPUT=test-results/home-rotation node apps/web/test/home-rotation-browser.mjs
+          node scripts/verify-media-cache.mjs
+      - name: Container diagnostics on failure
+        if: failure()
+        run: docker compose -f docker-compose.yml -f infra/compose.local.yml logs --tail=100
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: production-browser-qa
+          path: test-results/browser/
+          if-no-files-found: ignore
+          retention-days: 7
+      - name: Remove this CI project only
+        if: always()
+        run: docker compose -f docker-compose.yml -f infra/compose.local.yml down -v --remove-orphans
