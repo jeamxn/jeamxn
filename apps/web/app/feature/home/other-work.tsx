@@ -96,7 +96,12 @@ export function OtherWork({ projects }: { projects: Project[] }) {
     setIndex(destination);
     setManualAnnouncement(`${destination + 1} / ${batches.length} 묶음`);
   };
-  const status = paused || reduced ? "일시정지" : running ? "5초마다 자동 전환" : "읽는 동안 멈춤";
+  const status =
+    paused || reduced
+      ? "일시정지"
+      : running
+        ? `${ROTATION_INTERVAL / 1000}초마다 자동 전환`
+        : "읽는 동안 멈춤";
 
   return (
     <section
@@ -152,7 +157,11 @@ export function OtherWork({ projects }: { projects: Project[] }) {
         </div>
       </div>
       <div className="rotation-progress" aria-hidden="true">
-        <span key={`${index}-${running}`} className={running ? "is-running" : ""} />
+        <span
+          key={`${index}-${running}`}
+          className={running ? "is-running" : ""}
+          style={{ animationDuration: `${ROTATION_INTERVAL}ms` }}
+        />
       </div>
       <div className="rotation-stage" aria-live="off">
         <div className="rotation-batch" key={index}>

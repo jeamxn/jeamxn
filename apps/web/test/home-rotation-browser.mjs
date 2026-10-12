@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { mkdir, writeFile } from "node:fs/promises";
 import { portfolio } from "@jeamxn/core";
 import { chromium } from "playwright";
+import { ROTATION_INTERVAL } from "../app/shared/lib/project-rotation.ts";
 
 const base = process.env.QA_BASE_URL ?? process.env.QA_BASE ?? "http://127.0.0.1:5410";
 const output = process.env.QA_OUTPUT ?? "/tmp/jeamxn-home-v5/browser";
@@ -49,7 +50,12 @@ async function startClock(page) {
 try {
   const page = await open(1440);
   await startClock(page);
-  await page.clock.runFor(4900);
+  assert.equal(await page.locator(".rotation-status").textContent(), "3초마다 자동 전환");
+  const progressDuration = await page
+    .locator(".rotation-progress span")
+    .evaluate((element) => Number.parseFloat(getComputedStyle(element).animationDuration) * 1000);
+  assert.equal(progressDuration, ROTATION_INTERVAL);
+  await page.clock.runFor(ROTATION_INTERVAL - 100);
   assert.equal(await state(page), "1");
   await page.clock.runFor(100);
   assert.equal(await state(page), "2");
@@ -79,7 +85,7 @@ try {
   await page.waitForFunction(
     () => document.querySelector(".work-rotation").dataset.running === "true",
   );
-  await page.clock.runFor(4900);
+  await page.clock.runFor(ROTATION_INTERVAL - 100);
   assert.equal(await state(page), beforeHover);
   await page.clock.runFor(100);
   assert.equal(await state(page), "3");
@@ -134,7 +140,7 @@ try {
   await page.waitForFunction(
     () => document.querySelector(".work-rotation").dataset.running === "true",
   );
-  await page.clock.runFor(4900);
+  await page.clock.runFor(ROTATION_INTERVAL - 100);
   assert.equal(await state(page), "4");
   await page.clock.runFor(100);
   assert.equal(await state(page), "5");
@@ -146,7 +152,8 @@ try {
   assert.equal(await state(page), "5");
   results.push({
     width: 1440,
-    exactFiveSeconds: true,
+    exactIntervalMs: ROTATION_INTERVAL,
+    progressDurationMs: progressDuration,
     animation,
     hoverPause: true,
     focusPause: true,
@@ -227,7 +234,7 @@ try {
     });
     await reduced.close();
   }
-  // One wall-clock run, independent of mocked clock, proves live five-second advancement.
+  // One wall-clock run, independent of mocked clock, proves live three-second advancement.
   const live = await open(1440);
   await live.mouse.move(0, 0);
   await live.locator(".work-rotation").scrollIntoViewIfNeeded();
@@ -235,11 +242,14 @@ try {
     () => document.querySelector(".work-rotation").dataset.running === "true",
   );
   const started = Date.now();
-  await live.waitForTimeout(4600);
+  await live.waitForTimeout(ROTATION_INTERVAL - 400);
   assert.equal(await state(live), "1");
   await live.waitForFunction(() => document.querySelector(".work-rotation").dataset.batch === "2");
   const elapsed = Date.now() - started;
-  assert.ok(elapsed >= 4900 && elapsed <= 6000, `wall-clock transition ${elapsed}ms`);
+  assert.ok(
+    elapsed >= ROTATION_INTERVAL - 100 && elapsed <= ROTATION_INTERVAL + 1000,
+    `wall-clock transition ${elapsed}ms`,
+  );
   results.push({ wallClock: true, elapsed });
   await live.close();
   assert.deepEqual(errors, []);

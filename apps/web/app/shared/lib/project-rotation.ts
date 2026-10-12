@@ -1,6 +1,6 @@
 import type { Project } from "@jeamxn/contract";
 
-export const ROTATION_INTERVAL = 5000;
+export const ROTATION_INTERVAL = 3000;
 export const ROTATION_BATCH_SIZE = 3;
 
 export function otherProjects(projects: readonly Project[]): Project[] {

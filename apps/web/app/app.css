@@ -3099,7 +3099,7 @@
   transform-origin: left;
 }
 :where(.rotation-progress .is-running) {
-  animation: rotation-progress 5s linear both;
+  animation: rotation-progress 3s linear both;
 }
 :where(.rotation-stage) {
   position: relative;

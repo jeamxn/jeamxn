@@ -188,3 +188,17 @@ Frozen revision5 integration results on2026-10-12:
 CI executes these regressions with no real paid AI key. Local native-browser
 screenshots and technical timings do not constitute the user's final visual
 approval or deployment approval. Main and the live website were not changed.
+
+## Revision6: three records every three seconds
+
+At18:12the owner changed the requested rotation interval from5seconds to3seconds.
+`ROTATION_INTERVAL` is now3000ms. The visible status and inline progress animation
+read the same constant; the400ms transition,83records/28batches, manual controls
+and reading/reduced-motion/visibility pauses are unchanged. Timing regression uses
+2900ms unchanged /3000ms advanced and a separate real wall-clock check. Earlier
+five-second measurements above remain historical evidence, not current behavior.
+
+Rebuilt local production Compose then passed the three-second browser suite:
+exact2900/3000ms boundary, progress animation3000ms, wall-clock3001ms,
+400ms transition, all83records/28batches at3widths, stable height, keyboard,
+reading/manual/reduced-motion/offscreen pause. This is the current interval.

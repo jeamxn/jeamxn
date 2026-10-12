@@ -24,7 +24,7 @@ test("all 83 nonrepresentative records rotate in 28 complete batches with no six
   );
   assert.equal(batches.flat().length, 83);
   assert.ok(!batches.flat().some((record) => ["ara", "dipull", "pfct"].includes(record.slug)));
-  assert.equal(ROTATION_INTERVAL, 5000);
+  assert.equal(ROTATION_INTERVAL, 3000);
 });
 test("every batch is reachable forward and backward, with safe empty and singleton handling", () => {
   for (const count of [0, 1, 28]) {
