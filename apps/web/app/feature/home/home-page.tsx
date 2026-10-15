@@ -1,9 +1,9 @@
 import type { Portfolio } from "@jeamxn/contract";
 import { Icon } from "@jeamxn/icon";
 import { Link } from "react-router";
-import { Portrait } from "~/shared/widget/portrait";
 import { ProjectScene } from "~/shared/widget/project-scene";
 import { OtherWork } from "./other-work";
+import { ScrollStory } from "./scroll-story";
 
 export function HomePage({ data, onAsk }: { data: Portfolio; onAsk: () => void }) {
   const { profile } = data;
@@ -17,46 +17,9 @@ export function HomePage({ data, onAsk }: { data: Portfolio; onAsk: () => void }
   const companyStories = ["admin-foundation", "dpd-workspace", "meeting-workflow"].flatMap(
     (id) => pfct?.sections?.find((section) => section.id === id) ?? [],
   );
-  const headlineLines = profile.headline
-    .replace(/,\s*/u, ",\n")
-    .replace(/ (\S+)$/u, "\n$1")
-    .split("\n");
-  const nameWords = profile.nameEn.split(" ");
   return (
     <>
-      <section className="hero container" aria-labelledby="hero-title">
-        <div className="hero-copy">
-          <p className="hero-greeting">제품을 만드는 {profile.name}입니다.</p>
-          <h1 id="hero-title">
-            {headlineLines.map((line, index) => (
-              <span className="hero-title-line" key={line}>
-                {line}
-                {index < headlineLines.length - 1 ? " " : ""}
-              </span>
-            ))}
-          </h1>
-          <p className="hero-intro">{profile.intro}</p>
-          <a className="text-link" href="#work">
-            대표 작업 살펴보기 <Icon name="arrow-down" size={20} />
-          </a>
-        </div>
-        <Portrait src={profile.portrait} className="hero-portrait" priority />
-        <p className="hero-name" translate="no">
-          {nameWords.map((word) => (
-            <span key={word}>{word} </span>
-          ))}
-          <span className="name-period" aria-hidden="true">
-            .
-          </span>
-        </p>
-        <div className="hero-bottom">
-          <span>아이디어를 제품으로 만드는 사람</span>
-          <span>
-            현재 {data.experience[0]?.company}에서, 그리고{" "}
-            {data.projects.find((project) => project.slug === "ara")?.name}에서
-          </span>
-        </div>
-      </section>
+      <ScrollStory data={data} />
       <section id="work" className="selected-work container" aria-labelledby="work-title">
         <div className="section-intro">
           <h2 id="work-title">
