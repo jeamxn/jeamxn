@@ -59,8 +59,11 @@ test("WebGL lazily loads a capped decorative loop independent of scroll progress
   assert.match(source, /import\("\.\/story-three"\)/u);
   assert.match(source, /if \(!enhanced \|\| !threeHost.current\) return/u);
   assert.doesNotMatch(renderer, /setAnimationLoop|setInterval/u);
-  assert.match(renderer, /frameInterval = 1000 \/ 20/u);
-  assert.match(renderer, /elapsed >= frameInterval/u);
+  assert.match(renderer, /frameInterval = 1000 \/ 60/u);
+  assert.match(renderer, /elapsed >= frameInterval - 2/u);
+  assert.match(renderer, /applyFade\(model, pose\.opacity\)/u);
+  assert.match(renderer, /environment\.dispose\(\)/u);
+  assert.match(renderer, /removeEventListener\("pointermove", pointer\)/u);
   assert.match(renderer, /requestAnimationFrame\(animate\)/u);
   assert.match(renderer, /cancelAnimationFrame\(pendingFrame\)/u);
   assert.match(renderer, /!document\.hidden/u);

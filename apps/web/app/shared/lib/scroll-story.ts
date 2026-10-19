@@ -39,7 +39,7 @@ export function sentencePose(progress: number, index: number) {
   const current = activeBeat(progress) === index;
   return {
     opacity: current ? 1 - smoothStep((Math.abs(distance) - 0.4) / 0.1) : 0,
-    y: Math.sign(-distance) * smoothStep((Math.abs(distance) - 0.4) / 0.1) * 12,
+    y: Math.sign(-distance) * smoothStep((Math.abs(distance) - 0.4) / 0.1) * 18,
   };
 }
 /** Editorial lines reveal on scroll, never on a timer. Every line is fully
@@ -48,7 +48,8 @@ export function storyLinePose(progress: number, beat: number, line: number, coun
   const distance = clampUnit(progress) * (STORY_BEATS.length - 1) - beat;
   const step = count > 1 ? 0.22 / (count - 1) : 0;
   const opacity = smoothStep((distance + 0.47 - line * step) / 0.12);
-  return { opacity, y: (1 - opacity) * 14 };
+  // Decelerating rise: most travel happens while the line is still faint.
+  return { opacity, y: (1 - easeOutCubic(opacity)) * 22 };
 }
 /** Artwork stays continuous while one sentence leaves and the next arrives. */
 export function storyBlendWeight(progress: number, index: number): number {
@@ -114,6 +115,24 @@ export function modelWeight(progress: number, chapter: number, id: string): numb
         : 0),
     0,
   );
+}
+
+/** Where the reader is relative to the nearest beat that shows this model:
+ * -1 while it is still arriving (reader above), +1 once it is leaving. */
+export function modelSide(progress: number, chapter: number, id: string): number {
+  const position = clampUnit(progress) * (STORY_BEATS.length - 1);
+  let nearest = Number.POSITIVE_INFINITY;
+  for (const [index, beat] of STORY_BEATS.entries()) {
+    if (beat.chapterIndex !== chapter || beat.screen || !beat.models.includes(id)) continue;
+    if (Math.abs(position - index) < Math.abs(position - nearest)) nearest = index;
+  }
+  if (!Number.isFinite(nearest)) return 0;
+  return Math.max(-1, Math.min(1, (position - nearest) * 2));
+}
+/** Ease-out for arrivals: fast start, soft landing; reversible because it is pure. */
+export function easeOutCubic(value: number): number {
+  const t = clampUnit(value);
+  return 1 - (1 - t) ** 3;
 }
 
 export const STORY_TOOLS = [
@@ -340,20 +359,26 @@ export function chapterObjectPose(
     x += ((narrow ? 50 : 73) - x) * phase * 0.32;
     y += ((narrow ? 71 : 50) - y) * phase * 0.25;
   }
-  const weight = modelId
-    ? modelWeight(progress, chapter, modelId)
-    : chapterWeight(progress, chapter);
-  const reveal = 1;
+  const weight = clampUnit(
+    modelId ? modelWeight(progress, chapter, modelId) : chapterWeight(progress, chapter),
+  );
+  // Objects travel with the text instead of popping from nothing: arrivals rise
+  // from below and turn into place, departures keep drifting up and away. The
+  // opacity carries the hand-off; scale only settles from 80% so nothing blinks.
+  const side = modelId ? modelSide(progress, chapter, modelId) : 0;
+  const settle = easeOutCubic(weight);
+  const away = 1 - settle;
   const main = modelId === "waf-radar" || index === (chapter === 2 ? 1 : 0);
   return {
-    x,
-    y,
-    z: Math.sin(local * Math.PI + index * 0.6) * 0.55,
-    scale: (main ? (narrow ? 1.25 : 1.65) : narrow ? 0.57 : 0.82) * weight * reveal,
-    rx: -0.16 + Math.sin(local * Math.PI + index * 0.3) * 0.12,
-    ry: -0.32 + (local - 0.5) * (index % 2 ? -0.95 : 1.1),
+    x: x + side * away * (index % 2 ? -2.4 : 2.4),
+    y: y - (side || -1) * away * 9,
+    z: Math.sin(local * Math.PI + index * 0.6) * 0.55 - away * 2.4,
+    scale: (main ? (narrow ? 1.25 : 1.65) : narrow ? 0.57 : 0.82) * (0.8 + 0.2 * settle),
+    rx: -0.16 + Math.sin(local * Math.PI + index * 0.3) * 0.12 - (side || -1) * away * 0.35,
+    ry: -0.32 + (local - 0.5) * (index % 2 ? -0.95 : 1.1) + (side || -1) * away * 0.9,
     rz: (index % 2 ? -1 : 1) * 0.1 * Math.cos(local * Math.PI),
-    visible: weight * reveal > 0.002,
+    opacity: weight,
+    visible: weight > 0.002,
     connection: chapter >= 2 ? phase * weight : 0,
   };
 }

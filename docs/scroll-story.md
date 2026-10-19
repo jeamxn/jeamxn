@@ -96,8 +96,8 @@ large direct chapter jumps and anchors stay exact. Catch-up finishing is not
 automatic story playback: the target never moves without scroll. QA waits for
 that finite catch-up before asserting stable idle text/scroll/beat.
 
-Decorative3D has bounded10–16second loops, Y±.08world units/rx±.02/ry±.06/rz±.02,
-at most20fps. It does not alter base scroll poses or story progress. Both base
+Decorative3D has bounded8–14second loops, Y±.12/X±.04 world units, rx±.03/ry±.09/rz±.025,
+at most60fps (raised from20fps on 2026-10-19 so the float never strobes). It does not alter base scroll poses or story progress. Both base
 and actual animated poses are observable separately. Render loops stop on
 hidden/offscreen/reduced-motion/context loss/no-model screenshot beats/dispose.
 Static reading also disposes3D. This is the owner's explicit change from idle0,
@@ -107,7 +107,8 @@ not permission to auto-advance text or animate screenshots.
 
 Each editorial line has its own `storyLinePose(progress,beat,line,count)`.
 Lines enter in order during the beginning of a beat, with fade and14px upward
-settling. No per-line playback timer or CSS stagger clock. At the beat anchor
+settling (2026-10-19: decelerating 22px rise plus a blur-to-focus of at most
+7px while faint; fully read lines carry no blur). No per-line playback timer or CSS stagger clock. At the beat anchor
 all lines are fully present, and they remain so for reading. Reverse scroll
 restores exact line transforms. The complete paragraph still exists in static,
 no-JS and reduced-motion modes; the actual line breaks are editorial data.
@@ -138,3 +139,27 @@ large-log aggregation and shared tool access. IP blocking is a colleague's
 implementation; the owner's contribution there is safety review. Do not claim
 single-person authorship, measured accuracy/MTTR, fully autonomous mitigation,
 or the old tool-call/time limits as current behavior.
+
+## Natural motion and 3D polish (2026-10-19 13:00)
+
+The owner asked for the homepage animation and 3D models to feel more natural
+and polished. Measured before the change: every model appeared by scaling from
+nothing (smallest visible scale .016) with no positional travel, idle motion ran
+at19fps, and model pixels averaged luminance225/σ20 (washed-out pastel).
+
+- Arrivals/departures: `chapterObjectPose` now returns `opacity`; `modelSide`
+  says whether the reader is before (-1) or after (+1) the nearest beat showing a
+  model. Arrivals rise from below and turn into place, departures drift up and
+  back (ease-out cubic). Scale only settles from80%. Everything stays a pure
+  function of progress, so reverse scroll is exact
+- Renderer: each model owns cloned materials for an independent fade (originals
+  are disposed); connection lines fade with the weaker end
+- Look: long-lens perspective camera (layout plane still exactly12 units high),
+  RoomEnvironment PMREM reflections, lower ambient, cool rim light, AgX tone
+  mapping, satin roughness ≤.58, stronger contact shadow, 2048 shadow map
+- Pointer parallax (mouse + fine pointer only, not reduced motion): the shared
+  rig tilts at most ~4° with a critically damped follow; base model poses and
+  `threePose` observations are untouched
+- Smoother curved surfaces (more rounded-box/cylinder/sphere/torus/tube/bevel
+  segments). Browser peak stays ~109 draws / ~77k triangles including shadows
+- Sentences blur ≤5px while fading; the 80% dwell and no-overlap contract are unchanged

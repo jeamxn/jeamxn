@@ -154,8 +154,8 @@ for (const engine of ["chromium", "webkit"]) {
       "decorative motion renders while reading",
     );
     assert.ok(
-      +afterMotion.threeFrames - +beforeMotion.threeFrames <= 15,
-      "motion stays at20fps or lower",
+      +afterMotion.threeFrames - +beforeMotion.threeFrames <= 45,
+      "motion stays at60fps or lower",
     );
     assert.equal(
       afterMotion.threePose,
@@ -176,8 +176,8 @@ for (const engine of ["chromium", "webkit"]) {
     const animated = JSON.parse(afterMotion.threeAnimatedPose),
       basePose = JSON.parse(afterMotion.threePose);
     for (let i = 0; i < animated.length; i++) {
-      assert.ok(Math.abs(animated[i].position[1] - basePose[i].position[1]) <= 0.081);
-      assert.ok(Math.abs(animated[i].rotation[1] - basePose[i].rotation[1]) <= 0.061);
+      assert.ok(Math.abs(animated[i].position[1] - basePose[i].position[1]) <= 0.121);
+      assert.ok(Math.abs(animated[i].rotation[1] - basePose[i].rotation[1]) <= 0.091);
     }
     await seek(at("wakeup-screen"));
     await p.waitForFunction(
