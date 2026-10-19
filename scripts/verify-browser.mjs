@@ -27,6 +27,7 @@ try {
     page.on("pageerror", (error) => errors.push(error.message));
     for (const route of [
       "/",
+      "/story",
       "/about",
       "/work",
       ...portfolio.projects.map((project) => `/work/${project.slug}`),

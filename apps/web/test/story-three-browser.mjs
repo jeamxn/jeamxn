@@ -16,7 +16,7 @@ for (const engine of ["chromium", "webkit"]) {
     });
     const errors = [];
     p.on("pageerror", (e) => errors.push(e.message));
-    await p.goto(base, { waitUntil: "networkidle" });
+    await p.goto(`${base}/story`, { waitUntil: "networkidle" });
     await p.evaluate(() => document.fonts.ready);
     const supported = await p.evaluate(() => {
       const c = document.createElement("canvas");

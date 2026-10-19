@@ -12,6 +12,7 @@ export default {
   ssr: false,
   prerender: [
     "/",
+    "/story",
     "/about",
     "/work",
     "/resume",

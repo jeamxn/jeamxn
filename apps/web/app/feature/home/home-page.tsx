@@ -1,9 +1,10 @@
 import type { Portfolio } from "@jeamxn/contract";
-import { Icon } from "@jeamxn/icon";
 import { Link } from "react-router";
+import { Portrait } from "~/shared/widget/portrait";
 import { ProjectScene } from "~/shared/widget/project-scene";
 import { OtherWork } from "./other-work";
-import { ScrollStory } from "./scroll-story";
+import { TroubleLedger } from "./trouble-ledger";
+import "./home.css";
 
 export function HomePage({ data }: { data: Portfolio }) {
   const { profile } = data;
@@ -20,76 +21,104 @@ export function HomePage({ data }: { data: Portfolio }) {
     "ax-workflow",
     "ai-waf-monitoring",
   ].flatMap((id) => pfct?.sections?.find((section) => section.id === id) ?? []);
+  const products = data.projects
+    .filter((p) => p.featured && p.slug !== "pfct")
+    .sort((a, b) => ["ara", "dipull"].indexOf(a.slug) - ["ara", "dipull"].indexOf(b.slug));
   return (
-    <>
-      <ScrollStory data={data} />
-      <section id="work" className="selected-work container" aria-labelledby="work-title">
-        <div className="section-intro">
-          <h2 id="work-title">
-            친구와 동료에게
-            <br />
-            필요한 걸 만들어요.
-          </h2>
-          <p>
-            학교에서는 기상송 신청과 세탁 예약을 만들었어요.
-            <br />
-            지금은 동료들의 업무 화면과 AI 도구를 만들고 있어요.
+    <div className="home-v2">
+      <section className="hv-hero" aria-labelledby="hero-title">
+        <p className="hv-hello">안녕하세요, {profile.name}입니다.</p>
+        <h1 id="hero-title" className="hv-title">
+          <span>기술보다</span>
+          <span>아이디어를</span>
+        </h1>
+        <div className="hv-hero-foot">
+          <p className="hv-lead">
+            서비스로 더 많은 사람들을 행복하게 만들어주고 싶어요. 학교에서 친구들의 불편을 고치던
+            일이, 지금은 동료들의 수작업을 줄이는 일로 이어졌어요.
           </p>
+          <Portrait src={profile.portrait} className="hv-portrait" priority />
         </div>
-        {data.projects
-          .filter((p) => p.featured && p.slug !== "pfct")
-          .sort((a, b) => ["ara", "dipull"].indexOf(a.slug) - ["ara", "dipull"].indexOf(b.slug))
-          .map((project) => (
-            <article className={`featured featured--${project.slug}`} key={project.slug}>
-              <Link
-                to={`/work/${project.slug}`}
-                className="featured-image"
-                aria-label={`${project.name} 프로젝트 자세히 보기`}
-              >
-                <ProjectScene project={project} />
+      </section>
+
+      <section className="hv-ledger" aria-labelledby="ledger-title">
+        <div className="hv-ledger-head">
+          <h2 id="ledger-title">
+            불편했던 것과
+            <br />
+            그래서 만든 것
+          </h2>
+          <p>만든 것마다, 그 전에 누군가 불편해하던 일이 있었어요.</p>
+        </div>
+        <TroubleLedger />
+      </section>
+
+      <section className="hv-invite" aria-labelledby="invite-title">
+        <h2 id="invite-title">저의 이야기를 한 번 들어볼래요?</h2>
+        <p>학교 인트라넷부터 ara까지, 스크롤을 따라 한 문장씩 읽는 이야기예요.</p>
+        <Link className="hv-pill" to="/story">
+          이야기 들어보기
+        </Link>
+      </section>
+
+      <section id="work" className="selected-work hv-work" aria-labelledby="work-title">
+        <div className="hv-section-head">
+          <h2 id="work-title">대표 작업</h2>
+          <Link to="/work">전체 작업 기록 보기</Link>
+        </div>
+        {products.map((project) => (
+          <article className={`featured featured--${project.slug} hv-product`} key={project.slug}>
+            <div className="hv-product-head">
+              <Link to={`/work/${project.slug}`} className="project-name">
+                <h3 translate="no">{project.name}</h3>
               </Link>
-              <div className="featured-copy">
-                <p className="project-period">{project.period}</p>
-                <Link to={`/work/${project.slug}`} className="project-name">
-                  <h3 translate="no">{project.name}</h3>
-                  <span className="round-arrow">
-                    <Icon name="arrow-up-right" size={27} />
-                  </span>
-                </Link>
-                <p className="project-subtitle">{project.subtitle}</p>
+              <p className="project-period">{project.period}</p>
+            </div>
+            <Link
+              to={`/work/${project.slug}`}
+              className="featured-image"
+              aria-label={`${project.name} 프로젝트 자세히 보기`}
+            >
+              <ProjectScene project={project} />
+            </Link>
+            <div className="featured-copy hv-product-copy">
+              <p className="project-subtitle">{project.subtitle}</p>
+              <div>
                 <p className="project-summary">{project.summary}</p>
                 <p className="project-role">{project.role}</p>
-                <Link className="text-link" to={`/work/${project.slug}`}>
-                  프로젝트 이야기 <Icon name="arrow-right" size={20} />
+                <Link className="hv-text-link" to={`/work/${project.slug}`}>
+                  {project.name} 이야기 읽기
                 </Link>
               </div>
-            </article>
-          ))}
+            </div>
+          </article>
+        ))}
         {pfct && (
-          <article className="featured featured--pfct home-company" aria-label="PFCT 대표 작업">
-            <div className="featured-copy home-company-heading">
-              <p className="project-period">{pfct.period}</p>
+          <article
+            className="featured featured--pfct home-company hv-company"
+            aria-label="PFCT 대표 작업"
+          >
+            <div className="hv-product-head">
               <Link to="/work/pfct" className="project-name">
                 <h3 translate="no">{pfct.name}</h3>
-                <span className="round-arrow">
-                  <Icon name="arrow-up-right" size={27} />
-                </span>
               </Link>
-              <p className="project-subtitle">동료들이 쓰는 어드민과 사내 AI를 만들어요.</p>
-              <p className="project-summary">{pfct.lead ?? pfct.summary}</p>
-              <p className="project-role">{pfct.role}</p>
-              <Link className="text-link" to="/work/pfct">
-                PFCT의 전체 이야기 <Icon name="arrow-right" size={20} />
-              </Link>
+              <p className="project-period">{pfct.period}</p>
             </div>
-            <div className="home-company-stories">
+            <div className="featured-copy hv-product-copy">
+              <p className="project-subtitle">동료들이 쓰는 어드민과 사내 AI를 만들어요.</p>
+              <div>
+                <p className="project-summary">{pfct.lead ?? pfct.summary}</p>
+                <p className="project-role">{pfct.role}</p>
+                <Link className="hv-text-link" to="/work/pfct">
+                  PFCT의 전체 이야기
+                </Link>
+              </div>
+            </div>
+            <div className="home-company-stories hv-notes">
               {companyStories.map((section) => (
                 <article key={section.id}>
                   <h4>
-                    <Link to={`/work/pfct#${section.id}`}>
-                      {section.title}
-                      <Icon name="arrow-up-right" size={20} />
-                    </Link>
+                    <Link to={`/work/pfct#${section.id}`}>{section.title}</Link>
                   </h4>
                   <p>{section.paragraphs[0]}</p>
                 </article>
@@ -98,30 +127,28 @@ export function HomePage({ data }: { data: Portfolio }) {
           </article>
         )}
         {lecture && (
-          <article className="featured featured--kt-sat" aria-label="KT SAT 대표 작업">
-            <div className="featured-copy">
-              <p className="project-period">{lecture.period}</p>
+          <article className="featured featured--kt-sat hv-company" aria-label="KT SAT 대표 작업">
+            <div className="hv-product-head">
               <Link to={`/activity/${lecture.slug}`} className="project-name">
                 <h3 translate="no">KT SAT</h3>
-                <span className="round-arrow">
-                  <Icon name="arrow-up-right" size={27} />
-                </span>
               </Link>
-              <p className="project-subtitle">{lecture.title}</p>
-              <p className="project-summary">{lecture.lead ?? lecture.description}</p>
-              <p className="project-role">임직원 AX 기초 강연 / 강연 준비 / 발표</p>
-              <Link className="text-link" to={`/activity/${lecture.slug}`}>
-                강연 이야기 읽기 <Icon name="arrow-right" size={20} />
-              </Link>
+              <p className="project-period">{lecture.period}</p>
             </div>
-            <div className="home-lecture-stories">
+            <div className="featured-copy hv-product-copy">
+              <p className="project-subtitle">{lecture.title}</p>
+              <div>
+                <p className="project-summary">{lecture.lead ?? lecture.description}</p>
+                <p className="project-role">임직원 AX 기초 강연 / 강연 준비 / 발표</p>
+                <Link className="hv-text-link" to={`/activity/${lecture.slug}`}>
+                  강연 이야기 읽기
+                </Link>
+              </div>
+            </div>
+            <div className="home-lecture-stories hv-notes">
               {lectureStories.map((section) => (
                 <article key={section.id}>
                   <h4>
-                    <Link to={`/activity/${lecture.slug}#${section.id}`}>
-                      {section.title}
-                      <Icon name="arrow-up-right" size={20} />
-                    </Link>
+                    <Link to={`/activity/${lecture.slug}#${section.id}`}>{section.title}</Link>
                   </h4>
                   <p>{section.paragraphs[0]}</p>
                 </article>
@@ -131,24 +158,20 @@ export function HomePage({ data }: { data: Portfolio }) {
         )}
         <OtherWork projects={data.projects} />
       </section>
-      <section className="home-about container">
-        <div>
-          <h2>
-            제가 만든 도구를
-            <br />
-            직접 쓰면서
-            <br />
-            다시 고쳐요.
-          </h2>
-          <Link className="text-link" to="/resume#introduction">
-            저에 대해 더 보기 <Icon name="arrow-right" size={20} />
+
+      <section className="home-about hv-about" aria-labelledby="about-title">
+        <h2 id="about-title">
+          제가 만든 도구를
+          <br />
+          직접 쓰면서 다시 고쳐요.
+        </h2>
+        <div className="home-about-copy">
+          <p>{profile.about.at(-2)}</p>
+          <Link className="hv-text-link" to="/resume#introduction">
+            저에 대해 더 보기
           </Link>
         </div>
-        <div className="home-about-copy">
-          <p>{profile.about.at(-1)}</p>
-          <p>ara에서 문서와 발표 자료를 직접 만들면서 편집과 내보내기 과정의 문제를 찾고 있어요.</p>
-        </div>
       </section>
-    </>
+    </div>
   );
 }

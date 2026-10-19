@@ -32,6 +32,7 @@ for (const width of [390, 768, 1440]) {
   page.on("pageerror", (error) => faults.push({ width, error: error.message }));
   for (const route of [
     "/",
+    "/story",
     "/about",
     "/work",
     "/work/ara",
@@ -89,7 +90,7 @@ for (const width of [390, 768, 1440]) {
       `${route} at ${width}: horizontal overflow ${JSON.stringify(measurements)}`,
     );
     assert.deepEqual(measurements.imageFailures, [], `${route} broken images`);
-    if (route === "/") {
+    if (route === "/story") {
       assert.notEqual(
         measurements.reducedStory.enhanced,
         "true",

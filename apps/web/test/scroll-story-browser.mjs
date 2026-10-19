@@ -97,7 +97,7 @@ for (const name of browserNames) {
       const page = await context.newPage();
       const errors = [];
       page.on("pageerror", (error) => errors.push(error.message));
-      await page.goto(base, { waitUntil: "networkidle" });
+      await page.goto(`${base}/story`, { waitUntil: "networkidle" });
       await page.evaluate(() => document.fonts.ready);
       await page.waitForFunction(
         () => document.querySelector(".scroll-story").dataset.enhanced === "true",
@@ -119,10 +119,13 @@ for (const name of browserNames) {
       );
       assert.equal(await page.locator("h1").count(), 1);
       assert.match(await page.locator("h1").innerText(), /행복한 개발자/);
-      assert.deepEqual(
-        await page.locator(".selected-work > .featured .project-name h3").allTextContents(),
-        ["ara", "Dipull", "PFCT", "KT SAT"],
-      );
+      // /story ends with its own exit back to the homepage's selected work.
+      const exits = await page
+        .locator(".story-exit-link")
+        .evaluateAll((links) => links.map((link) => link.getAttribute("href")));
+      assert.equal(exits.length, 2);
+      assert.match(exits[0], /\/#work$/u);
+      assert.match(exits[1], /\/work$/u);
       const anchorStates = [];
       for (let index = 0; index < 5; index++) {
         const state = await seek(page, anchors[index]);
@@ -318,12 +321,12 @@ for (const name of browserNames) {
         (await page.locator(".scroll-story-stage").boundingBox()).y < 0,
         "skip must release sticky intro",
       );
-      await page.goto(`${base}/#work`, { waitUntil: "networkidle" });
+      await page.goto(`${base}/story#work`, { waitUntil: "networkidle" });
       assert.ok(
         (await page.locator("#work").boundingBox()).y < height / 2,
         "direct work anchor must remain reachable after enhancement",
       );
-      await page.goto(base, { waitUntil: "networkidle" });
+      await page.goto(`${base}/story`, { waitUntil: "networkidle" });
       await page.waitForFunction(
         () => document.querySelector(".scroll-story").dataset.enhanced === "true",
       );
@@ -400,7 +403,7 @@ for (const name of browserNames) {
       const page = await context.newPage();
       const errors = [];
       page.on("pageerror", (error) => errors.push(error.message));
-      await page.goto(base, { waitUntil: "networkidle" });
+      await page.goto(`${base}/story`, { waitUntil: "networkidle" });
       assert.equal(await page.locator(".scroll-story-panel").count(), 5);
       const layout = await page.locator(".scroll-story-panel").evaluateAll((panels) =>
         panels.map((panel) => ({

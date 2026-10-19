@@ -16,6 +16,7 @@ const engines = (process.env.QA_ENGINES ?? "chromium").split(",");
 const widths = (process.env.QA_WIDTHS ?? "390,1440").split(",").map(Number);
 const routes = [
   "/",
+  "/story",
   "/about",
   "/work",
   "/resume",
