@@ -81,12 +81,7 @@ is admin consolidation, permissions/security and DPD. AX work is Lily, MCP
 connections to development/work tools and AI-use presentations. ara is an
 integrated agent; Dipull is a school intranet, not only two individual features.
 
-The owner explicitly requested inferred motivations as editable drafts.
-`StorySection.draftThought` is optional and is rendered separately with
-“생각 초안 · 커밋에서 추정” and a not-a-confirmed-statement explanation. It is
-not a quotation or verified historical recollection. It must not enter the
-factual PDF projection; the resume uses
-confirmed work paragraphs rather than these hypotheses. The private commit
+The resume uses confirmed work paragraphs only. The private commit
 matrix stays outside public source; no internal URLs or implementation dumps.
 
 

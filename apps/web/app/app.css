@@ -3691,31 +3691,6 @@
   }
 }
 
-/* Owner-requested, explicitly provisional motivation drafts are not historical quotes. */
-:where(.story-thought-draft) {
-  margin-top: 20px;
-  padding: 20px 24px;
-  background: var(--color-paper);
-  border-left: 2px solid var(--color-mist);
-}
-:where(.story-thought-draft > span) {
-  display: block;
-  font-size: 12px;
-  line-height: 18px;
-  color: var(--color-slate);
-  margin-bottom: 12px;
-}
-:where(.story-thought-draft > p) {
-  margin: 0;
-}
-:where(.story-thought-draft > small) {
-  display: block;
-  font-size: 12px;
-  line-height: 18px;
-  color: var(--color-slate);
-  margin-top: 12px;
-}
-
 /* The owner's ID photo is resume-only; preserve the full source aspect ratio. */
 .resume-identity {
   display: flex;
