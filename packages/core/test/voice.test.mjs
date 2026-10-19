@@ -43,6 +43,10 @@ test("friendlier voice retains shared authorship, experimental status and histor
   assert.match(JSON.stringify(bySlug.get("bizmeka-mcp")), /공식.{0,40}아니/u);
 });
 
+// Inspect factual public copy locally; there is no assistant runtime/export.
+const publicContent = () =>
+  JSON.stringify(portfolio, (key, value) => (key === "draftThought" ? undefined : value));
+
 test("DPD is Internal work, while AX covers Lily, MCP and sharing without invented dates", () => {
   const internal = portfolio.experience.find((item) => item.team === "Internal Squad");
   const ax = portfolio.experience.find((item) => item.team === "AX Squad");
@@ -66,6 +70,17 @@ test("DPD is Internal work, while AX covers Lily, MCP and sharing without invent
     /Internal/u,
   );
 });
+test("draft thoughts are explicit optional fields and not part of the factual public-copy projection", () => {
+  const thoughts = portfolio.projects
+    .flatMap((project) => project.sections ?? [])
+    .filter((section) => section.draftThought);
+  assert.ok(thoughts.length >= 7);
+  assert.ok(thoughts.length <= 12);
+  const knowledge = publicContent();
+  assert.doesNotMatch(knowledge, /draftThought/u);
+  for (const section of thoughts) assert.ok(!knowledge.includes(section.draftThought));
+});
+
 test("personal project and external activity stories do not borrow PFCT work", () => {
   const companyProducts =
     /\bpfct\b|\blily\b|릴리(?!스)|피플펀드|peoplefund|Credit Planet|Internal Squad|AX Squad/iu;

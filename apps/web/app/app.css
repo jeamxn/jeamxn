@@ -3691,6 +3691,17 @@
   }
 }
 
+/* Owner's thoughts at the time, shown beside the factual work paragraphs. */
+:where(.story-thought-draft) {
+  margin-top: 20px;
+  padding: 20px 24px;
+  background: var(--color-paper);
+  border-left: 2px solid var(--color-mist);
+}
+:where(.story-thought-draft > p) {
+  margin: 0;
+}
+
 /* The owner's ID photo is resume-only; preserve the full source aspect ratio. */
 .resume-identity {
   display: flex;
