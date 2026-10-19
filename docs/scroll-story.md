@@ -163,3 +163,21 @@ at19fps, and model pixels averaged luminance225/σ20 (washed-out pastel).
 - Smoother curved surfaces (more rounded-box/cylinder/sphere/torus/tube/bevel
   segments). Browser peak stays ~109 draws / ~77k triangles including shadows
 - Sentences blur ≤5px while fading; the 80% dwell and no-overlap contract are unchanged
+
+## Story worlds redesign (2026-10-19 14:20)
+
+The owner clarified that the story itself is the homepage and should look new;
+a separate ledger homepage with the story moved to `/story` was reverted in the
+same PR. The story stays at `/` with all text, timing and 3D contracts unchanged.
+
+- `story-world.tsx` gives each chapter a paper tint, ink accent, chapter word and
+  icon (person, school, console, AI spark, ara waves). The paint loop blends them
+  by the same `storyPose` chapter weights as the panels (`--world-paper`,
+  `--world-accent`), so colours crossfade instead of jumping
+- The stage has a soft accent glow behind the 3D side; each panel carries its
+  chapter name huge and faint behind the models, drifting with chapter progress
+- Chapter tabs became a vertical journey rail on the left (icon stops, a line
+  filled by progress, hover/focus name pill). On narrow screens it is a horizontal
+  icon row inside the bottom bar. Buttons, labels and aria-current are unchanged
+- Context line, detail links, reading position and screenshot shadows use the accent
+- Reduced motion/static/no-JS: no chapter word, no transitions; normal-flow reading

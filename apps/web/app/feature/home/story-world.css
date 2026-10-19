@@ -1,0 +1,242 @@
+/* Story worlds: every chapter has its own paper tint and ink accent, blended
+ * by scroll. A vertical journey rail with chapter icons replaces the plain
+ * text tabs, and the chapter name sits huge behind the 3D objects. */
+.scroll-story {
+  --world-paper: rgb(238 240 247);
+  --world-accent: rgb(53 84 209);
+}
+.story-world-word,
+.story-rail-icon {
+  display: none;
+}
+
+.scroll-story[data-enhanced="true"] {
+  background: var(--world-paper);
+}
+.scroll-story[data-enhanced="true"] .scroll-story-stage {
+  background:
+    radial-gradient(
+      ellipse 46% 58% at 72% 46%,
+      color-mix(in srgb, var(--world-accent) 16%, transparent),
+      transparent 72%
+    ),
+    var(--world-paper);
+}
+.scroll-story[data-enhanced="true"] .scroll-story-panels {
+  overflow: hidden;
+}
+.scroll-story[data-enhanced="true"] .scroll-story-panel {
+  padding-left: max(132px, 9vw);
+}
+
+/* The chapter name, enormous and quiet, drifting as the chapter is read. */
+.scroll-story[data-enhanced="true"] .story-world-word {
+  display: block;
+  position: absolute;
+  right: -0.04em;
+  bottom: -0.2em;
+  z-index: 0;
+  font-family: var(--font-story-serif);
+  font-weight: 600;
+  font-size: clamp(150px, 21vw, 360px);
+  line-height: 1;
+  letter-spacing: -0.06em;
+  white-space: nowrap;
+  color: color-mix(in srgb, var(--world-accent) 9%, transparent);
+  transform: translate3d(calc((0.5 - var(--chapter-local, 0)) * 7vw), 0, 0);
+  pointer-events: none;
+  user-select: none;
+}
+
+/* Copy picks up the chapter's ink. */
+.scroll-story[data-enhanced="true"] .scroll-story-context {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--world-accent);
+}
+.scroll-story[data-enhanced="true"] .scroll-story-context::before {
+  content: "";
+  width: 28px;
+  height: 2px;
+  border-radius: 2px;
+  background: currentColor;
+}
+.scroll-story[data-enhanced="true"] .story-detail-link {
+  color: var(--world-accent);
+}
+.scroll-story[data-enhanced="true"] .story-reading-position {
+  color: color-mix(in srgb, var(--world-accent) 70%, var(--color-ink));
+  font-weight: 600;
+}
+.scroll-story[data-enhanced="true"] .story-media-frame {
+  box-shadow:
+    0 1px 0 color-mix(in srgb, var(--world-accent) 18%, transparent),
+    0 30px 60px -28px color-mix(in srgb, var(--world-accent) 45%, transparent);
+}
+
+/* Journey rail: a vertical line on the left edge, one icon stop per chapter. */
+.scroll-story[data-enhanced="true"] .scroll-story-controls::before {
+  display: none;
+}
+.scroll-story[data-enhanced="true"] .scroll-story-chapters {
+  position: fixed;
+  top: 50%;
+  left: clamp(20px, 2.6vw, 44px);
+  z-index: 12;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 14px;
+  transform: translate3d(0, -50%, 0);
+}
+.scroll-story[data-enhanced="true"] .scroll-story-chapters::before,
+.scroll-story[data-enhanced="true"] .scroll-story-chapters::after {
+  content: "";
+  position: absolute;
+  left: 25px;
+  top: 26px;
+  bottom: 26px;
+  width: 2px;
+  border-radius: 2px;
+  background: color-mix(in srgb, var(--world-accent) 18%, transparent);
+}
+.scroll-story[data-enhanced="true"] .scroll-story-chapters::after {
+  background: var(--world-accent);
+  transform-origin: top;
+  transform: scaleY(var(--story-progress));
+}
+.scroll-story[data-enhanced="true"] .scroll-story-chapters button {
+  z-index: 1;
+  gap: 12px;
+  min-height: 52px;
+  padding: 0 8px 0 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: color-mix(in srgb, var(--color-ink) 55%, var(--world-paper));
+}
+.scroll-story[data-enhanced="true"] .scroll-story-chapters button::after {
+  display: none;
+}
+.scroll-story[data-enhanced="true"] .story-rail-icon {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: var(--world-paper);
+  border: 1.5px solid color-mix(in srgb, var(--world-accent) 26%, transparent);
+  transition:
+    background-color 360ms ease,
+    color 360ms ease,
+    border-color 360ms ease,
+    transform 420ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+/* The active chapter's name is already the copy's context line; labels are
+ * a hover/focus hint drawn as a small pill so they never collide with text. */
+.scroll-story[data-enhanced="true"] .story-rail-label {
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: var(--color-ink);
+  color: #ffffff;
+  opacity: 0;
+  transform: translate3d(-6px, 0, 0);
+  transition:
+    opacity 260ms ease,
+    transform 360ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+.scroll-story[data-enhanced="true"] .scroll-story-chapters button[aria-current] {
+  color: var(--color-ink);
+}
+.scroll-story[data-enhanced="true"] .scroll-story-chapters button[aria-current] .story-rail-icon {
+  color: #ffffff;
+  background: var(--world-accent);
+  border-color: var(--world-accent);
+  transform: scale(1.12);
+}
+.scroll-story[data-enhanced="true"] .scroll-story-chapters button:hover .story-rail-label,
+.scroll-story[data-enhanced="true"] .scroll-story-chapters button:focus-visible .story-rail-label {
+  opacity: 1;
+  transform: none;
+}
+.scroll-story[data-enhanced="true"] .scroll-story-chapters button:hover .story-rail-icon {
+  border-color: var(--world-accent);
+}
+.scroll-story[data-enhanced="true"] .scroll-story-actions {
+  margin-left: auto;
+}
+.scroll-story[data-enhanced="true"] .scroll-story-actions a,
+.scroll-story[data-enhanced="true"] .scroll-story-actions button {
+  font-size: 13px;
+}
+.scroll-story[data-enhanced="true"] .scroll-story-actions a {
+  padding-inline: 18px;
+  border-radius: 999px;
+  color: #ffffff;
+  background: var(--world-accent);
+}
+.scroll-story[data-enhanced="true"] .scroll-story-actions a:hover {
+  color: #ffffff;
+  background: var(--color-ink);
+}
+
+@media (max-width: 760px) {
+  .scroll-story[data-enhanced="true"] .scroll-story-panel {
+    padding-left: 28px;
+  }
+  .scroll-story[data-enhanced="true"] .story-world-word {
+    font-size: clamp(96px, 30vw, 150px);
+    bottom: -0.1em;
+  }
+  .scroll-story[data-enhanced="true"] .scroll-story-chapters {
+    position: relative;
+    top: auto;
+    left: auto;
+    flex-direction: row;
+    align-items: center;
+    gap: 2px;
+    transform: none;
+  }
+  .scroll-story[data-enhanced="true"] .scroll-story-chapters::before,
+  .scroll-story[data-enhanced="true"] .scroll-story-chapters::after {
+    left: 22px;
+    right: 22px;
+    top: calc(50% - 1px);
+    bottom: auto;
+    width: auto;
+    height: 2px;
+  }
+  .scroll-story[data-enhanced="true"] .scroll-story-chapters::after {
+    transform-origin: left;
+    transform: scaleX(var(--story-progress));
+  }
+  .scroll-story[data-enhanced="true"] .scroll-story-chapters button {
+    padding: 0;
+    min-height: 44px;
+  }
+  .scroll-story[data-enhanced="true"] .story-rail-icon {
+    width: 44px;
+    height: 44px;
+  }
+  .scroll-story[data-enhanced="true"] .story-rail-label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+  }
+  .scroll-story[data-enhanced="true"] .scroll-story-chapters button[aria-current] .story-rail-icon {
+    transform: scale(1.06);
+  }
+}
+@media (prefers-reduced-motion: reduce), print {
+  .scroll-story[data-enhanced="true"] .story-world-word {
+    display: none;
+  }
+  .scroll-story[data-enhanced="true"] .story-rail-icon,
+  .scroll-story[data-enhanced="true"] .story-rail-label {
+    transition: none;
+  }
+}

@@ -5,6 +5,7 @@ import {
   activeBeat,
   activeStory,
   beatScrollTarget,
+  chapterLocalProgress,
   STORY_BEAT_TRAVEL_SVH,
   STORY_BEATS,
   sentencePose,
@@ -16,7 +17,9 @@ import {
 import { sitePath } from "~/shared/lib/site-path";
 import { Portrait } from "~/shared/widget/portrait";
 import { StoryTools } from "./story-tools";
+import { blendWorld, ChapterIcon, STORY_WORLDS } from "./story-world";
 import "./scroll-story.css";
+import "./story-world.css";
 
 import type { StoryScene } from "./story-three";
 
@@ -164,13 +167,19 @@ export function ScrollStory({ data }: { data: Portfolio }) {
       lastProgress.current = progress;
       threeScene.current?.paint(progress, narrow);
       section.dataset.pinned = rect.bottom >= frameHeight && rect.top <= 1 ? "true" : "false";
+      const weights: number[] = [];
       for (const [index, panel] of panels.current.entries()) {
         if (!panel) continue;
         const pose = storyPose(progress, index);
+        weights[index] = pose.opacity;
+        panel.style.setProperty("--chapter-local", String(chapterLocalProgress(progress, index)));
         panel.style.setProperty("--story-opacity", String(pose.opacity));
         panel.style.setProperty("--story-y", `${pose.y}px`);
         panel.style.setProperty("--story-scale", String(pose.scale));
       }
+      const world = blendWorld(weights);
+      section.style.setProperty("--world-paper", world.paper);
+      section.style.setProperty("--world-accent", world.accent);
       for (const [index, sentence] of sentences.current.entries()) {
         if (!sentence) continue;
         const pose = sentencePose(progress, index);
@@ -320,6 +329,9 @@ export function ScrollStory({ data }: { data: Portfolio }) {
               data-chapter={chapter.id}
               {...panelProps(index)}
             >
+              <div className="story-world-word" aria-hidden="true" translate="no">
+                {STORY_WORLDS[index].word}
+              </div>
               <div className="scroll-story-copy">
                 <p className="scroll-story-context" translate="no">
                   {index === 0 ? `제품을 만드는 ${profile.name}이에요.` : chapter.label}
@@ -472,7 +484,10 @@ export function ScrollStory({ data }: { data: Portfolio }) {
                 aria-current={enhanced && active === index ? "step" : undefined}
                 onClick={() => jumpTo(index)}
               >
-                {label}
+                <span className="story-rail-icon">
+                  <ChapterIcon index={index} />
+                </span>
+                <span className="story-rail-label">{label}</span>
               </button>
             ))}
           </nav>
