@@ -1,0 +1,70 @@
+name: Verify static portfolio
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: portfolio-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - base: /
+            site: https://jeamxn.dev
+            slug: root
+          - base: /jeamxn/
+            site: https://jeamxn.github.io/jeamxn
+            slug: project
+    env:
+      CI: 'true'
+      JEAMXN_BASE_PATH: ${{ matrix.base }}
+      JEAMXN_SITE_URL: ${{ matrix.site }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.33.0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24.16.0
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm build
+      - run: pnpm typecheck && pnpm lint && pnpm test && pnpm test:static
+      - name: Finalize the tested static artifact
+        run: node scripts/build-static.mjs
+      - run: node scripts/verify-media.mjs && node scripts/verify-copy.mjs
+      - name: Validate optional static container configuration
+        run: |
+          docker compose -f docker-compose.yml config -q
+          docker compose -f docker-compose.yml -f infra/compose.local.yml config -q
+      - run: pnpm exec playwright install --with-deps chromium
+      - name: Static Pages routes, downloads and API absence
+        env:
+          QA_OUTPUT: test-results/pages-${{ matrix.slug }}
+        run: |
+          node scripts/serve-static.mjs --port 5414 > /tmp/jeamxn-pages.log 2>&1 &
+          preview_pid=$!
+          trap 'kill "$preview_pid" 2>/dev/null || true' EXIT
+          export QA_BASE_URL="http://127.0.0.1:5414${JEAMXN_BASE_PATH%/}"
+          for attempt in $(seq 1 30); do
+            if curl --fail --silent "$QA_BASE_URL/" > /dev/null; then break; fi
+            sleep 1
+          done
+          pnpm test:pages
+          pnpm test:e2e
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: static-qa-${{ matrix.slug }}
+          path: test-results/
+          if-no-files-found: ignore
+          retention-days: 7

@@ -1,44 +1,30 @@
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
-.env*
-.data/
-
-# dependencies
-/node_modules
-/.pnp
-.pnp.js
-
-# testing
-/coverage
-
-# next.js
-/.next/
-/out/
-
-# production
-/build
-
-# misc
+node_modules/
+**/dist/
+**/build/
+**/.react-router/
+.turbo/
+.env
+.env.*
+!.env.example
+playwright-report/
+test-results/
 .DS_Store
-*.pem
+*.tsbuildinfo
 
-# debug
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
+# Private research ledger, sources and backups never enter Git/build contexts
+**/private-*
+**/private-*/**
+**/.activity-ledger
+**/.activity-ledger/**
+**/activity-ledger/
+**/ledger.sqlite3*
+**/*.sqlite
+**/*.sqlite3
+**/ledger-*.tar.gz
+**/original-inventory-*.json
+**/pfct-evidence.json
+**/ara-dipull-evidence.json
+**/content-source-map.json
 
-# local env files
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
-
-# vercel
-.vercel
-
-**/*.trace
-**/*.zip
-**/*.tar.gz
-**/*.tgz
-**/*.log
-package-lock.json
-**/*.bun
+# Generated at build time from public content; never a server response
+apps/web/public/resume.pdf

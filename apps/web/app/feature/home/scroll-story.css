@@ -1,0 +1,1283 @@
+/* One continuous constellation responds directly to document scroll. */
+.scroll-story {
+  --story-progress: 0;
+  --story-header: 76px;
+  position: relative;
+  color: var(--color-ink);
+  background: var(--color-fog);
+}
+.scroll-story-stage {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+.scroll-story-panels {
+  position: relative;
+}
+:where(.scroll-story) .scroll-story-panels,
+:where(.scroll-story) .scroll-story-controls {
+  width: 100%;
+  max-width: none;
+  margin-inline: 0;
+}
+.scroll-story-panel {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+  gap: 40px;
+  padding-block: 60px;
+  min-width: 0;
+  scroll-margin-top: 24px;
+}
+.scroll-story-copy {
+  min-width: 0;
+  position: relative;
+  z-index: 2;
+}
+.scroll-story-copy h1,
+.scroll-story-copy h2 {
+  font-family: var(--font-sans);
+  font-size: clamp(36px, 4.1vw, 54px);
+  font-weight: 650;
+  line-height: 1.25;
+  letter-spacing: -0.045em;
+  word-break: keep-all;
+  overflow-wrap: break-word;
+  text-wrap: balance;
+  margin: 0;
+}
+.scroll-story-copy h1 span {
+  display: block;
+}
+.scroll-story-copy h1 .story-type-serif,
+.scroll-story-copy h2.story-type-serif {
+  font-family: var(--font-story-serif, serif);
+  font-weight: 500;
+  line-height: 1.4;
+  letter-spacing: -0.05em;
+}
+.scroll-story-copy h1 .story-type-serif {
+  font-size: 0.82em;
+  margin-top: 12px;
+}
+.scroll-story-greeting,
+.scroll-story-context {
+  margin: 0 0 20px;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 21px;
+  letter-spacing: -0.42px;
+  color: var(--color-slate);
+}
+.scroll-story-context {
+  font-size: 16px;
+  line-height: 24px;
+  letter-spacing: -0.48px;
+}
+.scroll-story-lead {
+  font-size: 16px;
+  line-height: 24px;
+  letter-spacing: -0.48px;
+  margin: 24px 0 0;
+  max-width: 33em;
+  word-break: keep-all;
+}
+.scroll-story-detail {
+  color: var(--color-slate);
+  font-size: 12px;
+  line-height: 18px;
+  letter-spacing: -0.36px;
+  margin: 16px 0 0;
+  word-break: keep-all;
+}
+.scroll-story-person-media {
+  min-width: 0;
+  text-align: center;
+}
+.scroll-story-portrait {
+  width: 76%;
+  margin-inline: auto;
+  background: transparent;
+  overflow: visible;
+  border-radius: 0;
+}
+.scroll-story-portrait img {
+  display: block;
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+  border-radius: 0;
+}
+.scroll-story-name {
+  margin: 12px 0 0;
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: 24px;
+  line-height: 1.3;
+  letter-spacing: -0.72px;
+}
+.scroll-story-screen {
+  margin: 0;
+  min-width: 0;
+  text-align: left;
+}
+.scroll-story-screen img {
+  display: block;
+  height: auto;
+  object-fit: contain;
+}
+.scroll-story-screen figcaption {
+  color: var(--color-slate);
+  font-size: 11px;
+  line-height: 16.5px;
+  letter-spacing: -0.33px;
+  margin: 14px 0 0;
+  word-break: keep-all;
+}
+.scroll-story-phone {
+  justify-self: center;
+  width: 43%;
+  max-width: 176px;
+}
+.scroll-story-phone img {
+  width: 100%;
+  max-height: 330px;
+  border-radius: 8px;
+  box-shadow: 0 8px 20px #1616160a;
+}
+.scroll-story-workspace {
+  width: 100%;
+  align-self: center;
+}
+.scroll-story-workspace img {
+  width: 100%;
+  box-shadow: 0 8px 24px #1616160c;
+}
+.scroll-story-company-work {
+  width: 65%;
+  justify-self: center;
+  min-width: 0;
+}
+.scroll-story-wordmark {
+  font-family: var(--font-display);
+  font-size: clamp(50px, 7vw, 90px);
+  font-weight: 600;
+  letter-spacing: -0.06em;
+  line-height: 1;
+  margin: 0 0 24px;
+}
+.scroll-story-company-work ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.scroll-story-company-work li {
+  font-size: 14px;
+  padding-block: 7px;
+  line-height: 21px;
+  letter-spacing: -0.42px;
+  word-break: keep-all;
+}
+.scroll-story-company-work li span {
+  display: block;
+  color: var(--color-slate);
+  font-size: 11px;
+  line-height: 16.5px;
+  margin-top: 2px;
+}
+.scroll-story-lecture {
+  margin-top: 16px;
+  font-size: 11px;
+  line-height: 16.5px;
+}
+.scroll-story-lecture p {
+  margin: 3px 0;
+}
+.scroll-story-lecture p:first-child {
+  font-size: 14px;
+  font-weight: 500;
+}
+.scroll-story-lecture p:last-child {
+  color: var(--color-slate);
+}
+.scroll-story-controls {
+  order: -1;
+  padding-block: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+}
+.scroll-story-chapters,
+.scroll-story-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.scroll-story-controls button,
+.scroll-story-controls a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 8px;
+  font: inherit;
+  font-size: 12px;
+  line-height: 18px;
+  letter-spacing: -0.36px;
+  background: none;
+  border: 0;
+  border-radius: 3px;
+  color: var(--color-slate);
+  text-decoration: none;
+  cursor: pointer;
+  touch-action: manipulation;
+  white-space: nowrap;
+}
+.scroll-story-controls a,
+.scroll-story-chapters button[aria-current] {
+  color: var(--color-ink);
+}
+.scroll-story-controls button:hover,
+.scroll-story-controls a:hover {
+  color: var(--color-cobalt);
+}
+.scroll-story-controls :focus-visible {
+  outline: 2px solid var(--color-cobalt);
+  outline-offset: 3px;
+}
+.scroll-story-chapters button {
+  position: relative;
+}
+.scroll-story-chapters button::after {
+  content: "";
+  position: absolute;
+  width: 3px;
+  height: 3px;
+  left: calc(50% - 1.5px);
+  bottom: 2px;
+  border-radius: 50%;
+  background: currentColor;
+  opacity: 0;
+}
+.scroll-story-chapters button[aria-current]::after {
+  opacity: 1;
+}
+.scroll-story-controls button:disabled {
+  cursor: default;
+}
+.scroll-story:not([data-ready="true"]) .scroll-story-chapters,
+.scroll-story:not([data-ready="true"]) .scroll-story-actions button {
+  display: none;
+}
+
+.story-constellation {
+  display: none;
+  pointer-events: none;
+}
+.story-tool {
+  position: absolute;
+  left: var(--tool-x, 50%);
+  top: var(--tool-y, 50%);
+  width: 64px;
+  height: 64px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  opacity: var(--tool-opacity, 0.85);
+  transform: translate(-50%, -50%) rotate(var(--tool-rotation, 0deg)) scale(var(--tool-scale, 0.7));
+  transform-origin: center;
+}
+.story-tool svg {
+  width: 36px;
+  height: 36px;
+  overflow: visible;
+  filter: drop-shadow(0 2px 1px #1616160a);
+}
+.story-tool-label {
+  font: 400 10px / 15px var(--font-sans);
+  color: var(--color-slate);
+  letter-spacing: -0.3px;
+  white-space: nowrap;
+}
+.story-tool-connections {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  fill: none;
+  stroke: #16161623;
+  stroke-width: 0.22;
+}
+.story-tool-connections line {
+  opacity: 0;
+}
+.story-tool-caption {
+  position: absolute;
+  bottom: -26px;
+  left: 0;
+  right: 0;
+  text-align: center;
+  color: var(--color-slate);
+  font: 400 11px / 16.5px var(--font-sans);
+  letter-spacing: -0.33px;
+}
+.scroll-story[data-enhanced="true"] {
+  height: 440svh;
+}
+.scroll-story[data-enhanced="true"] .scroll-story-stage {
+  position: sticky;
+  top: 0;
+  height: calc(100svh - var(--story-header));
+  min-height: 0;
+}
+.scroll-story[data-enhanced="true"] .scroll-story-panels {
+  flex: 1;
+  min-height: 0;
+}
+.scroll-story[data-enhanced="true"] .scroll-story-panel {
+  position: absolute;
+  inset: 0;
+  padding-block: 32px;
+  opacity: var(--story-opacity, 0);
+  transform: translate3d(0, var(--story-y, 0px), 0) scale(var(--story-scale, 1));
+  transform-origin: center;
+  pointer-events: none;
+}
+.scroll-story[data-enhanced="true"] .scroll-story-panel:first-child {
+  --story-opacity: 1;
+}
+.scroll-story[data-enhanced="true"] .scroll-story-controls {
+  position: relative;
+  order: 1;
+  flex: none;
+}
+.scroll-story[data-enhanced="true"] .scroll-story-controls::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: var(--color-ink);
+  transform-origin: left;
+  transform: scaleX(var(--story-progress));
+}
+.scroll-story[data-enhanced="true"] .story-constellation {
+  display: block;
+  position: absolute;
+  z-index: 3;
+  right: 0;
+  top: 50%;
+  width: calc((100% - 40px) / 2);
+  height: min(410px, 80%);
+  transform: translateY(-50%);
+}
+.scroll-story[data-enhanced="true"] .scroll-story-person-media,
+.scroll-story[data-enhanced="true"] .scroll-story-screen,
+.scroll-story[data-enhanced="true"] .scroll-story-company-work {
+  position: relative;
+  z-index: 1;
+}
+.scroll-story[data-enhanced="true"] .scroll-story-person-media {
+  transform: translateY(-70px);
+}
+.scroll-story[data-enhanced="true"] .scroll-story-phone {
+  transform: translateY(-8px);
+}
+.scroll-story[data-enhanced="true"] .scroll-story-phone img {
+  max-height: 282px;
+  width: auto;
+  max-width: 100%;
+  margin-inline: auto;
+}
+.scroll-story[data-enhanced="true"] .scroll-story-phone figcaption {
+  max-width: 176px;
+  margin-top: 12px;
+  font-size: 10px;
+  line-height: 15px;
+}
+.scroll-story[data-enhanced="true"] .scroll-story-workspace {
+  transform: translateY(-74px);
+}
+.scroll-story[data-enhanced="true"] .scroll-story-screen figcaption {
+  position: relative;
+  z-index: 4;
+}
+.scroll-story[data-enhanced="true"] .scroll-story-company-work {
+  width: 60%;
+}
+.scroll-story[data-enhanced="true"] .scroll-story-wordmark {
+  font-size: clamp(46px, 6vw, 76px);
+}
+.scroll-story[data-enhanced="true"] .scroll-story-company-work li span,
+.scroll-story[data-enhanced="true"] .scroll-story-lecture p:last-child {
+  display: none;
+}
+@media (max-width: 1050px) and (min-width: 761px) {
+  .scroll-story-copy h1,
+  .scroll-story-copy h2 {
+    font-size: 40px;
+  }
+  .scroll-story-greeting,
+  .scroll-story-context {
+    margin-bottom: 16px;
+  }
+  .scroll-story-company-work {
+    width: 70%;
+  }
+  .story-tool {
+    width: 52px;
+    height: 52px;
+    gap: 4px;
+  }
+  .story-tool svg {
+    width: 30px;
+    height: 30px;
+  }
+}
+@media (max-width: 760px) {
+  .scroll-story-panel {
+    grid-template-columns: 1fr;
+    gap: 32px;
+    padding-block: 40px;
+  }
+  .scroll-story-copy h1,
+  .scroll-story-copy h2 {
+    font-size: 36px;
+    line-height: 1.3;
+  }
+  .scroll-story-copy h2.story-type-serif {
+    font-size: 34px;
+  }
+  .scroll-story-greeting,
+  .scroll-story-context {
+    margin-bottom: 12px;
+  }
+  .scroll-story-lead {
+    margin-top: 16px;
+  }
+  .scroll-story-detail {
+    margin-top: 12px;
+  }
+  .scroll-story-person-media {
+    width: 100%;
+  }
+  .scroll-story-portrait {
+    width: 70%;
+    max-width: 280px;
+  }
+  .scroll-story-name {
+    font-size: 20px;
+    margin-top: 8px;
+  }
+  .scroll-story-phone {
+    max-width: 170px;
+    width: 46%;
+  }
+  .scroll-story-workspace {
+    max-width: 500px;
+    margin-inline: auto;
+  }
+  .scroll-story-company-work {
+    width: 100%;
+  }
+  .scroll-story-controls {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+    padding-block: 4px 12px;
+  }
+  .scroll-story-chapters,
+  .scroll-story-actions {
+    justify-content: space-between;
+    gap: 0;
+  }
+  .scroll-story-controls button,
+  .scroll-story-controls a {
+    padding-inline: 6px;
+  }
+  .scroll-story[data-enhanced="true"] {
+    height: 360svh;
+  }
+  .scroll-story[data-enhanced="true"] .scroll-story-panel {
+    grid-template-rows: auto 280px;
+    align-content: center;
+    gap: 20px;
+    padding-block: 12px;
+  }
+  .scroll-story[data-enhanced="true"] .scroll-story-person-media {
+    align-self: center;
+    transform: translateY(-18px);
+  }
+  .scroll-story[data-enhanced="true"] .scroll-story-portrait {
+    max-width: 240px;
+  }
+  .scroll-story[data-enhanced="true"] .scroll-story-name {
+    font-size: 18px;
+  }
+  .scroll-story[data-enhanced="true"] .scroll-story-phone {
+    width: 35%;
+    max-width: 110px;
+    transform: translateY(-6px);
+  }
+  .scroll-story[data-enhanced="true"] .scroll-story-phone img {
+    max-height: 220px;
+  }
+  .scroll-story[data-enhanced="true"] .scroll-story-phone figcaption {
+    width: 280px;
+    max-width: none;
+    position: relative;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+  .scroll-story[data-enhanced="true"] .scroll-story-workspace {
+    align-self: center;
+    transform: translateY(-28px);
+  }
+  .scroll-story[data-enhanced="true"] .scroll-story-company-work {
+    align-self: center;
+    width: 60%;
+  }
+  .scroll-story[data-enhanced="true"] .scroll-story-wordmark {
+    font-size: 46px;
+    margin-bottom: 12px;
+  }
+  .scroll-story[data-enhanced="true"] .scroll-story-company-work li {
+    padding-block: 4px;
+    font-size: 12px;
+    line-height: 18px;
+  }
+  .scroll-story[data-enhanced="true"] .scroll-story-lecture {
+    margin-top: 12px;
+  }
+  .scroll-story[data-enhanced="true"] .story-constellation {
+    top: auto;
+    bottom: 12px;
+    width: 100%;
+    height: 280px;
+    transform: none;
+  }
+  .story-tool {
+    width: 48px;
+    height: 48px;
+    gap: 3px;
+  }
+  .story-tool svg {
+    width: 29px;
+    height: 29px;
+  }
+  .story-tool-label {
+    font-size: 9px;
+    line-height: 13.5px;
+  }
+  .story-tool-caption {
+    display: none;
+  }
+}
+@media (min-width: 761px) and (max-height: 779px) {
+  .scroll-story-copy h1,
+  .scroll-story-copy h2 {
+    font-size: 38px;
+  }
+  .scroll-story-lead {
+    margin-top: 16px;
+  }
+  .scroll-story[data-enhanced="true"] .story-constellation {
+    height: min(340px, 80%);
+  }
+  .scroll-story[data-enhanced="true"] .scroll-story-phone img {
+    max-height: 240px;
+  }
+}
+@media (prefers-reduced-motion: reduce), print {
+  .scroll-story[data-enhanced="true"] {
+    height: auto;
+  }
+  .scroll-story[data-enhanced="true"] .scroll-story-stage {
+    position: static;
+    height: auto;
+  }
+  .scroll-story[data-enhanced="true"] .scroll-story-panel {
+    position: static;
+    opacity: 1;
+    transform: none;
+  }
+  .scroll-story[data-enhanced="true"] .story-constellation {
+    display: none;
+  }
+}
+@media print {
+  .scroll-story-controls {
+    display: none;
+  }
+}
+
+/* The visual and the constellation share the same center; captions stay outside
+   the icon lanes rather than being covered by a moving tool. */
+.scroll-story[data-enhanced="true"] .scroll-story-phone figcaption {
+  width: 260px;
+  max-width: none;
+  margin-top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
+}
+.scroll-story[data-enhanced="true"] .scroll-story-workspace figcaption {
+  width: 100%;
+  margin-top: 16px;
+}
+@media (max-width: 760px) {
+  .scroll-story[data-enhanced="true"] .scroll-story-panel {
+    align-content: start;
+    padding-top: 32px;
+  }
+  .scroll-story[data-enhanced="true"] .scroll-story-copy {
+    min-height: 242px;
+  }
+  .scroll-story[data-enhanced="true"] .story-constellation {
+    top: 294px;
+    bottom: auto;
+  }
+  .scroll-story[data-enhanced="true"] .scroll-story-workspace {
+    transform: translateY(-50px);
+  }
+  .scroll-story[data-enhanced="true"] .scroll-story-person-media {
+    transform: translateY(-55px);
+  }
+  .scroll-story[data-enhanced="true"] .scroll-story-phone {
+    transform: translateY(-30px);
+  }
+  .story-tool-label {
+    visibility: hidden;
+  }
+}
+@media (max-width: 760px) {
+  .scroll-story[data-enhanced="true"] .scroll-story-phone {
+    height: 280px;
+    width: 100%;
+    max-width: none;
+    align-self: start;
+    transform: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .scroll-story[data-enhanced="true"] .scroll-story-phone img {
+    max-height: 190px;
+    max-width: 88px;
+    width: auto;
+  }
+  .scroll-story[data-enhanced="true"] .scroll-story-phone figcaption {
+    position: absolute;
+    top: 100%;
+    width: 100%;
+    margin-top: 4px;
+  }
+}
+
+/* The main story is a viewport-sized stage, not a 960px reading column. */
+.site-header--home {
+  position: absolute;
+  z-index: 10;
+  top: 0;
+  left: clamp(24px, 5vw, 96px);
+  width: calc(100% - clamp(24px, 5vw, 96px) * 2);
+  max-width: none;
+  margin: 0;
+}
+.scroll-story:not([data-enhanced="true"]) {
+  padding-top: 76px;
+}
+.scroll-story:not([data-enhanced="true"]) .scroll-story-panel {
+  padding-inline: clamp(24px, 7vw, 120px);
+}
+.scroll-story[data-enhanced="true"] .scroll-story-stage {
+  height: 100svh;
+}
+.scroll-story[data-enhanced="true"] .scroll-story-panels {
+  flex: none;
+  position: absolute;
+  inset: 0 0 88px;
+}
+.scroll-story[data-enhanced="true"] .scroll-story-panel {
+  grid-template-columns: 45% 55%;
+  gap: 0;
+  padding: 76px clamp(32px, 8vw, 154px) 32px;
+}
+.scroll-story[data-enhanced="true"] .scroll-story-copy {
+  max-width: 600px;
+  align-self: center;
+}
+.scroll-story[data-enhanced="true"] .scroll-story-copy h1,
+.scroll-story[data-enhanced="true"] .scroll-story-copy h2 {
+  font-size: clamp(40px, 4.7vw, 80px);
+}
+.scroll-story[data-enhanced="true"] .scroll-story-controls {
+  position: absolute;
+  bottom: 16px;
+  left: clamp(24px, 5vw, 96px);
+  width: calc(100% - clamp(24px, 5vw, 96px) * 2);
+  padding-block: 8px;
+}
+.scroll-story[data-enhanced="true"] .story-constellation {
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  transform: none;
+}
+.scroll-story[data-enhanced="true"] .story-tool {
+  width: clamp(54px, 5vw, 84px);
+  height: clamp(54px, 5vw, 84px);
+}
+.scroll-story[data-enhanced="true"] .story-tool svg {
+  width: clamp(32px, 3vw, 50px);
+  height: clamp(32px, 3vw, 50px);
+}
+.scroll-story[data-enhanced="true"] .story-tool-caption {
+  display: none;
+}
+.scroll-story[data-enhanced="true"] .scroll-story-person-media {
+  transform: translateY(-42px);
+}
+.scroll-story[data-enhanced="true"] .scroll-story-portrait {
+  width: 88%;
+  max-width: 600px;
+}
+.scroll-story[data-enhanced="true"] .scroll-story-name {
+  font-size: clamp(24px, 2.7vw, 42px);
+}
+.scroll-story[data-enhanced="true"] .scroll-story-phone {
+  width: 43%;
+  max-width: 235px;
+  transform: translateY(-20px);
+}
+.scroll-story[data-enhanced="true"] .scroll-story-phone img {
+  max-height: min(52svh, 440px);
+  max-width: 100%;
+}
+.scroll-story[data-enhanced="true"] .scroll-story-workspace {
+  width: 100%;
+  max-width: 820px;
+  transform: translateY(-24px);
+}
+.scroll-story[data-enhanced="true"] .scroll-story-company-work {
+  width: 62%;
+}
+.scroll-story[data-enhanced="true"] .scroll-story-wordmark {
+  font-size: clamp(70px, 9vw, 145px);
+}
+.scroll-story[data-enhanced="true"] .scroll-story-company-work li {
+  font-size: 16px;
+  line-height: 24px;
+  padding-block: 7px;
+}
+@media (max-width: 1100px) and (min-width: 761px) {
+  .scroll-story[data-enhanced="true"] .scroll-story-panel {
+    padding-inline: 7vw;
+  }
+  .scroll-story[data-enhanced="true"] .scroll-story-copy h1,
+  .scroll-story[data-enhanced="true"] .scroll-story-copy h2 {
+    font-size: 40px;
+  }
+}
+@media (max-width: 760px) {
+  .scroll-story[data-enhanced="true"] .scroll-story-panels {
+    inset: 0 0 112px;
+  }
+  .scroll-story[data-enhanced="true"] .scroll-story-panel {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    gap: 0;
+    padding: 92px 28px 16px;
+  }
+  .scroll-story[data-enhanced="true"] .scroll-story-copy {
+    align-self: stretch;
+    min-height: 0;
+    max-width: none;
+  }
+  .scroll-story[data-enhanced="true"] .scroll-story-copy h1,
+  .scroll-story[data-enhanced="true"] .scroll-story-copy h2 {
+    font-size: 36px;
+  }
+  .scroll-story[data-enhanced="true"] .scroll-story-copy h2.story-type-serif {
+    font-size: 34px;
+  }
+  .scroll-story[data-enhanced="true"] .scroll-story-person-media,
+  .scroll-story[data-enhanced="true"] .scroll-story-phone,
+  .scroll-story[data-enhanced="true"] .scroll-story-workspace,
+  .scroll-story[data-enhanced="true"] .scroll-story-company-work {
+    position: absolute;
+    top: 48%;
+    left: 28px;
+    width: calc(100% - 56px);
+    max-width: none;
+    height: 260px;
+    transform: none;
+    align-self: auto;
+  }
+  .scroll-story[data-enhanced="true"] .scroll-story-person-media {
+    top: 42%;
+  }
+  .scroll-story[data-enhanced="true"] .scroll-story-portrait {
+    width: 83%;
+    max-width: 320px;
+  }
+  .scroll-story[data-enhanced="true"] .scroll-story-name {
+    font-size: 21px;
+  }
+  .scroll-story[data-enhanced="true"] .scroll-story-phone img {
+    max-height: 235px;
+    max-width: 110px;
+  }
+  .scroll-story[data-enhanced="true"] .scroll-story-phone figcaption {
+    top: auto;
+    bottom: -16px;
+    margin-top: 0;
+  }
+  .scroll-story[data-enhanced="true"] .scroll-story-workspace {
+    top: 43%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  .scroll-story[data-enhanced="true"] .scroll-story-company-work {
+    top: 47%;
+    width: 52%;
+    left: 24%;
+  }
+  .scroll-story[data-enhanced="true"] .scroll-story-wordmark {
+    font-size: 60px;
+  }
+  .scroll-story[data-enhanced="true"] .scroll-story-company-work li {
+    font-size: 14px;
+    line-height: 21px;
+    padding-block: 4px;
+  }
+  .scroll-story[data-enhanced="true"] .scroll-story-controls {
+    bottom: 8px;
+    left: 20px;
+    width: calc(100% - 40px);
+    padding-block: 4px 0;
+  }
+  .scroll-story[data-enhanced="true"] .story-tool {
+    width: 48px;
+    height: 48px;
+  }
+  .scroll-story[data-enhanced="true"] .story-tool svg {
+    width: 29px;
+    height: 29px;
+  }
+}
+@media (prefers-reduced-motion: reduce), print {
+  .scroll-story[data-enhanced="true"] .scroll-story-stage {
+    height: auto;
+  }
+}
+.story-three-host {
+  display: none;
+}
+.scroll-story[data-enhanced="true"] .story-three-host {
+  position: absolute;
+  inset: 0;
+  display: block;
+  pointer-events: none;
+  z-index: 3;
+}
+.story-three-canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.scroll-story-panels:has(.story-three-host[data-three-ready="true"]) .story-tool svg,
+.scroll-story-panels:has(.story-three-host[data-three-ready="true"]) .story-tool-label {
+  visibility: hidden;
+}
+.scroll-story[data-enhanced="true"] .scroll-story-controls {
+  position: fixed;
+  z-index: 12;
+}
+.scroll-story[data-enhanced="true"][data-pinned="false"] .scroll-story-controls {
+  visibility: hidden;
+  pointer-events: none;
+}
+@media (prefers-reduced-motion: reduce), print {
+  .scroll-story[data-enhanced="true"] .story-three-host {
+    display: none;
+  }
+}
+.scroll-story-chapter-card {
+  min-width: 0;
+  width: 80%;
+  justify-self: center;
+}
+.scroll-story-chapter-card > p:not(.scroll-story-wordmark) {
+  font-size: 16px;
+  line-height: 24px;
+}
+.scroll-story-chapter-meta {
+  display: block;
+  margin-top: 20px;
+  font-size: 14px;
+  line-height: 21px;
+  color: var(--color-slate);
+}
+.scroll-story[data-enhanced="true"] {
+  height: 560svh;
+}
+.scroll-story-panels:has(.story-three-host[data-three-ready="true"]) .scroll-story-screen,
+.scroll-story-panels:has(.story-three-host[data-three-ready="true"]) .scroll-story-chapter-card {
+  visibility: hidden;
+}
+@media (max-width: 760px) {
+  .scroll-story[data-enhanced="true"] {
+    height: 500svh;
+  }
+  .scroll-story-chapters button {
+    font-size: 11px;
+    padding-inline: 4px;
+    min-width: 44px;
+  }
+  .scroll-story[data-enhanced="true"] .scroll-story-copy h2 {
+    font-size: 32px;
+  }
+  .scroll-story[data-enhanced="true"] .scroll-story-chapter-card {
+    position: absolute;
+    top: 50%;
+    left: 28px;
+    width: calc(100% - 56px);
+    text-align: center;
+  }
+}
+@media (max-width: 760px) {
+  .scroll-story[data-enhanced="true"] .story-constellation .story-tool {
+    left: calc(10% + var(--fallback-index, 0) * 10%);
+    top: 75%;
+  }
+}
+@media (prefers-reduced-motion: reduce), print {
+  .scroll-story[data-enhanced="true"] {
+    height: auto;
+  }
+  .scroll-story[data-enhanced="true"] .scroll-story-controls {
+    position: relative;
+  }
+}
+/* Each scroll beat is one complete sentence, not a chapter summary card. */
+.story-sentences {
+  display: grid;
+  gap: 24px;
+}
+.story-sentence {
+  margin: 0;
+  font-size: clamp(28px, 3.15vw, 52px);
+  line-height: 1.4;
+  letter-spacing: -0.035em;
+  font-weight: 500;
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+  text-wrap: balance;
+}
+.story-sentence--serif {
+  font-family: var(--font-story-serif, serif);
+}
+.story-reading-position {
+  color: var(--color-slate);
+  margin: 28px 0 0;
+  font-size: 12px;
+  line-height: 18px;
+  font-variant-numeric: tabular-nums;
+}
+.scroll-story[data-enhanced="true"] {
+  height: calc(100svh + (var(--story-beat-count) - 1) * var(--story-beat-travel, 115svh));
+}
+.scroll-story[data-enhanced="true"] .story-sentences {
+  position: relative;
+  display: grid;
+  min-height: 4.2em;
+}
+.scroll-story[data-enhanced="true"] .story-sentence {
+  grid-area: 1 / 1;
+  align-self: center;
+  opacity: var(--sentence-opacity, 0);
+  transform: translate3d(0, var(--sentence-y, 0px), 0);
+}
+.scroll-story[data-enhanced="true"] .story-reading-position {
+  margin-top: 30px;
+}
+.scroll-story:not([data-enhanced="true"]) .story-reading-position {
+  display: none;
+}
+@media (max-width: 760px) {
+  .scroll-story[data-enhanced="true"] .story-sentence {
+    font-size: 29px;
+    line-height: 1.5;
+  }
+  .scroll-story[data-enhanced="true"] .scroll-story-copy {
+    margin-top: 22px;
+  }
+}
+@media (prefers-reduced-motion: reduce), print {
+  .scroll-story[data-enhanced="true"] {
+    height: auto;
+  }
+  .scroll-story[data-enhanced="true"] .story-sentences {
+    display: block;
+  }
+  .scroll-story[data-enhanced="true"] .story-sentence {
+    opacity: 1;
+    transform: none;
+    margin-bottom: 24px;
+  }
+}
+/* Owner's guided narration: full sentences, then honest product viewports. */
+.story-sentence-text {
+  margin: 0;
+  font: inherit;
+  letter-spacing: inherit;
+}
+.story-sentence-note {
+  margin: 24px 0 0;
+  font: 400 16px / 24px var(--font-sans);
+  letter-spacing: -0.48px;
+  color: var(--color-slate);
+  word-break: keep-all;
+  text-wrap: pretty;
+}
+.story-detail-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 48px;
+  margin-top: 28px;
+  padding: 10px 20px;
+  border: 1px solid var(--color-ink);
+  border-radius: 999px;
+  background: var(--color-ink);
+  color: var(--color-fog);
+  font: 500 14px / 21px var(--font-sans);
+  letter-spacing: -0.42px;
+  pointer-events: auto;
+}
+.story-detail-link:hover {
+  background: var(--color-fog);
+  color: var(--color-ink);
+}
+.story-detail-link:focus-visible {
+  outline: 2px solid var(--color-cobalt);
+  outline-offset: 5px;
+}
+.story-beat-media {
+  margin: 28px 0;
+  min-width: 0;
+}
+.story-media-image {
+  display: block;
+  width: auto;
+  height: auto;
+  max-width: 100%;
+  max-height: 520px;
+  object-fit: contain;
+  margin-inline: auto;
+  border-radius: 12px;
+  box-shadow: 0 10px 40px rgb(0 0 0 / 0.06);
+}
+.story-media-caption {
+  margin: 16px auto 0;
+  max-width: 560px;
+  font: 400 11px / 16.5px var(--font-sans);
+  letter-spacing: -0.33px;
+  color: var(--color-slate);
+  text-wrap: pretty;
+}
+.story-media-title {
+  display: block;
+  margin-bottom: 6px;
+  color: var(--color-ink);
+  font-size: 13px;
+  line-height: 19.5px;
+}
+.story-media-fallback {
+  display: none;
+  font: 400 16px / 24px var(--font-sans);
+}
+.story-beat-media[data-image-failed="true"] .story-media-image {
+  display: none;
+}
+.story-beat-media[data-image-failed="true"] .story-media-fallback {
+  display: block;
+}
+.scroll-story[data-enhanced="true"] .story-beat-media {
+  position: absolute;
+  z-index: 5;
+  left: 52%;
+  right: 6%;
+  top: 9%;
+  bottom: 15%;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  opacity: var(--media-opacity, 0);
+  transform: translate3d(0, var(--media-y, 0px), 0);
+  pointer-events: none;
+}
+.scroll-story[data-enhanced="true"] .story-media-image {
+  max-width: 100%;
+  max-height: calc(100% - 88px);
+  flex-shrink: 1;
+  min-height: 0;
+  object-fit: contain;
+}
+.scroll-story[data-enhanced="true"] .story-beat-media--desktop .story-media-image {
+  width: 100%;
+  height: auto;
+}
+.scroll-story[data-enhanced="true"] .story-beat-media--mobile .story-media-image {
+  width: auto;
+  height: 100%;
+}
+.scroll-story[data-enhanced="true"] .story-sentence--screen {
+  font-size: clamp(26px, 2.7vw, 44px);
+}
+.scroll-story[data-enhanced="true"] [data-intro-portrait][aria-hidden="true"] {
+  visibility: hidden;
+}
+.scroll-story[data-enhanced="true"] .story-sentence[aria-hidden="true"] .story-detail-link {
+  pointer-events: none;
+}
+.scroll-story:not([data-enhanced="true"]) .scroll-story-panel {
+  display: block;
+}
+.scroll-story:not([data-enhanced="true"]) .story-sentences {
+  gap: 50px;
+}
+.scroll-story:not([data-enhanced="true"]) .scroll-story-person-media {
+  max-width: 560px;
+  margin-top: 40px;
+}
+@media (max-width: 760px) {
+  .scroll-story[data-enhanced="true"] .story-sentence--screen {
+    font-size: 26px;
+    line-height: 1.45;
+  }
+  .scroll-story[data-enhanced="true"] .story-beat-media {
+    left: 28px;
+    right: 28px;
+    top: 51%;
+    bottom: 12%;
+  }
+  .scroll-story[data-enhanced="true"] .story-media-image {
+    max-height: calc(100% - 73px);
+    border-radius: 8px;
+  }
+  .scroll-story[data-enhanced="true"] .story-media-caption {
+    margin-top: 10px;
+    font-size: 10px;
+    line-height: 15px;
+  }
+  .scroll-story[data-enhanced="true"][data-story-screen="true"] .story-reading-position {
+    margin-top: 16px;
+  }
+  .story-sentence-note {
+    font-size: 14px;
+    line-height: 21px;
+    margin-top: 18px;
+  }
+  .story-detail-link {
+    margin-top: 22px;
+  }
+}
+@media (prefers-reduced-motion: reduce), print {
+  .scroll-story[data-enhanced="true"] .story-beat-media {
+    position: static;
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Static mode keeps each picture beside the sentence it explains in reading order. */
+.scroll-story:not([data-enhanced="true"]) .scroll-story-panel {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+.scroll-story:not([data-enhanced="true"]) .scroll-story-copy,
+.scroll-story:not([data-enhanced="true"]) .story-sentences {
+  display: contents;
+}
+.scroll-story:not([data-enhanced="true"]) .story-sentence,
+.scroll-story:not([data-enhanced="true"]) .story-beat-media {
+  order: var(--beat-order, 0);
+}
+.scroll-story:not([data-enhanced="true"]) .story-sentence {
+  margin-block: 20px;
+}
+
+@media (max-width: 760px) {
+  .scroll-story[data-enhanced="true"][data-story-screen="true"] .scroll-story-copy {
+    margin-top: 0;
+  }
+}
+/* A fixed media region contains the whole image; width and height remain auto
+   so tall and wide viewports do not stretch under flex-shrink/max-height. */
+.story-media-frame {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+}
+.scroll-story[data-enhanced="true"] .story-media-frame {
+  flex: 1;
+  min-height: 0;
+  width: 100%;
+}
+.scroll-story[data-enhanced="true"] .story-media-frame .story-media-image {
+  width: auto;
+  height: auto;
+  max-width: 100%;
+  max-height: 100%;
+  flex: none;
+}
+.scroll-story[data-enhanced="true"] .story-media-caption {
+  flex: none;
+  min-height: 64px;
+}
+@media (max-width: 760px) {
+  .scroll-story[data-enhanced="true"] .story-media-caption {
+    min-height: 64px;
+  }
+}
+/* Deliberate breathing points are editorial, not whatever line balance chooses. */
+.story-sentence-text {
+  white-space: pre-line;
+  text-wrap: pretty;
+}
+@media (max-width: 760px) {
+  .scroll-story[data-enhanced="true"] .story-sentence {
+    font-size: 27px;
+  }
+  .scroll-story[data-enhanced="true"] .story-sentence--screen {
+    font-size: 24px;
+  }
+  .scroll-story[data-enhanced="true"] .story-sentence-text {
+    line-height: 1.5;
+  }
+}
+.story-line {
+  display: block;
+  white-space: normal;
+}
+.scroll-story[data-enhanced="true"] .story-line {
+  opacity: var(--line-opacity, 1);
+  transform: translate3d(0, var(--line-y, 0px), 0);
+}
+@media (prefers-reduced-motion: reduce), print {
+  .scroll-story[data-enhanced="true"] .story-line {
+    opacity: 1;
+    transform: none;
+  }
+}
