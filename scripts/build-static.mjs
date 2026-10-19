@@ -10,7 +10,6 @@ const base = basePath(),
   site = siteUrl();
 const routes = [
   "/",
-  "/story",
   "/about",
   "/work",
   "/resume",

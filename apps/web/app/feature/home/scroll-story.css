@@ -679,7 +679,7 @@
 }
 
 /* The main story is a viewport-sized stage, not a 960px reading column. */
-.site-header--story {
+.site-header--home {
   position: absolute;
   z-index: 10;
   top: 0;
@@ -1285,35 +1285,4 @@
     transform: none;
     filter: none;
   }
-}
-/* /story ends with a short exit back to the homepage's work. */
-.story-exit {
-  display: grid;
-  align-content: center;
-  gap: 16px;
-  /* A full screen, so the skip link can carry the pinned stage fully away. */
-  min-height: 100svh;
-  padding-block: 96px 120px;
-}
-.story-exit-title {
-  margin: 0;
-  font: 600 clamp(28px, 4vw, 48px) / 1.25 var(--font-story-serif);
-  letter-spacing: -0.03em;
-  word-break: keep-all;
-}
-.story-exit-text {
-  margin: 0;
-  color: var(--color-slate);
-}
-.story-exit-links {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px 28px;
-  margin-top: 8px;
-  font-weight: 600;
-}
-.story-exit-link {
-  text-decoration: underline;
-  text-underline-offset: 6px;
-  text-decoration-thickness: 2px;
 }

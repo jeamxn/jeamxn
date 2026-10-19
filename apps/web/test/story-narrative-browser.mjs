@@ -37,7 +37,7 @@ async function seek(page, id) {
   return i;
 }
 async function open(page) {
-  await page.goto(`${base}/story`, { waitUntil: "networkidle" });
+  await page.goto(base, { waitUntil: "networkidle" });
   await page.evaluate(() => document.fonts.ready);
   await page.waitForFunction(
     () => document.querySelector(".scroll-story")?.dataset.ready === "true",

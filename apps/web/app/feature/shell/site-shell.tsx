@@ -15,18 +15,13 @@ export function SiteShell({
   nameEn: string;
 }) {
   const [menuOpen, setMenuOpen] = useState(false);
-  const { pathname } = useLocation();
-  const home = pathname === "/";
-  // The scroll story overlays its full-screen stage under the header.
-  const overlay = pathname === "/story" || pathname === "/story/";
+  const home = useLocation().pathname === "/";
   return (
     <>
       <a className="skip-link" href="#main">
         본문으로 건너뛰기
       </a>
-      <header
-        className={`site-header container${home ? " site-header--home" : ""}${overlay ? " site-header--home site-header--story" : ""}`}
-      >
+      <header className={`site-header container${home ? " site-header--home" : ""}`}>
         <Link to="/" className="brand" translate="no" aria-label="최재민 홈">
           jeamxn<span aria-hidden="true">*</span>
         </Link>
