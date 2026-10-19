@@ -4,10 +4,17 @@ import { portfolioSchema } from "@jeamxn/contract";
 import { portfolio } from "../dist/index.js";
 
 // Inspect factual public copy locally; there is no assistant runtime/export.
-const publicContent = () => JSON.stringify(portfolio);
+const publicContent = () =>
+  JSON.stringify(portfolio, (key, value) => (key === "draftThought" ? undefined : value));
 
 test("public content validates without changing its approved project structure", () => {
   assert.deepEqual(portfolioSchema.parse(portfolio), portfolio);
+  assert.deepEqual(
+    JSON.parse(publicContent()),
+    JSON.parse(
+      JSON.stringify(portfolio, (key, value) => (key === "draftThought" ? undefined : value)),
+    ),
+  );
   assert.equal(new Set(portfolio.projects.map((p) => p.slug)).size, portfolio.projects.length);
   assert.deepEqual(
     portfolio.projects.filter((p) => p.featured).map((p) => p.slug),

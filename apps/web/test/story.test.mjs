@@ -53,3 +53,23 @@ test("short stories remain complete and do not need a contents panel", async () 
   assert.match(html, /짧은 이야기도 전체를 읽습니다/);
   assert.doesNotMatch(html, /<nav/);
 });
+
+test("thoughts are shown beside factual paragraphs without a draft label", async () => {
+  const { StoryReader } = await vite.ssrLoadModule("/app/shared/widget/story-reader.tsx");
+  const html = renderToStaticMarkup(
+    StoryReader({
+      sections: [
+        {
+          id: "draft",
+          title: "작업",
+          paragraphs: ["확인한 작업 내용이에요."],
+          draftThought: "같은 일을 반복하지 않도록 만들고 싶었어요.",
+        },
+      ],
+    }),
+  );
+  assert.match(html, /확인한 작업 내용이에요/u);
+  assert.doesNotMatch(html, /커밋에서 추정/u);
+  assert.doesNotMatch(html, /확인된 발언이 아니라/u);
+  assert.match(html, /같은 일을 반복하지 않도록/u);
+});

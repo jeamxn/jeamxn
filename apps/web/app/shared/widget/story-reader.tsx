@@ -28,6 +28,11 @@ export function StoryReader({ sections }: { sections: StorySection[] }) {
             {section.paragraphs.map((paragraph) => (
               <p key={paragraph}>{paragraph}</p>
             ))}
+            {section.draftThought && (
+              <aside className="story-thought-draft" aria-label="당시 생각">
+                <p>{section.draftThought}</p>
+              </aside>
+            )}
           </section>
         ))}
       </div>

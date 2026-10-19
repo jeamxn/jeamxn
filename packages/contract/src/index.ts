@@ -5,6 +5,7 @@ export const storySectionSchema = z.object({
   id: z.string(),
   title: z.string(),
   paragraphs: z.array(z.string()).min(1),
+  draftThought: z.string().optional(),
 });
 export type StorySection = z.infer<typeof storySectionSchema>;
 export const projectScreenSchema = z.object({
