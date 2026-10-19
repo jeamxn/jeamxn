@@ -31,23 +31,39 @@ export function storyProgress(top: number, height: number, frameHeight: number):
 export function activeBeat(progress: number): number {
   return Math.round(clampUnit(progress) * (STORY_BEATS.length - 1));
 }
-/**80% of each115svh reading interval is completely still. Text fades out
- * before the next beat fades in; adjacent sentences never share the canvas. */
+/** Most of each 115svh reading interval keeps the sentence fully readable.
+ * It never freezes, though: the text drifts a few pixels with the scroll so
+ * the page always answers the reader. Text fades out before the next beat
+ * fades in; adjacent sentences never share the canvas. */
 export const STORY_BEAT_TRAVEL_SVH = 115;
+const SENTENCE_FADE_START = 0.36;
+const SENTENCE_DRIFT_PX = 14;
 export function sentencePose(progress: number, index: number) {
   const distance = clampUnit(progress) * (STORY_BEATS.length - 1) - index;
   const current = activeBeat(progress) === index;
+  const fade = smoothStep((Math.abs(distance) - SENTENCE_FADE_START) / (0.5 - SENTENCE_FADE_START));
   return {
-    opacity: current ? 1 - smoothStep((Math.abs(distance) - 0.4) / 0.1) : 0,
-    y: Math.sign(-distance) * smoothStep((Math.abs(distance) - 0.4) / 0.1) * 18,
+    opacity: current ? 1 - fade : 0,
+    // Continuous reading drift plus an eased exit/entry offset.
+    y:
+      -Math.max(-0.5, Math.min(0.5, distance)) * SENTENCE_DRIFT_PX +
+      Math.sign(-distance) * fade * 16,
   };
+}
+/** The opening portrait is large, so it leaves over a longer stretch than the
+ * headline and is gone exactly when the first beat hands over. */
+export function portraitPose(progress: number) {
+  const distance = clampUnit(progress) * (STORY_BEATS.length - 1);
+  const fade = smoothStep((distance - 0.18) / 0.32);
+  return { opacity: 1 - fade, y: -Math.min(0.5, distance) * SENTENCE_DRIFT_PX - fade * 24 };
 }
 /** Editorial lines reveal on scroll, never on a timer. Every line is fully
  * present before the beat's anchor, leaving a generous complete-reading dwell. */
 export function storyLinePose(progress: number, beat: number, line: number, count: number) {
   const distance = clampUnit(progress) * (STORY_BEATS.length - 1) - beat;
-  const step = count > 1 ? 0.22 / (count - 1) : 0;
-  const opacity = smoothStep((distance + 0.47 - line * step) / 0.12);
+  // Lines overlap like a wave instead of arriving one by one with a pause.
+  const step = count > 1 ? 0.14 / (count - 1) : 0;
+  const opacity = smoothStep((distance + 0.49 - line * step) / 0.2);
   // Decelerating rise: most travel happens while the line is still faint.
   return { opacity, y: (1 - easeOutCubic(opacity)) * 22 };
 }
