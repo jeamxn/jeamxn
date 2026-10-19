@@ -3,62 +3,61 @@
 ## 준비
 
 ```sh
-nvm use # .nvmrc: 24.16.0
+nvm use
 corepack enable
 corepack prepare pnpm@10.33.0 --activate
 pnpm install --frozen-lockfile
-pnpm build
-```
-
-Node 20으로 빌드하지 않습니다. 패키지는 dist export를 사용하므로 새 workspace나 브랜치 변경 뒤에는 packages/core·contract 등을 포함한 빌드를 먼저 수행하세요. lockfile은 루트 조정 작업에서만 갱신합니다.
-
-## 개발 서버
-
-```sh
-AI_ENABLED=false \
-JEAMXN_PUBLIC_ORIGIN=http://localhost:5410,http://127.0.0.1:5410 \
-AI_REQUIRE_VALKEY=false \
 pnpm dev
 ```
 
-- 웹: `http://localhost:5410`
-- API: `http://localhost:5411/api/health`
-- 웹 dev proxy의 `/api` 목적지는 `JEAMXN_DEV_API_URL` (기본 `http://127.0.0.1:5411`)입니다.
-- `pnpm dev`는 `.env`를 자동 읽지 않습니다. 셸에서 명시적으로 export하거나 승인된 로컬 env loader를 사용하세요.
-- `.env.example`은 컨테이너 테스트 origin `http://127.0.0.1:5412` 기준입니다. dev에는 위 origin을 사용하세요.
-- 개발의 메모리 quota는 단일 프로세스 fallback입니다. production과 shared-limit 검증에는 별도 Valkey를 사용하세요. ara·릴리·monitoring 등의 store나 이미 사용 중인 포트를 재사용하지 않습니다.
+Node24.16.0을 사용해요. `pnpm dev`는 공개 패키지와 PDF를 빌드한 뒤 웹5410을 열어요.
+API·AI 키·DB·Valkey는 없어요. `.env`는 자동으로 읽지 않고 필요한 공개 설정은 셸에서 지정해요.
 
-## 검증 순서
+## 빌드와 엄격한 정적 미리보기
 
 ```sh
 pnpm build
+pnpm preview
+# http://127.0.0.1:5414/
+```
+
+`serve-static.mjs`는 URL이 실제 파일/디렉터리에 매핑될 때만200응답하고 나머지는404예요.
+Vite의 SPA fallback만 확인한 결과를 GitHub Pages 호환 검증으로 대신하지 않아요.
+
+```sh
+JEAMXN_BASE_PATH=/jeamxn/ JEAMXN_SITE_URL=https://jeamxn.github.io/jeamxn pnpm build
+node scripts/serve-static.mjs --base /jeamxn/ --port 5414
+QA_BASE_URL=http://127.0.0.1:5414/jeamxn pnpm test:pages
+```
+
+## 검사
+
+```sh
 pnpm typecheck
 pnpm lint
 pnpm test
-# 부모/로컬 QA용 browser script가 준비된 뒤
-pnpm test:e2e
-docker compose -f docker-compose.yml config -q
-docker compose -f docker-compose.yml -f infra/compose.local.yml config -q
+pnpm test:static
+node scripts/verify-media.mjs
+node scripts/verify-copy.mjs
+QA_BASE_URL=http://127.0.0.1:5414 pnpm test:pages
+QA_BASE_URL=http://127.0.0.1:5414 pnpm test:e2e
 ```
 
-`pnpm lint`는 Biome과 경계 검사기입니다. core의 공개 가능 여부, 이미지 권리, 수치·현재 상태·공동 작업 기여는 사람이 다시 검토해야 합니다. 웹 검증은 390/768/1440px, reduced-motion, 키보드 dialog focus, form 오류, 모든 직접 링크 진입을 포함하세요. 테스트는 실제 AI 키 없이 mock/local FAQ를 사용합니다.
+`QA_BASE_URL`에는 repo 하위 경로를 포함할 수 있어요. Pages 검사는 기본 Chromium,
+`QA_ENGINES=chromium,webkit`으로 두 엔진을 확인해요. 다른 스크롤·GPU 하네스의 엔진 범위는 각 파일을 확인해요.
+본문·검색·메뉴·캡처 고지·줄별 스크롤과 모션 감소는 그대로 보존해요.
+PDF는 실다운로드 뒤 MuPDF/PDFKit 글자·그림·OCR 검사를 유지해요.
+실제 Pages 배포 성공과 로컬 정적 호환 검증은 별도 증거예요.
 
-## 로컬 컨테이너
+## 선택적 정적 컨테이너
 
-기존 스택에 영향을 주지 않도록 project 이름을 지정합니다. 루트 Compose 자체는 port를 publish하지 않으며 local override만 loopback에 publish합니다.
+루트`docker-compose.yml` 위치는 그대로예요. web 하나만 빌드하고 실행해요.
 
 ```sh
-docker compose -p jeamxn-portfolio-test -f docker-compose.yml -f infra/compose.local.yml up --build -d
-docker compose -p jeamxn-portfolio-test -f docker-compose.yml -f infra/compose.local.yml ps
-curl --fail http://127.0.0.1:5412/api/health
-curl --fail http://127.0.0.1:5412/api/assistant/status
-curl --fail http://127.0.0.1:5412/api/resume.pdf -o /tmp/jeamxn-resume.pdf
-# 본인 테스트 project만 제거, 공유 Docker 리소스는 손대지 않음
-docker compose -p jeamxn-portfolio-test -f docker-compose.yml -f infra/compose.local.yml down
+docker compose -p jeamxn-portfolio-preview -f docker-compose.yml -f infra/compose.local.yml up --build -d --wait
+curl --fail http://127.0.0.1:5412/healthz
+curl --fail http://127.0.0.1:5412/resume.pdf -o /tmp/jeamxn-resume.pdf
 ```
 
-`down -v`는 테스트 quota volume까지 없애는 의도적인 작업이므로 필요할 때만 실행합니다. `docker system prune`, 다른 project의 down, 기존 ara/lily 프로세스 종료는 이 작업의 일부가 아닙니다. 회사망 registry CA 문제는 신뢰된 CA/정상 네트워크를 통해 해결하며 TLS 검증을 끄지 않습니다.
-
-## 콘텐츠 변경
-
-먼저 `packages/core`의 공개 콘텐츠를 수정하고 schema validation, 웹 표시, PDF, FAQ를 함께 확인합니다. 원본 인터뷰를 파일로 복사하지 않습니다. 대표 프로젝트의 샘플 화면은 가상 데이터라면 이를 표시하며 운영 성과로 오해하게 만들지 않습니다.
+공유 Docker/ara/Lily 프로세스를 정리하지 않아요. 기존 프로젝트의 서버·Valkey 잔여 컨테이너를
+제거할 때도 해당 project와 대상만 명시하며, 다른 DB나 volume을 지우지 않아요.

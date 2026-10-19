@@ -1,4 +1,5 @@
 import type { Project } from "@jeamxn/contract";
+import { resumeProjects } from "@jeamxn/core";
 
 export const collections = {
   personal: "개인",
@@ -28,6 +29,9 @@ export function archiveRecords(projects: Project[], params: URLSearchParams) {
   const words = query.split(/\s+/u).filter(Boolean);
   const collection = params.get("collection");
   const type = params.get("type");
+  const pinnedOrder = new Map(
+    resumeProjects(projects).map((project, index) => [project.slug, index]),
+  );
   return projects
     .filter((project) => {
       const haystack = [
@@ -51,9 +55,12 @@ export function archiveRecords(projects: Project[], params: URLSearchParams) {
         (!type || !(type in recordTypes) || projectRecordType(project) === type)
       );
     })
-    .sort((a, b) =>
-      params.get("sort") === "name"
+    .sort((a, b) => {
+      const aPin = pinnedOrder.get(a.slug) ?? projects.length;
+      const bPin = pinnedOrder.get(b.slug) ?? projects.length;
+      if (aPin !== bPin) return aPin - bPin;
+      return params.get("sort") === "name"
         ? a.name.localeCompare(b.name, "ko")
-        : observedYear(b) - observedYear(a) || a.name.localeCompare(b.name, "ko"),
-    );
+        : observedYear(b) - observedYear(a) || a.name.localeCompare(b.name, "ko");
+    });
 }

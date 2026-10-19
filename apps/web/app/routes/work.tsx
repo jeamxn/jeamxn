@@ -6,8 +6,9 @@ import type { Route } from "./+types/work";
 export function meta({ params }: Route.MetaArgs) {
   const project = portfolio.projects.find((p) => p.slug === params.slug);
   return pageMeta(
-    project?.name ?? "프로젝트를 찾지 못했습니다",
+    project?.name ?? "프로젝트를 찾지 못했어요",
     project?.summary ?? "프로젝트 목록에서 다른 이야기를 살펴보세요.",
+    project ? `/work/${project.slug}` : "/work",
   );
 }
 export default function Work() {
@@ -21,7 +22,7 @@ export default function Work() {
     />
   ) : (
     <div className="container missing-page">
-      <h1>이 프로젝트는 찾지 못했습니다.</h1>
+      <h1>이 프로젝트는 찾지 못했어요.</h1>
       <p>주소를 확인하거나, 작업 기록에서 다시 살펴보세요.</p>
       <Link className="button button--solid" to="/work">
         모든 작업 기록 보기

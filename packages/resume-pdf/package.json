@@ -1,0 +1,30 @@
+{
+  "name": "@jeamxn/resume-pdf",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "test": "node --test test/*.test.mjs",
+    "generate": "node dist/cli.js"
+  },
+  "dependencies": {
+    "@jeamxn/contract": "workspace:*",
+    "@jeamxn/core": "workspace:*",
+    "@pdf-lib/fontkit": "1.1.1",
+    "pdf-lib": "1.17.1"
+  },
+  "devDependencies": {
+    "@types/node": "^24",
+    "typescript": "~6.0.3"
+  }
+}

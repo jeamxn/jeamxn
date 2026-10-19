@@ -29,6 +29,13 @@ test("all archive query URLs hydrate from the same full static first render", as
     );
   const full = render("/work");
   assert.equal((full.match(/class="archive-record"/gu) ?? []).length, portfolio.projects.length);
+  assert.deepEqual(
+    [...full.matchAll(/class="archive-record" data-pinned="true" href="\/work\/([^"/]+)"/gu)].map(
+      (match) => match[1],
+    ),
+    ["ara", "pfct", "dipull"],
+  );
+  assert.equal((full.match(/class="archive-pin"/gu) ?? []).length, 3);
   for (const query of [
     "q=aRa",
     "collection=school",

@@ -4,13 +4,14 @@ import path from "node:path";
 import { chromium } from "playwright";
 import { portfolio } from "../packages/core/dist/index.js";
 
-const base = process.env.QA_BASE_URL ?? "http://127.0.0.1:5410";
+const base = (process.env.QA_BASE_URL ?? "http://127.0.0.1:5410").replace(/\/$/, "");
 const output = path.resolve(process.env.QA_OUTPUT ?? "test-results/browser");
 await fs.mkdir(output, { recursive: true });
 const options = { headless: true };
 if (process.env.QA_BROWSER_PATH) options.executablePath = process.env.QA_BROWSER_PATH;
 const browser = await chromium.launch(options);
 const report = [];
+const apiRequests = [];
 try {
   for (const width of (process.env.QA_WIDTHS ?? "390,768,1440").split(",").map(Number)) {
     const context = await browser.newContext({
@@ -19,6 +20,10 @@ try {
     });
     const page = await context.newPage();
     const errors = [];
+    page.on("request", (request) => {
+      if (/(?:^|\/)api(?:\/|$)/u.test(new URL(request.url()).pathname))
+        apiRequests.push(request.url());
+    });
     page.on("pageerror", (error) => errors.push(error.message));
     for (const route of [
       "/",
@@ -33,6 +38,11 @@ try {
       const response = await page.goto(base + route, { waitUntil: "networkidle" });
       assert.equal(response?.status(), 200, `${route} status`);
       await page.locator("main").waitFor();
+      assert.equal(
+        await page.locator(".assistant-trigger,.header-ask,.ask-inline,.assistant-modal").count(),
+        0,
+        "removed answer UI",
+      );
       await page.evaluate(() => document.fonts.ready);
       for (const image of await page.locator("img").all()) {
         if (await image.isVisible()) {
@@ -103,29 +113,15 @@ try {
   });
   const page = await context.newPage();
   await page.goto(base, { waitUntil: "networkidle" });
-  const open = page.getByRole("button", { name: /질문|대화|궁금/ }).first();
-  assert.ok(await open.count(), "assistant entry present");
-  await open.click();
-  const dialog = page.getByRole("dialog").last();
-  await dialog.waitFor({ state: "visible" });
-  const input = dialog.getByRole("textbox").first();
-  await input.fill("ara purpose 아이디어는 무엇인가요?");
-  await dialog.getByRole("button", { name: "질문 보내기" }).click();
-  await dialog.locator(".message--assistant").last().waitFor({ state: "visible", timeout: 10000 });
-  const text = await dialog.innerText();
-  assert.ok(text.includes("purpose"), "assistant renders question/answer");
-  assert.ok(
-    text.includes("성민") || text.includes("공개 내용"),
-    "assistant completes an explicit answer",
-  );
-  await page.keyboard.press("Escape");
-  await dialog.waitFor({ state: "hidden" });
-  const pdf = await context.request.get(`${base}/api/resume.pdf`);
+  const pdf = await context.request.get(`${base}/resume.pdf`);
   assert.equal(pdf.status(), 200);
   const bytes = await pdf.body();
   assert.equal(bytes.subarray(0, 4).toString(), "%PDF");
   await fs.writeFile(path.join(output, "resume.pdf"), bytes);
-  report.push({ assistantDialog: true, pdfBytes: bytes.length });
+  assert.match(pdf.headers()["content-type"] ?? "", /application\/pdf/);
+  assert.ok(bytes.length > 2_000_000, "real embedded-font resume PDF");
+  assert.deepEqual(apiRequests, [], "static portfolio does not request APIs");
+  report.push({ answerUiAbsent: true, apiRequests, pdfBytes: bytes.length });
   await context.close();
   await fs.writeFile(path.join(output, "report.json"), JSON.stringify(report, null, 2));
   console.log(

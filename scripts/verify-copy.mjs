@@ -8,7 +8,15 @@ function collect(value) {
   return [];
 }
 const text = collect(portfolio).join("\n");
-assert.doesNotMatch(text, /[‘’·]/u);
+assert.doesNotMatch(text, /[‘’]/u);
+for (const value of collect(portfolio))
+  for (const match of value.matchAll(/·/gu)) {
+    const i = match.index;
+    assert.equal(value[i - 1], " ");
+    assert.equal(value[i + 1], " ");
+    assert.notEqual(value[i - 2], " ");
+    assert.notEqual(value[i + 2], " ");
+  }
 assert.match(text, /일정 \/ 회의실/u);
 assert.ok(text.includes("'"));
 console.log(

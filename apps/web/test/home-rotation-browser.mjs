@@ -4,7 +4,12 @@ import { portfolio } from "@jeamxn/core";
 import { chromium } from "playwright";
 import { ROTATION_INTERVAL } from "../app/shared/lib/project-rotation.ts";
 
-const base = process.env.QA_BASE_URL ?? process.env.QA_BASE ?? "http://127.0.0.1:5410";
+const base = (process.env.QA_BASE_URL ?? process.env.QA_BASE ?? "http://127.0.0.1:5410").replace(
+  /\/$/,
+  "",
+);
+const basePath = new URL(base).pathname.replace(/\/$/, "");
+const sitePath = (route) => `${basePath}${route}`;
 const output = process.env.QA_OUTPUT ?? "/tmp/jeamxn-home-v5/browser";
 await mkdir(output, { recursive: true });
 const browser = await chromium.launch({
@@ -18,9 +23,10 @@ const state = (page) => page.locator(".work-rotation").getAttribute("data-batch"
 async function open(width, reducedMotion = "no-preference") {
   const page = await browser.newPage({ viewport: { width, height: 1000 }, reducedMotion });
   page.on("pageerror", (error) => errors.push(error.message));
-  // No paid AI or external credentials: only local portfolio data; unopened assistant.
-  await page.route("**/api/assistant/chat", (route) => {
-    throw new Error(`Unexpected assistant request ${route.request().url()}`);
+  // This is a static portfolio: no request may reach any old API route.
+  page.on("request", (request) => {
+    if (/(?:^|\/)api(?:\/|$)/u.test(new URL(request.url()).pathname))
+      errors.push(`Unexpected API request ${request.url()}`);
   });
   await page.goto(base, { waitUntil: "networkidle" });
   await page.evaluate(() => document.fonts.ready);
@@ -33,7 +39,7 @@ async function open(width, reducedMotion = "no-preference") {
     0,
   );
   assert.equal(await page.locator(".home-activity").count(), 0);
-  assert.equal(await page.locator(".home-company-stories article").count(), 3);
+  assert.equal(await page.locator(".home-company-stories article").count(), 4);
   assert.equal(await page.locator(".home-lecture-stories article").count(), 3);
   assert.equal(Number(await page.locator(".work-rotation").getAttribute("data-record-count")), 83);
   return page;
@@ -202,7 +208,10 @@ try {
       assert.ok(geometry.controls.every(([w, h]) => w >= 44 && h >= 44));
       await reduced.getByRole("button", { name: "다음 작업 묶음", exact: true }).click();
     }
-    assert.deepEqual(seen, new Set(expectedRecords.map((project) => `/work/${project.slug}`)));
+    assert.deepEqual(
+      seen,
+      new Set(expectedRecords.map((project) => sitePath(`/work/${project.slug}`))),
+    );
     assert.equal(await state(reduced), "1");
     assert.ok(Math.max(...heights) - Math.min(...heights) <= 1, JSON.stringify({ width, heights }));
     assert.deepEqual(overflows, []);
@@ -221,7 +230,10 @@ try {
       .first()
       .getAttribute("href");
     await reduced.locator(".rotation-batch .work-row").first().click();
-    await reduced.waitForURL(`**${destination}`);
+    await reduced.waitForURL(
+      (url) =>
+        url.pathname.replace(/\/$/, "") === new URL(destination, base).pathname.replace(/\/$/, ""),
+    );
     results.push({
       width,
       reducedMotion: true,

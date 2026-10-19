@@ -5,6 +5,7 @@ export const storySectionSchema = z.object({
   id: z.string(),
   title: z.string(),
   paragraphs: z.array(z.string()).min(1),
+  draftThought: z.string().optional(),
 });
 export type StorySection = z.infer<typeof storySectionSchema>;
 export const projectScreenSchema = z.object({
@@ -93,19 +94,3 @@ export const portfolioSchema = z.object({
 });
 export type Portfolio = z.infer<typeof portfolioSchema>;
 export type Activity = Portfolio["activities"][number];
-export const chatMessageSchema = z.object({
-  role: z.enum(["user", "assistant"]),
-  content: z.string().min(1).max(1800),
-});
-export const chatRequestSchema = z
-  .object({ messages: z.array(chatMessageSchema).min(1).max(10) })
-  .strict();
-export type ChatRequest = z.infer<typeof chatRequestSchema>;
-export const chatResponseSchema = z.object({
-  answer: z.string(),
-  sources: z.array(linkSchema),
-  mode: z.enum(["ai", "local"]),
-});
-export type ChatResponse = z.infer<typeof chatResponseSchema>;
-export const assistantStatusSchema = z.object({ mode: z.enum(["ai", "local"]), label: z.string() });
-export type AssistantStatus = z.infer<typeof assistantStatusSchema>;

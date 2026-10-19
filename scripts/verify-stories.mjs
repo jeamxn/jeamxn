@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import fs from "node:fs/promises";
 import { chromium } from "playwright";
 
-const base = process.env.QA_BASE_URL ?? "http://127.0.0.1:5410";
+const base = (process.env.QA_BASE_URL ?? "http://127.0.0.1:5410").replace(/\/$/, "");
 const output = process.env.QA_OUTPUT ?? "test-results/stories";
 const browser = await chromium.launch({
   headless: true,

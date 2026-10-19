@@ -11,7 +11,7 @@ export function AboutPage({ data }: { data: Portfolio }) {
         <h1>
           필요한 것을 배우고,
           <br />
-          좋아하는 것을 만듭니다.
+          좋아하는 걸 만들어요.
         </h1>
       </header>
       <div className="about-layout">
@@ -44,7 +44,7 @@ export function AboutPage({ data }: { data: Portfolio }) {
           <p>
             빠르게 달리는 경주, 함께 응원하는 경기,
             <br />
-            그리고 작은 공연장의 음악을 좋아합니다.
+            그리고 작은 공연장의 음악을 좋아해요.
           </p>
         </div>
         <ul>

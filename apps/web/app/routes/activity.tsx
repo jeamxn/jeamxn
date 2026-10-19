@@ -7,8 +7,9 @@ import type { Route } from "./+types/activity";
 export function meta({ params }: Route.MetaArgs) {
   const activity = portfolio.activities.find((item) => item.slug === params.slug);
   return pageMeta(
-    activity?.title ?? "활동을 찾지 못했습니다",
+    activity?.title ?? "활동을 찾지 못했어요",
     activity?.description ?? "이력과 활동에서 다른 이야기를 살펴보세요.",
+    activity ? `/activity/${activity.slug}` : "/resume",
   );
 }
 export default function Activity() {
@@ -18,7 +19,7 @@ export default function Activity() {
     <ActivityPage activity={activity} />
   ) : (
     <div className="container missing-page">
-      <h1>이 활동은 찾지 못했습니다.</h1>
+      <h1>이 활동은 찾지 못했어요.</h1>
       <p>주소를 확인하거나 이력에서 다른 이야기를 살펴보세요.</p>
       <Link className="button button--solid" to="/resume">
         이력과 활동 보기

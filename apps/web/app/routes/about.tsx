@@ -1,12 +1,22 @@
 import { portfolio } from "@jeamxn/core";
-import { AboutPage } from "~/feature/about/about-page";
+import { useEffect } from "react";
+import { useNavigate } from "react-router";
+import { ResumePage } from "~/feature/resume/resume-page";
 import { pageMeta } from "~/shared/lib/meta";
+
 export function meta() {
   return pageMeta(
-    "소개",
-    "필요한 것을 배우고 사람들과 함께 제품으로 완성하는 최재민의 이야기입니다.",
+    "이력",
+    "최재민의 소개와 경력, 주요 작업, 교육과 활동을 한곳에 모았어요.",
+    "/resume",
   );
 }
+
 export default function About() {
-  return <AboutPage data={portfolio} />;
+  const navigate = useNavigate();
+  useEffect(() => {
+    void navigate("/resume#introduction", { replace: true });
+  }, [navigate]);
+  // Keep the legacy static URL useful before hydration and with JavaScript off.
+  return <ResumePage data={portfolio} />;
 }

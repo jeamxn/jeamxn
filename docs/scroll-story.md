@@ -23,3 +23,118 @@ No JavaScript, reduced motion, desktop heights below 620px, mobile heights below
 ## Verification boundary
 
 `apps/web/test/scroll-story.test.mjs`: twelve pure mapping/boundary/reverse/complementary-opacity tests plus five SSR/content/control tests. Parent session owns full browser motion/keyboard/no-JS/Chrome/WebKit/mobile/production-build verification and preview. Unit or type success is not visual approval. No merge or deploy is included in this change.
+
+## Sentence-level story (owner correction 2026-10-18 23:16)
+
+The homepage is not five summary cards anymore. `packages/core/src/home-story.ts`
+is the short factual narrative:20beats, grouped intro1 / Dipull5 / Internal5 /
+AX4 / ara5. Each non-intro beat is one complete sentence, revealed directly by
+native document scroll. Situation → inconvenience → concrete work → resulting
+flow is the order within chapters. Do not insert inferred motives from the
+separately labelled case-study drafts into these factual beats.
+
+`STORY_BEATS`, chapter anchors, active chapter, exact sentence, chapter-local
+progress and model reveal lists are all derived from this source. Navigation
+jumps to a chapter's first sentence; reading-mode toggling preserves the exact
+sentence and restores focus. Static/reduced/no-JS exposes every sentence in
+normal flow. No wheel interception, scroll lock or autoplay clock. The runway
+is100svh +19×62svh, not20screens that each summarize an entire project.
+
+Model visibility follows each sentence's explicit model IDs. The campus begins
+alone; music/laundry appear when their inconvenience is mentioned; the agent
+hub appears when ara's integration is introduced. Reversal must reproduce exact
+same transforms and visible IDs. Same-model nearby-scroll rotation/Z and the
+cost of all sentence/chapter crossfades are separate assertions from set swaps.
+
+## Guided greeting, product screens and conclusions (2026-10-19 01:01)
+
+The owner's greeting follows the original headline as separate beats:
+“안녕하세요? 최재민입니다!” → “저는 서비스로 더 많은 사람들을 행복하게
+만들어주고 싶어요.” → “저의 이야기를 한 번 들어볼래요?”
+The factual school background now includes the owner's DB-ransomware account;
+no attack date, culprit, vulnerability or security outcome was inferred.
+
+There are36beats: intro4 / Dipull9 / Internal7 / AX7 / ara9. Stable beat IDs
+are distinct from display text. Optional `note`, `hero`, `screen`, and `link`
+fields share the narration data. Dipull shows wakeup/laundry/stay-seats/home;
+ara shows chat/documents/canvas/canvas-timeline. These are existing complete
+original-app viewports with synthetic data, NOT archival real student/company
+records. Keep visible captions/alt/versioned image paths and full image ratio.
+Actual private company screenshots are not available for publication, so both
+PFCT chapters retain meaningful 3D rather than fabricated company UI.
+
+Each non-intro conclusion has its own real detail anchor. Only the active beat's
+link is interactive/focusable; inactive beat wrappers are inert, including links
+within an otherwise active chapter. Mouse/keyboard reachability and exact
+route+hash must be checked, not merely href strings or visual opacity.
+3D disappears on product-screen beats so it does not cover the screenshot.
+Static mode must put the screenshot after the sentence it explains. Errors that
+happen before hydration need the completed-image/naturalWidth check too.
+
+`story-narrative-browser.mjs` checks all8viewports and4real clicks in Chromium
+andWebKit at390/768/1440, visible synthetic captions, uncropped native ratio,
+text/media separation, static ordering and forced image-failure fallback.
+The pointer and standard scroll-story/3D suites remain separate regressions.
+
+## Reading pace, breathing lines and decorative motion (2026-10-19 01:22 / 01:28)
+
+This supersedes the original62svh/idle0 opening contract. The owner explicitly
+requested more reading time and gentle icon motion while text stays put.
+Each beat now occupies115svh and remains fully opaque/still for80% of that
+interval (~92svh, about3.4× the old fully readable distance). At most one text
+beat paints at any scroll position; the old overlapping crossfade is no longer
+allowed. Artwork blend weights are independent from the sequential text fade.
+
+`lines` carries explicit editorial breathing points, with `lines.join(' ')`
+equal to the factual sentence. Rendering uses real newlines with pre-line;
+the greeting and invitation must remain exactly two intended lines where they
+fit. Normal line wrapping remains available to prevent narrow-screen clipping.
+
+Native scroll is not intercepted or locked. A90ms exponential visual-progress
+catch-up smooths small real wheel/touch/keyboard gestures and settles exactly;
+large direct chapter jumps and anchors stay exact. Catch-up finishing is not
+automatic story playback: the target never moves without scroll. QA waits for
+that finite catch-up before asserting stable idle text/scroll/beat.
+
+Decorative3D has bounded10–16second loops, Y±.08world units/rx±.02/ry±.06/rz±.02,
+at most20fps. It does not alter base scroll poses or story progress. Both base
+and actual animated poses are observable separately. Render loops stop on
+hidden/offscreen/reduced-motion/context loss/no-model screenshot beats/dispose.
+Static reading also disposes3D. This is the owner's explicit change from idle0,
+not permission to auto-advance text or animate screenshots.
+
+### Scroll-driven line reveals (2026-10-19 01:33)
+
+Each editorial line has its own `storyLinePose(progress,beat,line,count)`.
+Lines enter in order during the beginning of a beat, with fade and14px upward
+settling. No per-line playback timer or CSS stagger clock. At the beat anchor
+all lines are fully present, and they remain so for reading. Reverse scroll
+restores exact line transforms. The complete paragraph still exists in static,
+no-JS and reduced-motion modes; the actual line breaks are editorial data.
+
+Public prose preserves a single space on both sides of middle dots. The shared
+normalizer no longer converts them to slashes. Snapshot ingestion keeps earlier
+sources intact while adding this owner correction and the latest HOME_STORY.
+
+## AI WAF observation case (2026-10-19 02:50)
+
+The owner identified the Monitoring product as the AI WAF observation system.
+It is an independent PFCT case at `/work/pfct#ai-waf-monitoring`, also linked
+from the homepage's PFCT case list. The AX chapter adds6beats (42overall,
+5chapters/5conclusion links); it does not invent a new company/job period.
+Existing115svh reading pace, editorial line reveals, finite90ms catch-up,
+no-overlap text and decorative20fps motion remain unchanged.
+
+WAF narration uses fresh `waf-radar` / `waf-shield` / `waf-events` models appended
+to AX. Only those3are visible at its conclusion, while Lily's5models are hidden.
+These are original procedural explanatory objects, NOT screenshots of actual
+company systems. Do not put internal endpoints, IPs, thresholds, accounts,
+tokens or raw operational logs in public content or images.
+
+The existing collection/rule detection/platform and initial UI are colleagues'
+foundations. The owner's evidenced extensions include app-log evidence and
+operational signals, read-only tool investigation, alert detail and sound/UI,
+large-log aggregation and shared tool access. IP blocking is a colleague's
+implementation; the owner's contribution there is safety review. Do not claim
+single-person authorship, measured accuracy/MTTR, fully autonomous mitigation,
+or the old tool-call/time limits as current behavior.

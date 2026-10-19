@@ -55,18 +55,29 @@ export function Modal({
             'a[href], button:not([disabled]), input:not([disabled]), textarea:not([disabled]), select:not([disabled]), [tabindex="0"]',
           ),
         ].filter((element) => element.getClientRects().length > 0);
-        const first = elements[0];
-        const last = elements.at(-1);
-        if (!first || !last) {
-          event.preventDefault();
-          return;
-        }
-        if (event.shiftKey && document.activeElement === first) {
-          event.preventDefault();
-          last.focus();
-        } else if (!event.shiftKey && document.activeElement === last) {
-          event.preventDefault();
-          first.focus();
+        // WebKit can skip links when the system's full keyboard access is off.
+        // Own the complete cycle, not only its ends, so focus never leaves the modal.
+        event.preventDefault();
+        if (elements.length === 0) return;
+        const active = document.activeElement;
+        const current = active instanceof HTMLElement ? elements.indexOf(active) : -1;
+        const next = event.shiftKey
+          ? current <= 0
+            ? elements.length - 1
+            : current - 1
+          : (current + 1) % elements.length;
+        elements[next]?.focus();
+      }}
+      onClick={(event) => {
+        if (event.target !== event.currentTarget) return;
+        const bounds = event.currentTarget.getBoundingClientRect();
+        if (
+          event.clientX < bounds.left ||
+          event.clientX > bounds.right ||
+          event.clientY < bounds.top ||
+          event.clientY > bounds.bottom
+        ) {
+          closeRef.current();
         }
       }}
       onCancel={(event) => {

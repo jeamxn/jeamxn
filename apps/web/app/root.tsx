@@ -1,6 +1,5 @@
 import { portfolio } from "@jeamxn/core";
-import { colors } from "@jeamxn/token";
-import { type ReactNode, useState } from "react";
+import type { ReactNode } from "react";
 import {
   isRouteErrorResponse,
   Link,
@@ -10,22 +9,20 @@ import {
   Scripts,
   ScrollRestoration,
 } from "react-router";
-import { AssistantPanel } from "~/feature/assistant/assistant-panel";
 import { SiteShell } from "~/feature/shell/site-shell";
+import { sitePath } from "~/shared/lib/site-path";
 import type { Route } from "./+types/root";
-import "wanted-sans/fonts/webfonts/variable/split/WantedSansVariable.css";
-import "@fontsource/geist/latin-400.css";
-import "@fontsource/geist/latin-500.css";
-import geistFontUrl from "@fontsource/geist/files/geist-latin-400-normal.woff2?url";
 import "./app.css";
 
 export function links() {
   return [
+    { rel: "stylesheet", href: sitePath("/fonts/interlude/fonts.css") },
+    { rel: "stylesheet", href: sitePath("/fonts/noto-serif-kr/fonts.css") },
     {
       rel: "preload",
       as: "font",
       type: "font/woff2",
-      href: geistFontUrl,
+      href: sitePath("/fonts/interlude/InterludeVariable.subset.base.15o-z1u4_~ysk.woff2"),
       crossOrigin: "anonymous",
     },
   ];
@@ -37,8 +34,8 @@ export function Layout({ children }: { children: ReactNode }) {
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <meta name="theme-color" content={colors.fog} />
-        <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+        <meta name="theme-color" content="#f7f7f7" />
+        <link rel="icon" href={sitePath("/favicon.svg")} type="image/svg+xml" />
         <Meta />
         <Links />
       </head>
@@ -51,30 +48,21 @@ export function Layout({ children }: { children: ReactNode }) {
   );
 }
 export default function App() {
-  const [assistantOpen, setAssistantOpen] = useState(false);
   return (
-    <>
-      <SiteShell
-        email={portfolio.profile.email}
-        github={portfolio.profile.github}
-        nameEn={portfolio.profile.nameEn}
-        onAsk={() => setAssistantOpen(true)}
-      >
-        <Outlet context={{ onAsk: () => setAssistantOpen(true) }} />
-      </SiteShell>
-      <AssistantPanel
-        open={assistantOpen}
-        onClose={() => setAssistantOpen(false)}
-        data={portfolio}
-      />
-    </>
+    <SiteShell
+      email={portfolio.profile.email}
+      github={portfolio.profile.github}
+      nameEn={portfolio.profile.nameEn}
+    >
+      <Outlet />
+    </SiteShell>
   );
 }
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
   const notFound = isRouteErrorResponse(error) && error.status === 404;
   return (
     <div className="container missing-page">
-      <h1>{notFound ? "이 페이지는 찾지 못했습니다." : "페이지를 불러오지 못했습니다."}</h1>
+      <h1>{notFound ? "페이지를 찾지 못했어요." : "페이지를 불러오지 못했어요."}</h1>
       <p>
         {notFound
           ? "주소를 확인하거나 첫 화면에서 다시 살펴보세요."

@@ -14,3 +14,18 @@ test-results
 **/.env.*
 !**/.env.example
 **/.turbo
+
+# Private research ledger, sources and backups never enter Git/build contexts
+**/private-*
+**/private-*/**
+**/.activity-ledger
+**/.activity-ledger/**
+**/activity-ledger/
+**/ledger.sqlite3*
+**/*.sqlite
+**/*.sqlite3
+**/ledger-*.tar.gz
+**/original-inventory-*.json
+**/pfct-evidence.json
+**/ara-dipull-evidence.json
+**/content-source-map.json

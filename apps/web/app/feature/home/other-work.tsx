@@ -121,7 +121,7 @@ export function OtherWork({ projects }: { projects: Project[] }) {
       }}
     >
       <div className="rotation-heading">
-        <h3 id="other-work-title">그리고 이런 것들을 만들었습니다.</h3>
+        <h3 id="other-work-title">이런 것들도 만들어봤어요.</h3>
         <p>{records.length}개의 작업 기록 / 세 개씩 살펴보기</p>
       </div>
       <div className="rotation-controls">
@@ -187,7 +187,7 @@ export function OtherWork({ projects }: { projects: Project[] }) {
         {manualAnnouncement}
       </span>
       <Link className="text-link home-archive-link" to="/work">
-        작은 실험까지, 모든 작업 기록 보기 <Icon name="arrow-right" size={20} />
+        모든 작업 기록 보기 <Icon name="arrow-right" size={20} />
       </Link>
     </section>
   );

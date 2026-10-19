@@ -1,0 +1,74 @@
+name: Deploy GitHub Pages
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: github-pages
+  cancel-in-progress: true
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.33.0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24.16.0
+          cache: pnpm
+      # Settings > Pages > Source must be GitHub Actions. This workflow does not
+      # create a domain or change DNS. configure-pages detects root/project base.
+      - name: Read Pages configuration
+        id: pages
+        uses: actions/configure-pages@v5
+      - name: Keep build and test path configuration identical
+        env:
+          PAGES_BASE_PATH: ${{ steps.pages.outputs.base_path }}
+          PAGES_BASE_URL: ${{ steps.pages.outputs.base_url }}
+        run: |
+          printf 'JEAMXN_BASE_PATH=%s/\n' "$PAGES_BASE_PATH" >> "$GITHUB_ENV"
+          printf 'JEAMXN_SITE_URL=%s\n' "$PAGES_BASE_URL" >> "$GITHUB_ENV"
+      - run: pnpm install --frozen-lockfile
+      - name: Build static HTML, assets and resume PDF
+        run: pnpm build
+      - run: pnpm typecheck && pnpm lint && pnpm test && pnpm test:static
+      - name: Finalize the tested static artifact
+        run: node scripts/build-static.mjs
+      - run: node scripts/verify-media.mjs && node scripts/verify-copy.mjs
+      - run: pnpm exec playwright install --with-deps chromium
+      - name: Verify the exact Pages artifact without an API
+        env:
+          JEAMXN_BASE_PATH: ${{ steps.pages.outputs.base_path }}/
+          QA_BASE_URL: http://127.0.0.1:5414${{ steps.pages.outputs.base_path }}
+          QA_OUTPUT: test-results/pages
+        run: |
+          node scripts/serve-static.mjs --port 5414 > /tmp/jeamxn-pages.log 2>&1 &
+          preview_pid=$!
+          trap 'kill "$preview_pid" 2>/dev/null || true' EXIT
+          for attempt in $(seq 1 30); do
+            if curl --fail --silent "$QA_BASE_URL/" > /dev/null; then break; fi
+            sleep 1
+          done
+          pnpm test:pages
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: apps/web/build/client
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Publish verified static artifact
+        id: deployment
+        uses: actions/deploy-pages@v4

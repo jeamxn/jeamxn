@@ -1,5 +1,6 @@
 import type { Project } from "@jeamxn/contract";
 import { useState } from "react";
+import { sitePath } from "~/shared/lib/site-path";
 
 export function ProjectScene({
   project,
@@ -15,7 +16,7 @@ export function ProjectScene({
     >
       {project.image && !failed ? (
         <img
-          src={project.image}
+          src={sitePath(project.image)}
           alt={project.cover?.alt ?? `${project.name}의 가상 데이터 제품 예시 화면`}
           width={project.cover?.width ?? (project.slug === "ara" ? 1920 : 1440)}
           height={project.cover?.height ?? (project.slug === "ara" ? 1200 : 1000)}
@@ -28,8 +29,8 @@ export function ProjectScene({
           <span className="scene-line" />
           <span className="scene-fallback-caption">
             {project.slug === "ara"
-              ? "대화에서 작업으로, 하나의 공간에서."
-              : "학교의 하루를 조금 더 편하게."}
+              ? "AI와 대화하고 결과물을 편집하는 작업공간"
+              : "기상송 신청과 세탁 예약을 모은 교내 서비스"}
           </span>
         </div>
       )}

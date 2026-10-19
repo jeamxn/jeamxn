@@ -7,13 +7,16 @@
     "node": ">=24"
   },
   "scripts": {
-    "dev": "turbo dev --filter=@jeamxn/server --filter=@jeamxn/web",
-    "build": "turbo build && node scripts/generate-sitemap.mjs",
+    "dev": "pnpm build && pnpm --filter @jeamxn/web dev",
+    "build": "turbo build && node scripts/build-static.mjs",
     "typecheck": "turbo typecheck",
     "lint": "biome check --error-on-warnings . && node scripts/check-boundary.mjs",
     "lint:fix": "biome check --write .",
     "test": "turbo test",
-    "test:e2e": "node scripts/verify-browser.mjs"
+    "test:e2e": "node scripts/verify-browser.mjs",
+    "preview": "node scripts/serve-static.mjs",
+    "test:pages": "node scripts/verify-pages.mjs",
+    "test:static": "node --test tests/*.test.mjs"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.5.7",

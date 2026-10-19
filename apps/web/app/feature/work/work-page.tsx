@@ -3,6 +3,7 @@ import { Icon } from "@jeamxn/icon";
 import { Link } from "react-router";
 import { safeHref } from "~/shared/lib/meta";
 import { projectMedia, projectScreens } from "~/shared/lib/project-media";
+import { sitePath } from "~/shared/lib/site-path";
 import { ProductGallery } from "~/shared/widget/product-gallery";
 import { ProjectScene } from "~/shared/widget/project-scene";
 import { StoryReader } from "~/shared/widget/story-reader";
@@ -85,20 +86,20 @@ export function WorkPage({ project, next }: { project: Project; next?: Project }
             controls
             playsInline
             preload="none"
-            poster={media.video.poster}
+            poster={sitePath(media.video.poster)}
             width={media.video.width}
             height={media.video.height}
             aria-label={media.video.alt}
           >
-            <source src={media.video.src} type="video/mp4" />
+            <source src={sitePath(media.video.src)} type="video/mp4" />
             <track
               kind="captions"
-              src={media.video.captions}
+              src={sitePath(media.video.captions)}
               srcLang="ko"
               label="한국어 설명"
               default
             />
-            이 브라우저는 영상을 지원하지 않습니다. 위의 제품 예시 화면을 살펴보세요.
+            이 브라우저에서는 영상을 재생할 수 없어요. 위의 제품 예시 화면을 살펴보세요.
           </video>
           <figcaption>{media.video.caption}</figcaption>
         </figure>
@@ -120,7 +121,7 @@ export function WorkPage({ project, next }: { project: Project; next?: Project }
             {project.links.map((link) => (
               <a
                 key={link.href}
-                href={safeHref(link.href)}
+                href={sitePath(safeHref(link.href))}
                 target="_blank"
                 rel="noreferrer"
                 className="text-link"

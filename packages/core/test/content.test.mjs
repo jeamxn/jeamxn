@@ -1,11 +1,20 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { portfolioSchema } from "@jeamxn/contract";
-import { createPublicKnowledge, portfolio } from "../dist/index.js";
+import { portfolio } from "../dist/index.js";
 
-test("public content validates and the assistant receives only the same public object", () => {
+// Inspect factual public copy locally; there is no assistant runtime/export.
+const publicContent = () =>
+  JSON.stringify(portfolio, (key, value) => (key === "draftThought" ? undefined : value));
+
+test("public content validates without changing its approved project structure", () => {
   assert.deepEqual(portfolioSchema.parse(portfolio), portfolio);
-  assert.deepEqual(JSON.parse(createPublicKnowledge()), portfolio);
+  assert.deepEqual(
+    JSON.parse(publicContent()),
+    JSON.parse(
+      JSON.stringify(portfolio, (key, value) => (key === "draftThought" ? undefined : value)),
+    ),
+  );
   assert.equal(new Set(portfolio.projects.map((p) => p.slug)).size, portfolio.projects.length);
   assert.deepEqual(
     portfolio.projects.filter((p) => p.featured).map((p) => p.slug),
@@ -21,7 +30,7 @@ test("public assets and links are safe and disclosure scope is explicit", () => 
   assert.match(portfolio.projects[0].status, /실험/);
   assert.match(portfolio.projects[1].status, /미확인/);
   assert.match(portfolio.projects.find((p) => p.slug === "yun").status, /가족/);
-  const text = createPublicKnowledge();
+  const text = publicContent();
   for (const bad of ["lily.pfct.kr", "/Users/", "threadId="])
     assert.equal(text.includes(bad), false);
 });
@@ -69,9 +78,17 @@ test("product screens have byte-versioned URLs and correct native dimensions", (
   }
 });
 
-test("public copy uses straight apostrophes and spaced slashes instead of middle dots", () => {
-  const text = createPublicKnowledge();
-  assert.doesNotMatch(text, /[‘’·]/u);
+test("public copy uses straight apostrophes and one space on both sides of middle dots", () => {
+  const text = publicContent();
+  assert.doesNotMatch(text, /[‘’]/u);
+  for (const match of text.matchAll(/·/gu)) {
+    const i = match.index;
+    assert.equal(text[i - 1], " ");
+    assert.equal(text[i + 1], " ");
+    assert.notEqual(text[i - 2], " ");
+    assert.notEqual(text[i + 2], " ");
+  }
+  assert.match(text, /개발 · 업무/u);
   assert.match(text, /일정 \/ 회의실/u);
 });
 
@@ -85,4 +102,25 @@ test("representatives are ara, Dipull, PFCT and KT SAT without treating a talk a
     ["kt-sat-ax"],
   );
   assert.equal(portfolio.projects.filter((project) => !project.featured).length, 83);
+});
+
+test("certificate issuers preserve the owner's corrected Linux Master authority", () => {
+  const linux = portfolio.awards.find((item) => item.title === "리눅스마스터 2급");
+  const network = portfolio.awards.find((item) => item.title === "네트워크관리사 2급");
+  assert.equal(linux.organization, "한국정보통신진흥협회");
+  assert.equal(linux.year, "2022");
+  assert.equal(network.organization, "한국정보통신자격협회");
+});
+
+test("AI WAF is a discoverable PFCT case with explicit shared foundations and contribution boundaries", () => {
+  const pfct = portfolio.projects.find((project) => project.slug === "pfct");
+  assert.match(pfct.summary, /AI WAF 관제/u);
+  const section = pfct.sections.find((section) => section.id === "ai-waf-monitoring");
+  assert.ok(section);
+  const text = section.paragraphs.join(" ");
+  for (const term of ["Elastic", "Sentry", "Grafana", "읽기 도구", "민감한 값", "IP 차단", "리뷰"])
+    assert.ok(text.includes(term), term);
+  assert.match(text, /기존 WAF 로그 수집과 규칙 탐지 기반/u);
+  assert.doesNotMatch(text, /완전 자동|정확도|100%|8회|120초/u);
+  assert.doesNotMatch(text, /peoplefund-tech|pfct\.(kr|io)|arn:aws|\b(?:\d{1,3}\.){3}\d{1,3}\b/u);
 });

@@ -33,7 +33,7 @@ function ScreenImage({ screen, large = false }: { screen: ProjectScreen; large?:
       {status !== "ready" || !src ? (
         <div className="screen-image-status" role="status">
           <p>
-            {failed ? `${screen.title} 화면을 불러오지 못했습니다.` : `${screen.title} 불러오는 중`}
+            {failed ? `${screen.title} 화면을 불러오지 못했어요.` : `${screen.title} 불러오는 중`}
           </p>
           {failed && src && (
             <button
@@ -47,7 +47,7 @@ function ScreenImage({ screen, large = false }: { screen: ProjectScreen; large?:
               다시 불러오기
             </button>
           )}
-          {failed && <p>다른 화면을 선택하거나 잠시 후 다시 확인해 주세요.</p>}
+          {failed && <p>다른 화면을 선택하거나 잠시 뒤 다시 불러와 주세요.</p>}
         </div>
       ) : null}
     </div>
@@ -57,8 +57,8 @@ function ScreenImage({ screen, large = false }: { screen: ProjectScreen; large?:
 export function ProductGallery({
   name,
   screens,
-  heading = "제품의 화면을 살펴보세요",
-  description = "화면을 선택해 기능을 살펴보고, 크게 열어 자세히 볼 수 있습니다.",
+  heading = "제품 화면",
+  description = "아래에서 화면을 선택하거나 크게 열어 자세히 볼 수 있어요.",
 }: {
   name: string;
   screens: ProjectScreen[];
@@ -93,8 +93,16 @@ export function ProductGallery({
     // newly selected screen back into view rather than updating it offscreen.
     requestAnimationFrame(() => {
       const figure = currentFigure.current;
-      if (figure && figure.getBoundingClientRect().top < 100)
-        figure.scrollIntoView({ block: "start", behavior: "instant" });
+      if (
+        figure &&
+        (figure.getBoundingClientRect().top < 100 ||
+          figure.getBoundingClientRect().top > window.innerHeight * 0.7)
+      ) {
+        window.scrollTo({
+          top: window.scrollY + figure.getBoundingClientRect().top - 100,
+          behavior: "instant",
+        });
+      }
     });
   }
   function selectScreen(index: number) {

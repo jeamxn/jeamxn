@@ -6,7 +6,7 @@ import ts from "typescript";
 const root = fileURLToPath(new URL("../", import.meta.url));
 const slash = (value) => value.split(path.sep).join("/");
 const relative = (file) => slash(path.relative(root, file));
-const roots = ["apps/server/src", "apps/web/app", "packages"];
+const roots = ["apps/web/app", "packages"];
 const files = [];
 async function walk(directory) {
   let entries;
@@ -33,15 +33,11 @@ for (const directory of roots) await walk(path.join(root, directory));
 function targetOf(file, specifier) {
   if (specifier.startsWith(".")) return relative(path.resolve(path.dirname(file), specifier));
   if (specifier.startsWith("~/")) return `apps/web/app/${specifier.slice(2)}`;
-  if (specifier.startsWith("#")) return `apps/server/src/${specifier.slice(1)}`;
   if (specifier.startsWith("@jeamxn/")) return `packages/${specifier.slice("@jeamxn/".length)}/src`;
   return undefined;
 }
 function featureOf(file) {
   return /^apps\/web\/app\/feature\/([^/]+)(?:\/|$)/.exec(file)?.[1];
-}
-function domainOf(file) {
-  return /^apps\/server\/src\/([^/]+)\//.exec(file)?.[1];
 }
 const errors = [];
 for (const file of files) {
@@ -66,6 +62,8 @@ for (const file of files) {
       const target = targetOf(file, literal.text);
       const violations = [];
       if (target) {
+        if (sourceName.startsWith("apps/web/app/") && target.startsWith("packages/resume-pdf/"))
+          violations.push("build-only PDF generator must never enter the browser");
         const sourceFeature = featureOf(sourceName);
         const targetFeature = featureOf(target);
         if (sourceFeature && targetFeature && sourceFeature !== targetFeature) {
@@ -84,17 +82,6 @@ for (const file of files) {
             violations.push("public core cannot import private/interview data");
           }
         }
-        const sourceDomain = domainOf(sourceName);
-        const targetDomain = domainOf(target);
-        if (
-          sourceDomain &&
-          targetDomain &&
-          sourceDomain !== targetDomain &&
-          sourceDomain !== "shared" &&
-          targetDomain !== "shared" &&
-          !/\.public(?:\.[cm]?[jt]s)?$/.test(target)
-        )
-          violations.push("enter another server domain only through its *.public module");
       }
       for (const violation of violations) {
         const { line } = source.getLineAndCharacterOfPosition(literal.getStart(source));

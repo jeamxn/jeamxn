@@ -3,7 +3,7 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import { chromium } from "playwright";
 
-const base = process.env.QA_BASE_URL ?? "http://127.0.0.1:5410";
+const base = (process.env.QA_BASE_URL ?? "http://127.0.0.1:5410").replace(/\/$/, "");
 const output = path.resolve(process.env.QA_OUTPUT ?? "test-results/gallery");
 await fs.mkdir(output, { recursive: true });
 const browser = await chromium.launch({
@@ -179,7 +179,11 @@ try {
       const destination = await page.locator(".next-work").getAttribute("href");
       const nextTitle = await page.locator(".next-work strong").innerText();
       await page.locator(".next-work").click();
-      await page.waitForURL(`**${destination}`);
+      await page.waitForURL(
+        (url) =>
+          url.pathname.replace(/\/$/, "") ===
+          new URL(destination, base).pathname.replace(/\/$/, ""),
+      );
       await page.getByRole("heading", { level: 1, name: nextTitle, exact: true }).waitFor();
       assert.equal(
         await page.locator('.screen-thumbnail[aria-pressed="true"]').count(),

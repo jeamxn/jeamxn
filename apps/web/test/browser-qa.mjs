@@ -4,25 +4,36 @@ import { portfolio } from "@jeamxn/core";
 import { chromium } from "playwright";
 
 const output = process.env.QA_OUTPUT ?? "/tmp/jeamxn-renewal/web-qa";
-const base = process.env.QA_BASE ?? "http://localhost:5410";
+const base = (process.env.QA_BASE_URL ?? process.env.QA_BASE ?? "http://localhost:5410").replace(
+  /\/$/,
+  "",
+);
 await mkdir(output, { recursive: true });
+const basePath = new URL(base).pathname.replace(/\/$/, "");
+const sitePath = (route) => `${basePath}${route}`;
 const browser = await chromium.launch(
   process.env.QA_BROWSER_PATH
     ? { executablePath: process.env.QA_BROWSER_PATH, headless: true }
-    : { channel: "chrome", headless: true },
+    : { headless: true },
 );
 const results = [];
 const faults = [];
+const apiRequests = [];
 for (const width of [390, 768, 1440]) {
   const page = await browser.newPage({
     viewport: { width, height: 1000 },
     deviceScaleFactor: 1,
     reducedMotion: "reduce",
   });
+  page.on("request", (request) => {
+    if (/(?:^|\/)api(?:\/|$)/u.test(new URL(request.url()).pathname))
+      apiRequests.push(request.url());
+  });
   page.on("pageerror", (error) => faults.push({ width, error: error.message }));
   for (const route of [
     "/",
     "/about",
+    "/work",
     "/work/ara",
     "/work/dipull",
     "/work/pfct",
@@ -32,7 +43,13 @@ for (const width of [390, 768, 1440]) {
     "/activity/kt-sat-ax",
     "/resume",
   ]) {
-    await page.goto(`${base}${route}`, { waitUntil: "networkidle" });
+    const response = await page.goto(`${base}${route}`, { waitUntil: "networkidle" });
+    assert.equal(response?.status(), 200, `${route} status`);
+    assert.equal(
+      await page.locator(".assistant-trigger,.header-ask,.ask-inline,.assistant-modal").count(),
+      0,
+      "removed answer UI",
+    );
     await page.evaluate(() => document.fonts.ready);
     for (const image of await page.locator("main img").all()) {
       await image.scrollIntoViewIfNeeded();
@@ -48,9 +65,12 @@ for (const width of [390, 768, 1440]) {
         .filter((image) => !image.complete || !image.naturalWidth)
         .map((image) => image.src),
       font: getComputedStyle(document.body).fontFamily,
-      heroAnimation: document.querySelector(".hero-name")
-        ? getComputedStyle(document.querySelector(".hero-name")).animationName
-        : null,
+      reducedStory: {
+        enhanced: document.querySelector(".scroll-story")?.dataset.enhanced,
+        animatedTools: [...document.querySelectorAll(".story-tool")].filter(
+          (node) => getComputedStyle(node).animationName !== "none",
+        ).length,
+      },
       overflowing: [...document.querySelectorAll("main *")]
         .filter((el) => {
           const box = el.getBoundingClientRect();
@@ -69,7 +89,18 @@ for (const width of [390, 768, 1440]) {
       `${route} at ${width}: horizontal overflow ${JSON.stringify(measurements)}`,
     );
     assert.deepEqual(measurements.imageFailures, [], `${route} broken images`);
-    if (route === "/") assert.equal(measurements.heroAnimation, "none");
+    if (route === "/") {
+      assert.notEqual(
+        measurements.reducedStory.enhanced,
+        "true",
+        "reduced motion uses normal-flow story",
+      );
+      assert.equal(
+        measurements.reducedStory.animatedTools,
+        0,
+        "reduced motion stops decorative movement",
+      );
+    }
     const source = route.startsWith("/work/")
       ? portfolio.projects.find((item) => `/work/${item.slug}` === route)
       : portfolio.activities.find((item) => `/activity/${item.slug}` === route);
@@ -129,17 +160,19 @@ for (const width of [390, 768, 1440]) {
         Number(await page.locator(".work-rotation").getAttribute("data-record-count")),
         portfolio.projects.filter((project) => !project.featured).length,
       );
-      assert.equal(await page.locator(".home-company-stories article").count(), 3);
-      assert.ok(await page.locator('.home-company a[href="/work/pfct"]').count());
+      assert.equal(await page.locator(".home-company-stories article").count(), 4);
+      assert.ok(await page.locator(`.home-company a[href="${sitePath("/work/pfct")}"]`).count());
       assert.ok((await page.locator(".home-company").textContent()).length > 500);
-      assert.ok(await page.locator('a[href="/activity/kt-sat-ax"]').count());
+      assert.ok(await page.locator(`a[href="${sitePath("/activity/kt-sat-ax")}"]`).count());
     }
-    if (route === "/resume") assert.ok(await page.locator('a[href="/activity/kt-sat-ax"]').count());
+    if (route === "/resume")
+      assert.ok(await page.locator(`a[href="${sitePath("/activity/kt-sat-ax")}"]`).count());
     results.push({ width, route, ...measurements });
     if (
       [
         "/",
         "/about",
+        "/work",
         "/work/ara",
         "/work/dipull",
         "/work/pfct",
@@ -153,60 +186,6 @@ for (const width of [390, 768, 1440]) {
       });
   }
   await page.goto(base, { waitUntil: "networkidle" });
-  await page.route("**/api/assistant/status", (route) =>
-    route.fulfill({
-      status: 200,
-      contentType: "application/json",
-      body: JSON.stringify({ mode: "local", label: "자주 묻는 질문" }),
-    }),
-  );
-  await page.route("**/api/assistant/chat", async (route) => {
-    const body = route.request().postDataJSON();
-    assert.ok(body.messages.length <= 10);
-    assert.ok(body.messages.reduce((sum, message) => sum + message.content.length, 0) <= 6000);
-    await new Promise((resolve) => setTimeout(resolve, 100));
-    await route.fulfill({
-      status: 200,
-      contentType: "application/json",
-      body: JSON.stringify({
-        answer: "공개 내용에서 안내하는 ara입니다.\n\n가상 데이터로 검증합니다.",
-        sources: [{ label: "ara", href: "/work/ara" }],
-        mode: "local",
-      }),
-    });
-  });
-  const trigger = page.locator(".assistant-trigger");
-  await trigger.click();
-  const dialog = page.locator(".assistant-modal");
-  await dialog.waitFor({ state: "visible" });
-  assert.equal(await page.evaluate(() => document.body.style.overflow), "hidden");
-  assert.equal(
-    await page.evaluate(() => document.activeElement?.getAttribute("aria-label")),
-    "대화 닫기",
-  );
-  for (let count = 0; count < 12; count++) {
-    await page.keyboard.press("Tab");
-    assert.ok(
-      await page.evaluate(() => Boolean(document.activeElement?.closest("dialog"))),
-      `focus escaped ${width}`,
-    );
-  }
-  await page.locator(".send-button").click();
-  await page.getByText("궁금한 내용을 입력해 주세요.", { exact: true }).first().waitFor();
-  await page.getByRole("button", { name: "ara는 어떻게 시작했나요?" }).click();
-  await page.locator(".message--assistant").waitFor();
-  assert.equal(
-    await page.locator(".message--assistant .message-label").innerText(),
-    "공개 내용 안내",
-  );
-  await page.screenshot({ path: `${output}/assistant-${width}.png` });
-  await page.keyboard.press("Escape");
-  await dialog.waitFor({ state: "hidden" });
-  assert.equal(await page.evaluate(() => document.body.style.overflow), "");
-  assert.ok(
-    await trigger.evaluate((el) => el === document.activeElement),
-    "trigger focus not restored",
-  );
   if (width === 390) {
     const menu = page.getByRole("button", { name: "메뉴 열기" });
     await menu.click();
@@ -228,6 +207,10 @@ for (const width of [390, 768, 1440]) {
   await page.close();
 }
 assert.deepEqual(faults, [], "browser runtime faults");
+assert.deepEqual(apiRequests, [], "static portfolio does not request APIs");
 await browser.close();
-await writeFile(`${output}/results.json`, JSON.stringify({ results, faults }, null, 2));
+await writeFile(
+  `${output}/results.json`,
+  JSON.stringify({ base, results, faults, apiRequests }, null, 2),
+);
 console.log(JSON.stringify({ screenshots: output, routes: results.length, faults }, null, 2));

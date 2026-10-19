@@ -1,3 +1,5 @@
+import { sitePath } from "~/shared/lib/site-path";
+
 export function Portrait({
   src,
   className = "",
@@ -10,8 +12,8 @@ export function Portrait({
   return (
     <div className={`portrait ${className}`}>
       <img
-        src={src}
-        srcSet="/images/portrait-small.webp 720w, /images/portrait.webp 1800w"
+        src={sitePath(src)}
+        srcSet={`${sitePath("/images/portrait-small.webp")} 720w, ${sitePath("/images/portrait.webp")} 1800w`}
         sizes="(max-width: 600px) 82vw, 50vw"
         alt="최재민의 인물 사진"
         width="1800"

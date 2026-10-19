@@ -4,7 +4,12 @@ import { portfolio } from "@jeamxn/core";
 import { chromium } from "playwright";
 import { archiveRecords } from "../app/shared/lib/work-archive.ts";
 
-const base = process.env.QA_BASE_URL ?? process.env.QA_BASE ?? "http://127.0.0.1:5410";
+const base = (process.env.QA_BASE_URL ?? process.env.QA_BASE ?? "http://127.0.0.1:5410").replace(
+  /\/$/,
+  "",
+);
+const basePath = new URL(base).pathname.replace(/\/$/, "");
+const sitePath = (route) => `${basePath}${route}`;
 const output = process.env.QA_OUTPUT ?? "/tmp/jeamxn-catalog-v4/archive-qa";
 await mkdir(output, { recursive: true });
 const browser = await chromium.launch({
@@ -31,18 +36,20 @@ try {
     assert.ok(measurements.pageWidth <= width + 1, JSON.stringify(measurements));
     const search = page.getByRole("searchbox");
     await search.fill("없는 검색어 검증");
-    await page.getByRole("heading", { name: "일치하는 기록이 없습니다." }).waitFor();
+    await page.getByRole("heading", { name: "일치하는 기록이 없어요." }).waitFor();
     assert.match(page.url(), /q=/);
     await page.getByRole("button", { name: "모든 기록 보기", exact: true }).click();
     await page.locator(".archive-record").first().waitFor();
     assert.equal(await page.locator(".archive-record").count(), portfolio.projects.length);
     await search.fill("aRa");
     await page.waitForFunction(
-      () =>
+      (href) =>
+        new URLSearchParams(location.search).get("q") === "aRa" &&
         document.querySelectorAll(".archive-record").length > 0 &&
         [...document.querySelectorAll(".archive-record")].some(
-          (link) => link.getAttribute("href") === "/work/ara",
+          (link) => link.getAttribute("href") === href,
         ),
+      sitePath("/work/ara"),
     );
     await page.reload({ waitUntil: "networkidle" });
     assert.equal(await search.inputValue(), "aRa");
@@ -81,7 +88,7 @@ try {
         await page
           .locator(".archive-record")
           .evaluateAll((links) => links.map((link) => link.getAttribute("href"))),
-        expected.map((project) => `/work/${project.slug}`),
+        expected.map((project) => sitePath(`/work/${project.slug}`)),
         query,
       );
       assert.equal(
@@ -129,14 +136,14 @@ try {
     }
   }
   await page.goto(base, { waitUntil: "networkidle" });
-  assert.ok((await page.locator('a[href="/work"]').count()) > 0);
+  assert.ok((await page.locator(`a[href="${sitePath("/work")}"]`).count()) > 0);
   assert.equal(await page.locator(".other-work .rotation-batch .work-row").count(), 3);
   assert.equal(
     Number(await page.locator(".work-rotation").getAttribute("data-record-count")),
     portfolio.projects.filter((project) => !project.featured).length,
   );
   assert.equal(await page.locator(".selected-work > .featured").count(), 4);
-  assert.equal(await page.locator(".home-company-stories article").count(), 3);
+  assert.equal(await page.locator(".home-company-stories article").count(), 4);
   assert.deepEqual(errors, []);
   await writeFile(
     `${output}/results.json`,

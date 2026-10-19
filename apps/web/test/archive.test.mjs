@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { portfolio } from "@jeamxn/core";
+import { portfolio, resumeProjects } from "@jeamxn/core";
 import {
   archiveRecords,
   observedYear,
@@ -15,9 +15,12 @@ test("archive exposes every public record by default, with no featured or six-it
     new Set(records.map((project) => project.slug)),
     new Set(portfolio.projects.map((project) => project.slug)),
   );
+  const selected = resumeProjects(portfolio.projects);
+  assert.deepEqual(records.slice(0, selected.length), selected);
+  const rest = records.slice(selected.length);
   assert.ok(
-    records.every(
-      (project, index) => !index || observedYear(records[index - 1]) >= observedYear(project),
+    rest.every(
+      (project, index) => !index || observedYear(rest[index - 1]) >= observedYear(project),
     ),
   );
 });
@@ -54,5 +57,48 @@ test("collection and record type filters reflect metadata independently", () => 
           projectRecordType(record) === projectRecordType(project),
       ),
     );
+  }
+});
+
+test("resume-selected works stay pinned in the same order under both archive sorts", () => {
+  const pinned = resumeProjects(portfolio.projects).map((project) => project.slug);
+  assert.deepEqual(pinned, ["ara", "pfct", "dipull"]);
+  for (const sort of ["recent", "name"]) {
+    const records = archiveRecords(portfolio.projects, new URLSearchParams({ sort }));
+    assert.deepEqual(
+      records.slice(0, pinned.length).map((project) => project.slug),
+      pinned,
+    );
+    const rest = records.slice(pinned.length);
+    assert.ok(rest.every((project) => !pinned.includes(project.slug)));
+    if (sort === "name")
+      assert.deepEqual(
+        rest.map((project) => project.name),
+        rest.map((project) => project.name).toSorted((a, b) => a.localeCompare(b, "ko")),
+      );
+  }
+});
+
+test("pinning never bypasses query, collection or type filters", () => {
+  const selected = resumeProjects(portfolio.projects);
+  for (const params of [
+    new URLSearchParams({ q: "missing-pinned-project" }),
+    new URLSearchParams({ q: "dipull", sort: "name" }),
+    new URLSearchParams({ collection: "company" }),
+    new URLSearchParams({ collection: "school" }),
+    new URLSearchParams({ type: "experiment" }),
+  ]) {
+    const result = archiveRecords(portfolio.projects, params);
+    const expected = selected.filter((project) => archiveRecords([project], params).length);
+    assert.deepEqual(
+      result.slice(0, expected.length).map((project) => project.slug),
+      expected.map((project) => project.slug),
+    );
+    for (const project of selected)
+      assert.equal(
+        result.some((record) => record.slug === project.slug),
+        expected.includes(project),
+      );
+    assert.equal(new Set(result.map((project) => project.slug)).size, result.length);
   }
 });

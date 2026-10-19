@@ -10,3 +10,21 @@ playwright-report/
 test-results/
 .DS_Store
 *.tsbuildinfo
+
+# Private research ledger, sources and backups never enter Git/build contexts
+**/private-*
+**/private-*/**
+**/.activity-ledger
+**/.activity-ledger/**
+**/activity-ledger/
+**/ledger.sqlite3*
+**/*.sqlite
+**/*.sqlite3
+**/ledger-*.tar.gz
+**/original-inventory-*.json
+**/pfct-evidence.json
+**/ara-dipull-evidence.json
+**/content-source-map.json
+
+# Generated at build time from public content; never a server response
+apps/web/public/resume.pdf
