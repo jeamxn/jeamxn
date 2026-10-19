@@ -1,6 +1,10 @@
 # jeamxn workspace
 
 Read agent.md and docs/architecture.md, development.md, content.md, deployment.md.
+
+Root README.md is the owner's GitHub profile README. Preserve it byte-for-byte;
+portfolio development/deployment documentation belongs in docs/portfolio.md, not
+the root README. Do not replace the profile with project setup documentation.
 This is an independent public portfolio, not a copy of private product source.
 
 Static React Router app only. There is no backend, API client, AI response panel,

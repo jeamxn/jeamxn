@@ -4,6 +4,11 @@
 `docs/content.md`를 먼저 읽는다. 활동 근거 저장/이어 조사는
 `docs/activity-ledger.md`와 `scripts/activity-ledger.py`를 사용한다.
 
+## GitHub 프로필 README 보존
+
+루트 `README.md`는 `github.com/jeamxn` 프로필에 표시된다. 기존 프로필 원문은
+그대로 보존하며 포트폴리오 개발·배포 안내는 `docs/portfolio.md`와 `docs/`에 둔다.
+
 ## 정적 배포 구조 (2026-10-19)
 
 AI 답변·정적 FAQ 대화 기능은 사용자 요청으로 코드에서 제거했다. 질문 UI/API/모델 키/
