@@ -28,13 +28,6 @@ export function StoryReader({ sections }: { sections: StorySection[] }) {
             {section.paragraphs.map((paragraph) => (
               <p key={paragraph}>{paragraph}</p>
             ))}
-            {section.draftThought && (
-              <aside className="story-thought-draft" aria-label="당시 생각 추정 초안">
-                <span>생각 초안 · 커밋에서 추정</span>
-                <p>{section.draftThought}</p>
-                <small>확인된 발언이 아니라 작업 내용을 바탕으로 쓴 초안이에요.</small>
-              </aside>
-            )}
           </section>
         ))}
       </div>

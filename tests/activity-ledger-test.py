@@ -40,7 +40,7 @@ class LedgerTest(unittest.TestCase):
         return ledger.import_file(self.con, path, kind)
 
     def test_idempotence_source_bytes_and_review_preserved(self):
-        data = {'projects': [{'slug': 'ara', 'name': 'ara', 'sections': [{'id': 'x', 'draftThought': 'draft'}]}], 'activities': []}
+        data = {'projects': [{'slug': 'ara', 'name': 'ara', 'sections': [{'id': 'x'}]}], 'activities': []}
         self.source('public.json', data, 'portfolio')
         self.con.execute("UPDATE activities SET user_notes='edited by owner',review_state='owner-reviewed'")
         self.con.commit()
