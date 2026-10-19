@@ -1145,8 +1145,18 @@
 .scroll-story[data-enhanced="true"] .story-sentence--screen {
   font-size: clamp(26px, 2.7vw, 44px);
 }
+.scroll-story[data-enhanced="true"] [data-intro-portrait] {
+  opacity: var(--portrait-opacity, 1);
+  translate: 0 var(--portrait-y, 0px);
+}
 .scroll-story[data-enhanced="true"] [data-intro-portrait][aria-hidden="true"] {
   visibility: hidden;
+}
+@media (prefers-reduced-motion: reduce), print {
+  .scroll-story[data-enhanced="true"] [data-intro-portrait] {
+    opacity: 1;
+    translate: none;
+  }
 }
 .scroll-story[data-enhanced="true"] .story-sentence[aria-hidden="true"] .story-detail-link {
   pointer-events: none;

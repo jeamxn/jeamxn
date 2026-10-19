@@ -5,6 +5,7 @@ import {
   activeBeat,
   activeStory,
   beatScrollTarget,
+  portraitPose,
   STORY_BEAT_TRAVEL_SVH,
   STORY_BEATS,
   sentencePose,
@@ -30,6 +31,7 @@ export function ScrollStory({ data }: { data: Portfolio }) {
   const lastProgress = useRef(0);
   const panels = useRef<(HTMLElement | null)[]>([]);
   const sentences = useRef<(HTMLElement | null)[]>([]);
+  const portrait = useRef<HTMLDivElement | null>(null);
   const media = useRef<(HTMLElement | null)[]>([]);
   const lines = useRef<(HTMLElement | null)[][]>([]);
   const [still, setStill] = useState(false);
@@ -189,6 +191,12 @@ export function ScrollStory({ data }: { data: Portfolio }) {
           node.style.setProperty("--line-opacity", String(pose.opacity));
           node.style.setProperty("--line-y", `${pose.y}px`);
         }
+      }
+      // The opening portrait leaves with the headline instead of vanishing at the beat switch.
+      if (portrait.current) {
+        const pose = portraitPose(progress);
+        portrait.current.style.setProperty("--portrait-opacity", String(pose.opacity));
+        portrait.current.style.setProperty("--portrait-y", `${pose.y}px`);
       }
       for (const [index, figure] of media.current.entries()) {
         if (!figure) continue;
@@ -450,6 +458,7 @@ export function ScrollStory({ data }: { data: Portfolio }) {
                 <div
                   className="scroll-story-person-media"
                   data-intro-portrait
+                  ref={portrait}
                   aria-hidden={enhanced && beat !== 0 ? true : undefined}
                 >
                   <Portrait src={profile.portrait} className="scroll-story-portrait" priority />

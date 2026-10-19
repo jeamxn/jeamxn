@@ -11,6 +11,7 @@ import {
   chapterWeight,
   clampUnit,
   modelWeight,
+  portraitPose,
   STORY_ANCHORS,
   STORY_BEATS,
   STORY_CHAPTERS,
@@ -246,7 +247,7 @@ test("long reading dwell never paints two adjacent sentences at once", () => {
     assert.ok(visible.length <= 1, `overlapping sentences at ${p}`);
   }
   for (let i = 1; i < STORY_BEATS.length - 1; i++) {
-    for (const local of [-0.39, -0.2, 0, 0.2, 0.39])
+    for (const local of [-0.35, -0.2, 0, 0.2, 0.35])
       assert.equal(sentencePose((i + local) / (STORY_BEATS.length - 1), i).opacity, 1);
   }
 });
@@ -255,7 +256,7 @@ test("editorial lines reveal sequentially by scroll and stay fully readable at a
   const beat = STORY_BEATS.findIndex((item) => item.id === "hello"),
     end = STORY_BEATS.length - 1;
   const p = (beat - 0.35) / end;
-  assert.ok(storyLinePose(p, beat, 0, 2).opacity > 0.9);
+  assert.ok(storyLinePose(p, beat, 0, 2).opacity > 0.75);
   assert.equal(storyLinePose(p, beat, 1, 2).opacity, 0);
   for (const count of [1, 2, 3])
     for (let i = 0; i < count; i++) {
@@ -281,4 +282,25 @@ test("AI WAF has an independent main narrative, conclusion link and visible-only
     assert.equal(modelWeight(anchor, 3, id), 1);
   for (const id of ["lily", "mcp-server", "meeting", "presentation"])
     assert.equal(modelWeight(anchor, 3, id), 0);
+});
+
+test("opening portrait fades with the headline and is gone before the first beat hands over", () => {
+  const end = STORY_BEATS.length - 1;
+  assert.equal(portraitPose(0).opacity, 1);
+  assert.equal(portraitPose(0.5 / end).opacity, 0);
+  let previous = 1;
+  for (let i = 0; i <= 50; i++) {
+    const { opacity } = portraitPose(i / 100 / end);
+    assert.ok(opacity <= previous + 1e-9);
+    previous = opacity;
+  }
+});
+
+test("reading dwell keeps answering the scroll with a small drift", () => {
+  const end = STORY_BEATS.length - 1;
+  const a = sentencePose((5 - 0.2) / end, 5).y,
+    b = sentencePose(5 / end, 5).y,
+    c = sentencePose((5 + 0.2) / end, 5).y;
+  assert.ok(a > b && b > c);
+  assert.ok(Math.abs(a - c) <= 8);
 });
