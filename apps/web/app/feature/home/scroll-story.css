@@ -1004,6 +1004,7 @@
   align-self: center;
   opacity: var(--sentence-opacity, 0);
   transform: translate3d(0, var(--sentence-y, 0px), 0);
+  filter: blur(calc((1 - var(--sentence-opacity, 0)) * 5px));
 }
 .scroll-story[data-enhanced="true"] .story-reading-position {
   margin-top: 30px;
@@ -1030,6 +1031,7 @@
   .scroll-story[data-enhanced="true"] .story-sentence {
     opacity: 1;
     transform: none;
+    filter: none;
     margin-bottom: 24px;
   }
 }
@@ -1274,10 +1276,13 @@
 .scroll-story[data-enhanced="true"] .story-line {
   opacity: var(--line-opacity, 1);
   transform: translate3d(0, var(--line-y, 0px), 0);
+  /* Lines come into focus as they rise; fully read lines carry no filter. */
+  filter: blur(calc((1 - var(--line-opacity, 1)) * 7px));
 }
 @media (prefers-reduced-motion: reduce), print {
   .scroll-story[data-enhanced="true"] .story-line {
     opacity: 1;
     transform: none;
+    filter: none;
   }
 }

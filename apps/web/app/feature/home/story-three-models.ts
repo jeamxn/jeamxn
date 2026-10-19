@@ -104,7 +104,7 @@ function box(
   return mesh(
     parent,
     name,
-    new RoundedBoxGeometry(...size, 2, Math.min(radius, ...size.map((n) => n / 3))),
+    new RoundedBoxGeometry(...size, 3, Math.min(radius, ...size.map((n) => n / 3))),
     material,
     position,
   );
@@ -129,7 +129,7 @@ function ring(
   material: Material,
   position: Point,
 ): Mesh {
-  return mesh(parent, name, new TorusGeometry(radius, thickness, 8, 40), material, position);
+  return mesh(parent, name, new TorusGeometry(radius, thickness, 12, 48), material, position);
 }
 
 function sphere(
@@ -157,16 +157,16 @@ function tube(
       path.add(new LineCurve3(vertices[i - 1], vertices[i]));
     }
   }
-  return mesh(parent, name, new TubeGeometry(path, 32, radius, 8, false), material);
+  return mesh(parent, name, new TubeGeometry(path, 48, radius, 12, false), material);
 }
 
 function extrude(shape: Shape, depth: number, bevel = 0.025): ExtrudeGeometry {
   const geometry = new ExtrudeGeometry(shape, {
     depth,
     steps: 1,
-    curveSegments: 8,
+    curveSegments: 16,
     bevelEnabled: true,
-    bevelSegments: 2,
+    bevelSegments: 3,
     bevelSize: bevel,
     bevelThickness: bevel,
   });

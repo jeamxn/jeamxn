@@ -79,7 +79,7 @@ function box(
   return mesh(
     group,
     name,
-    new RoundedBoxGeometry(...size, 1, Math.min(radius, ...size.map((value) => value / 3))),
+    new RoundedBoxGeometry(...size, 3, Math.min(radius, ...size.map((value) => value / 3))),
     material,
     position,
   );
@@ -93,7 +93,7 @@ function cylinder(
   material: MeshStandardMaterial,
   position: Point,
 ): Mesh {
-  return mesh(group, name, new CylinderGeometry(radius, radius, height, 24), material, position);
+  return mesh(group, name, new CylinderGeometry(radius, radius, height, 40), material, position);
 }
 
 function sphere(
@@ -103,7 +103,7 @@ function sphere(
   material: MeshStandardMaterial,
   position: Point,
 ): Mesh {
-  return mesh(group, name, new SphereGeometry(radius, 20, 12), material, position);
+  return mesh(group, name, new SphereGeometry(radius, 28, 18), material, position);
 }
 
 function ring(
@@ -114,7 +114,7 @@ function ring(
   material: MeshStandardMaterial,
   position: Point,
 ): Mesh {
-  return mesh(group, name, new TorusGeometry(radius, thickness, 8, 32), material, position);
+  return mesh(group, name, new TorusGeometry(radius, thickness, 12, 44), material, position);
 }
 
 function wire(
@@ -129,9 +129,9 @@ function wire(
     name,
     new TubeGeometry(
       new CatmullRomCurve3(points.map((point) => new Vector3(...point))),
-      24,
+      48,
       thickness,
-      8,
+      12,
     ),
     material,
   );
@@ -144,7 +144,7 @@ function repeatedBoxes(
   material: MeshStandardMaterial,
   points: readonly Point[],
 ): InstancedMesh {
-  const geometry = new RoundedBoxGeometry(...size, 1, Math.min(0.025, ...size.map((n) => n / 3)));
+  const geometry = new RoundedBoxGeometry(...size, 2, Math.min(0.025, ...size.map((n) => n / 3)));
   const object = new InstancedMesh(geometry, material, points.length);
   object.name = name;
   object.castShadow = true;
@@ -162,9 +162,9 @@ function extrusion(shape: Shape, depth: number, bevel = 0.025): ExtrudeGeometry 
   const geometry = new ExtrudeGeometry(shape, {
     depth,
     steps: 1,
-    curveSegments: 8,
+    curveSegments: 16,
     bevelEnabled: true,
-    bevelSegments: 2,
+    bevelSegments: 3,
     bevelSize: bevel,
     bevelThickness: bevel,
   });

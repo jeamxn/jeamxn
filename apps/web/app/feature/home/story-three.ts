@@ -1,4 +1,5 @@
 import * as THREE from "three";
+import { RoomEnvironment } from "three/addons/environments/RoomEnvironment.js";
 import {
   activeStory,
   chapterObjectPose,
@@ -16,8 +17,16 @@ export type StoryScene = {
  * Idle rendering is capped and stops when the scene cannot be seen or animated. */
 export function createStoryScene(host: HTMLElement): StoryScene {
   const scene = new THREE.Scene();
-  const camera = new THREE.OrthographicCamera(-10, 10, 6, -6, 0.1, 100);
-  camera.position.set(0, 0, 24);
+  // A long lens keeps the 12-unit layout plane exact while letting depth,
+  // turns and arrivals read as real perspective instead of a flat projection.
+  const CAMERA_DISTANCE = 34;
+  const camera = new THREE.PerspectiveCamera(
+    THREE.MathUtils.radToDeg(2 * Math.atan(6 / CAMERA_DISTANCE)),
+    1,
+    1,
+    100,
+  );
+  camera.position.set(0, 0, CAMERA_DISTANCE);
   const renderer = new THREE.WebGLRenderer({
     alpha: true,
     antialias: true,
@@ -26,20 +35,34 @@ export function createStoryScene(host: HTMLElement): StoryScene {
   renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.5));
   renderer.setClearColor(0x000000, 0);
   renderer.outputColorSpace = THREE.SRGBColorSpace;
-  renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = 1.25;
+  renderer.toneMapping = THREE.AgXToneMapping;
+  renderer.toneMappingExposure = 1.05;
   renderer.shadowMap.enabled = true;
-  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+  renderer.shadowMap.type = THREE.PCFShadowMap;
   renderer.domElement.setAttribute("aria-hidden", "true");
   renderer.domElement.className = "story-three-canvas";
   host.append(renderer.domElement);
-  scene.add(new THREE.AmbientLight(0xffffff, 1.8));
-  const hemisphere = new THREE.HemisphereLight(0xffffff, 0xb5b1a7, 2.8);
+  // Soft studio reflections give the clay-like objects form; the flat ambient
+  // wash that made every face the same pale value is gone.
+  const pmrem = new THREE.PMREMGenerator(renderer);
+  const roomEnvironment = new RoomEnvironment();
+  const environment = pmrem.fromScene(roomEnvironment, 0.04).texture;
+  roomEnvironment.traverse((object) => {
+    if (object instanceof THREE.Mesh) {
+      object.geometry.dispose();
+      (object.material as THREE.Material).dispose();
+    }
+  });
+  pmrem.dispose();
+  scene.environment = environment;
+  scene.environmentIntensity = 0.55;
+  scene.add(new THREE.AmbientLight(0xffffff, 0.35));
+  const hemisphere = new THREE.HemisphereLight(0xfffdf8, 0x9c9789, 1.1);
   scene.add(hemisphere);
-  const key = new THREE.DirectionalLight(0xfff7e9, 4);
+  const key = new THREE.DirectionalLight(0xfff3e2, 3.4);
   key.position.set(-7, 10, 14);
   key.castShadow = true;
-  key.shadow.mapSize.set(1024, 1024);
+  key.shadow.mapSize.set(2048, 2048);
   key.shadow.camera.left = -14;
   key.shadow.camera.right = 14;
   key.shadow.camera.top = 10;
@@ -48,20 +71,71 @@ export function createStoryScene(host: HTMLElement): StoryScene {
   key.shadow.normalBias = 0.03;
   key.shadow.radius = 3;
   scene.add(key);
-  const fill = new THREE.DirectionalLight(0xd5e5ff, 1.8);
-  fill.position.set(8, -3, 10);
+  const fill = new THREE.DirectionalLight(0xd9e6ff, 0.9);
+  fill.position.set(9, -2, 10);
   scene.add(fill);
+  // Cool rim from behind separates light silhouettes from the fog-white page.
+  const rim = new THREE.DirectionalLight(0xe4ecff, 2.2);
+  rim.position.set(6, 7, -10);
+  scene.add(rim);
   const shadows = new THREE.Mesh(
     new THREE.PlaneGeometry(60, 40),
-    new THREE.ShadowMaterial({ opacity: 0.075 }),
+    new THREE.ShadowMaterial({ opacity: 0.11 }),
   );
   shadows.position.z = -1.5;
   shadows.receiveShadow = true;
   scene.add(shadows);
   const chapters = createChapterModels();
+  // Pointer parallax tilts this rig, never the models' scroll-derived poses.
+  const rig = new THREE.Group();
+  scene.add(rig);
+  // Each model owns its material copies so it can fade independently while the
+  // palette stays shared at creation. Originals are released immediately.
+  type Fade = { material: THREE.MeshStandardMaterial; opacity: number; transparent: boolean };
+  const fades = new Map<THREE.Group, Fade[]>();
+  const originals = new Set<THREE.Material>();
+  for (const entry of chapters) {
+    for (const { group } of entry.models) {
+      const copies = new Map<THREE.Material, THREE.MeshStandardMaterial>();
+      const list: Fade[] = [];
+      group.traverse((object) => {
+        if (!(object instanceof THREE.Mesh)) return;
+        const swap = (material: THREE.Material) => {
+          originals.add(material);
+          let copy = copies.get(material);
+          if (!copy) {
+            copy = (material as THREE.MeshStandardMaterial).clone();
+            // Satin finish: the environment adds gentle highlights on edges.
+            copy.roughness = Math.min(copy.roughness, 0.58);
+            copy.envMapIntensity = 0.9;
+            copies.set(material, copy);
+            list.push({ material: copy, opacity: copy.opacity, transparent: copy.transparent });
+          }
+          return copy;
+        };
+        object.material = Array.isArray(object.material)
+          ? object.material.map(swap)
+          : swap(object.material);
+      });
+      fades.set(group, list);
+    }
+  }
+  for (const material of originals) material.dispose();
+  const shown = new Map<THREE.Group, number>();
+  const applyFade = (group: THREE.Group, value: number) => {
+    shown.set(group, value);
+    for (const fade of fades.get(group) ?? []) {
+      const transparent = fade.transparent || value < 0.999;
+      if (fade.material.transparent !== transparent) {
+        fade.material.transparent = transparent;
+        fade.material.needsUpdate = true;
+      }
+      fade.material.opacity = fade.opacity * value;
+    }
+  };
   const connections: { line: THREE.Line; chapter: number; target: number }[] = [];
   for (const [chapter, entry] of chapters.entries()) {
-    for (const item of entry.models) scene.add(item.group);
+    for (const item of entry.models) rig.add(item.group);
     if (chapter < 2) continue;
     for (let target = 0; target < entry.models.length; target++) {
       if (target === (chapter === 2 ? 1 : 0)) continue;
@@ -76,7 +150,7 @@ export function createStoryScene(host: HTMLElement): StoryScene {
         }),
       );
       connections.push({ line, chapter, target });
-      scene.add(line);
+      rig.add(line);
     }
   }
   let width = 1,
@@ -90,8 +164,14 @@ export function createStoryScene(host: HTMLElement): StoryScene {
     hasVisibleModels = false,
     motionSeconds = 0,
     lastFrame = 0,
-    pendingFrame = 0;
-  const frameInterval = 1000 / 20;
+    pendingFrame = 0,
+    tiltX = 0,
+    tiltY = 0,
+    tiltTargetX = 0,
+    tiltTargetY = 0;
+  // Display-rate idle motion (capped at 60fps) so the slow float never strobes.
+  const frameInterval = 1000 / 60;
+  const finePointer = window.matchMedia("(hover: hover) and (pointer: fine)");
   const motionMedia = window.matchMedia("(prefers-reduced-motion: reduce)");
   let observer: ResizeObserver | undefined;
   let intersection: IntersectionObserver | undefined;
@@ -126,9 +206,14 @@ export function createStoryScene(host: HTMLElement): StoryScene {
       return;
     }
     const elapsed = timestamp - lastFrame;
-    if (elapsed >= frameInterval) {
+    if (elapsed >= frameInterval - 2) {
       // A paused tab never adds its elapsed wall time to the decorative clock.
-      motionSeconds += Math.min(elapsed, 100) / 1000;
+      const step = Math.min(elapsed, 100) / 1000;
+      motionSeconds += step;
+      // Critically damped follow (~0.45s) toward the pointer target.
+      const follow = 1 - Math.exp(-step / 0.16);
+      tiltX += (tiltTargetX - tiltX) * follow;
+      tiltY += (tiltTargetY - tiltY) * follow;
       lastFrame = timestamp;
       renderPose();
     }
@@ -148,6 +233,7 @@ export function createStoryScene(host: HTMLElement): StoryScene {
         const pose = chapterObjectPose(progress, chapter, index, narrow, item.id);
         const model = item.group;
         model.visible = pose.visible;
+        applyFade(model, pose.opacity);
         model.scale.setScalar(Math.max(0.001, pose.scale));
         model.position.set(
           (pose.x / 100 - 0.5) * worldWidth,
@@ -171,10 +257,11 @@ export function createStoryScene(host: HTMLElement): StoryScene {
           const phase = chapter * 0.83 + index * 1.37;
           const wave = (period: number, offset = 0) =>
             Math.sin((motionSeconds * Math.PI * 2) / period + phase + offset);
-          model.position.y += wave(12) * 0.08;
-          model.rotation.x += wave(14, 0.4) * 0.02;
-          model.rotation.y += wave(16, 0.8) * 0.06;
-          model.rotation.z += wave(10, 1.2) * 0.02;
+          model.position.y += wave(9) * 0.12;
+          model.position.x += wave(13, 2.1) * 0.04;
+          model.rotation.x += wave(11, 0.4) * 0.03;
+          model.rotation.y += wave(14, 0.8) * 0.09;
+          model.rotation.z += wave(8, 1.2) * 0.025;
         }
         animatedStats.push({
           ...base,
@@ -197,8 +284,13 @@ export function createStoryScene(host: HTMLElement): StoryScene {
       values.setXYZ(1, satellite.position.x, satellite.position.y, -0.8);
       values.needsUpdate = true;
       line.geometry.computeBoundingSphere();
-      (line.material as THREE.LineBasicMaterial).opacity = chapterWeight(progress, chapter) * 0.35;
+      // A thread exists only while both ends are present, so it never dangles.
+      (line.material as THREE.LineBasicMaterial).opacity =
+        chapterWeight(progress, chapter) *
+        Math.min(shown.get(main) ?? 0, shown.get(satellite) ?? 0) *
+        0.35;
     }
+    rig.rotation.set(moving ? tiltY : 0, moving ? tiltX : 0, 0);
     hasVisibleModels = activeIds.length > 0;
     if (!contextLost && !document.hidden && inView) {
       renderer.render(scene, camera);
@@ -232,11 +324,7 @@ export function createStoryScene(host: HTMLElement): StoryScene {
       box.left < window.innerWidth;
     width = Math.max(1, box.width);
     height = Math.max(1, box.height);
-    const halfWidth = (6 * width) / height;
-    camera.left = -halfWidth;
-    camera.right = halfWidth;
-    camera.top = 6;
-    camera.bottom = -6;
+    camera.aspect = width / height;
     camera.updateProjectionMatrix();
     renderer.setSize(width, height, false);
     paint(progress, width <= 760);
@@ -259,10 +347,22 @@ export function createStoryScene(host: HTMLElement): StoryScene {
     renderPose();
     syncMotion();
   };
+  const pointer = (event: PointerEvent) => {
+    if (!finePointer.matches || event.pointerType !== "mouse") return;
+    // At most ~4 degrees: a sense of depth under the cursor, never a spin.
+    tiltTargetX = ((event.clientX / window.innerWidth) * 2 - 1) * 0.07;
+    tiltTargetY = ((event.clientY / window.innerHeight) * 2 - 1) * 0.045;
+  };
+  const pointerLeave = () => {
+    tiltTargetX = 0;
+    tiltTargetY = 0;
+  };
   renderer.domElement.addEventListener("webglcontextlost", lost);
   renderer.domElement.addEventListener("webglcontextrestored", restored);
   document.addEventListener("visibilitychange", visibility);
   motionMedia.addEventListener("change", preference);
+  window.addEventListener("pointermove", pointer, { passive: true });
+  document.documentElement.addEventListener("pointerleave", pointerLeave);
   intersection = new IntersectionObserver((entries) => {
     inView = entries.some((entry) => entry.isIntersecting && entry.intersectionRatio > 0);
     if (inView) renderPose();
@@ -282,6 +382,9 @@ export function createStoryScene(host: HTMLElement): StoryScene {
       intersection?.disconnect();
       document.removeEventListener("visibilitychange", visibility);
       motionMedia.removeEventListener("change", preference);
+      window.removeEventListener("pointermove", pointer);
+      document.documentElement.removeEventListener("pointerleave", pointerLeave);
+      environment.dispose();
       renderer.domElement.removeEventListener("webglcontextlost", lost);
       renderer.domElement.removeEventListener("webglcontextrestored", restored);
       const geometries = new Set<THREE.BufferGeometry>(),
