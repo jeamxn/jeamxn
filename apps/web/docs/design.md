@@ -71,3 +71,59 @@ visitor does. The scroll story, palette and type scale are unchanged.
 Rejected: SplitText/BlurText page-title entrances (they hide prerendered text until JS runs), card
 kits (SpotlightCard, MagicBento) that would turn stories into identical tiles, and cursor
 replacements. Reduced motion removes the dot field and threads and stills the rest.
+
+## React Bits layer, second pass (2026-11-20)
+
+The owner asked for most of the library, for fun, spread over the real pages and not gathered on a
+showcase page. All 219 components are vendored; 215 mount on some page, each carrying that page's own
+content: project names, the portrait, published product screens, real links. Nothing is labelled with
+a component name and there is no sample copy. The scroll story, palette and type scale are unchanged.
+
+Where they are:
+
+- Shell: PillNav, Magnet, a cobalt ClickSpark on every click, and in the footer Threads,
+  VariableProximity, a large TextPressure `jeamxn`, CircularText around the mail button and a faint
+  Noise grain.
+- Home, after the story: three product cards and a grid of what was done in each; the product screens
+  on one stage with a single "show it another way" button (21 layouts); a band of the site's sentences
+  and project names in motion; the asterisk mark in metal, glass and light; and a staff badge on a
+  Lanyard beside the closing statement.
+- Work list: the project names on a curved loop under the heading. Search and filters stay in the
+  first screen.
+- Work record and activity pages: a record with no product screen opens with a cover, dealt out by the
+  record's place in the list from three decks (`shared/widget/cover.tsx`): one of 65 backgrounds, the
+  record's name in one of 20 text animations, and on every other record one of 13 pointer effects that
+  lives inside the cover. Every record ends with who made it (the portrait, one of 17 treatments per
+  record) and a way onward (one of 9 menus or 2 pickers per record, with the site's real
+  destinations).
+- ara record: what you do in ara, by hand: talking to the agent, adjusting a canvas, tidying documents.
+- Dipull record: what students did in Dipull, by hand: booking a washer, choosing the wake-up song.
+  Both records say plainly that the pieces are rebuilt for the page and connected to nothing.
+- Resume: CountUp counts taken from the data, a LogoLoop of the most used tools, the Lanyard badge,
+  and the portrait on one stage with the same single button.
+- Not found: a FuzzyText 404, a menu of real destinations, mail and work-list buttons, and a few
+  toys. The real HTTP 404 page is
+  the app shell, so it shows the same screen.
+
+Left out because no page had a natural place for them: RubberSegment, CurvedInput, FadeContent and
+GradualBlur.
+
+Rules that keep it from breaking:
+
+- `Bit` (`shared/widget/bit.tsx`) mounts a component only while its box is near the viewport and
+  unmounts it when it leaves, behind an error boundary. Browsers cap live WebGL contexts, so heavy
+  groups share one stage, and a component that cannot start shows a short message instead of taking
+  the page down.
+- Nothing from the library renders during prerender. Static HTML carries headings and copy; where a
+  number or a list matters (resume counts and tools) the plain version is the placeholder. Covers and
+  the word band are decorative and hidden from assistive technology; the heading above says the same.
+- Tailwind utilities live in cascade layers and lose to the unlayered element rules in `app.css`.
+  Inside `.bit`, those element rules are handed back with `revert-layer`.
+- Reduced motion: covers stay a still gradient with the name, the site-wide spark is off, and pieces
+  that run on their own wait behind a button. Pointer effects need a fine pointer.
+- `pnpm test:bits` (`scripts/verify-bits.mjs`) walks every page under the production CSP, scrolling
+  to the end and pressing every "show it another way" button, and fails on a page error, a console
+  error, an off-origin request, a component that did not start, horizontal overflow, more than 12
+  live WebGL contexts, or fewer than 180 components in use.
+- No camera, microphone or network: ReflectiveCard runs with `webcam={false}`, VoicePill with a
+  simulated level, GridScan without face tracking, and the agent pieces change state on timers.

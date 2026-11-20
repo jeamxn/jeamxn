@@ -2,6 +2,7 @@ import { portfolio } from "@jeamxn/core";
 import { Link, useParams } from "react-router";
 import { WorkPage } from "~/feature/work/work-page";
 import { pageMeta } from "~/shared/lib/meta";
+import { MissingMark } from "~/shared/widget/missing-mark";
 import type { Route } from "./+types/work";
 export function meta({ params }: Route.MetaArgs) {
   const project = portfolio.projects.find((p) => p.slug === params.slug);
@@ -17,11 +18,13 @@ export default function Work() {
   const project = portfolio.projects[index];
   return project ? (
     <WorkPage
+      order={index}
       project={project}
       next={portfolio.projects[(index + 1) % portfolio.projects.length]}
     />
   ) : (
     <div className="container missing-page">
+      <MissingMark />
       <h1>이 프로젝트는 찾지 못했어요.</h1>
       <p>주소를 확인하거나, 작업 기록에서 다시 살펴보세요.</p>
       <Link className="button button--solid" to="/work">

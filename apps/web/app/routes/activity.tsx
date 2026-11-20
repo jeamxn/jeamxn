@@ -2,6 +2,7 @@ import { portfolio } from "@jeamxn/core";
 import { Link, useParams } from "react-router";
 import { ActivityPage } from "~/feature/activity/activity-page";
 import { pageMeta } from "~/shared/lib/meta";
+import { MissingMark } from "~/shared/widget/missing-mark";
 import type { Route } from "./+types/activity";
 
 export function meta({ params }: Route.MetaArgs) {
@@ -19,6 +20,7 @@ export default function Activity() {
     <ActivityPage activity={activity} />
   ) : (
     <div className="container missing-page">
+      <MissingMark />
       <h1>이 활동은 찾지 못했어요.</h1>
       <p>주소를 확인하거나 이력에서 다른 이야기를 살펴보세요.</p>
       <Link className="button button--solid" to="/resume">

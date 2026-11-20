@@ -5,7 +5,9 @@ import GlareHover from "~/shared/reactbits/GlareHover";
 import Magnet from "~/shared/reactbits/Magnet";
 import ScrollReveal from "~/shared/reactbits/ScrollReveal";
 import ScrollVelocity from "~/shared/reactbits/ScrollVelocity";
+import { IdLanyard } from "~/shared/widget/id-lanyard";
 import { ProjectScene } from "~/shared/widget/project-scene";
+import { HomeGlance, HomeMark, HomeScreens, HomeWords } from "./home-desk";
 import { OtherWork } from "./other-work";
 import { ScrollStory } from "./scroll-story";
 
@@ -168,8 +170,12 @@ export function HomePage({ data }: { data: Portfolio }) {
         )}
         <OtherWork projects={data.projects} />
       </section>
+      <HomeGlance />
+      <HomeScreens />
+      <HomeWords />
+      <HomeMark />
       <section className="home-about container">
-        <div>
+        <div className="home-about-say">
           <ScrollReveal
             baseOpacity={0.14}
             baseRotation={0}
@@ -190,6 +196,7 @@ export function HomePage({ data }: { data: Portfolio }) {
           <p>{profile.about.at(-1)}</p>
           <p>ara에서 문서와 발표 자료를 직접 만들면서 편집과 내보내기 과정의 문제를 찾고 있어요.</p>
         </div>
+        <IdLanyard name={profile.name} nameEn={profile.nameEn} className="home-about-badge" />
       </section>
     </>
   );

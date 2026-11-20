@@ -3,6 +3,9 @@ import { resumePhoto, resumeProjects } from "@jeamxn/core";
 import { Icon } from "@jeamxn/icon";
 import { Link } from "react-router";
 import { sitePath } from "~/shared/lib/site-path";
+import { IdLanyard } from "~/shared/widget/id-lanyard";
+import { ResumeTally, ResumeTools } from "./resume-extras";
+import { ResumePhoto } from "./resume-photo";
 
 export function ResumePage({ data }: { data: Portfolio }) {
   return (
@@ -49,6 +52,8 @@ export function ResumePage({ data }: { data: Portfolio }) {
       <Link className="text-link resume-archive-link" to="/work">
         모든 작업 기록 보기 <Icon name="arrow-right" size={18} />
       </Link>
+      <ResumeTally data={data} />
+      <ResumeTools data={data} />
       <section
         className="resume-section resume-introduction"
         id="introduction"
@@ -69,9 +74,15 @@ export function ResumePage({ data }: { data: Portfolio }) {
                 <li key={interest}>{interest}</li>
               ))}
             </ul>
+            <IdLanyard
+              name={data.profile.name}
+              nameEn={data.profile.nameEn}
+              className="resume-badge"
+            />
           </div>
         </div>
       </section>
+      <ResumePhoto />
       <section className="resume-section">
         <h2>경험</h2>
         <div>
