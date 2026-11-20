@@ -4,6 +4,7 @@ import { Link } from "react-router";
 import { safeHref } from "~/shared/lib/meta";
 import { projectMedia, projectScreens } from "~/shared/lib/project-media";
 import { sitePath } from "~/shared/lib/site-path";
+import Magnet from "~/shared/reactbits/Magnet";
 import { ProductGallery } from "~/shared/widget/product-gallery";
 import { ProjectScene } from "~/shared/widget/project-scene";
 import { StoryReader } from "~/shared/widget/story-reader";
@@ -138,7 +139,16 @@ export function WorkPage({ project, next }: { project: Project; next?: Project }
         <Link to={`/work/${next.slug}`} className="next-work">
           <span>다음 이야기</span>
           <strong translate="no">{next.name}</strong>
-          <Icon name="arrow-up-right" size={48} />
+          <Magnet
+            padding={48}
+            magnetStrength={3}
+            maxOffset={14}
+            wrapperClassName="next-work-magnet"
+          >
+            <span className="next-work-arrow">
+              <Icon name="arrow-up-right" size={32} />
+            </span>
+          </Magnet>
         </Link>
       )}
     </article>

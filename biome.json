@@ -12,7 +12,8 @@
       "!**/asset",
       "!test-results",
       "!playwright-report",
-      "!**/.turbo"
+      "!**/.turbo",
+      "!apps/web/app/shared/reactbits"
     ]
   },
   "formatter": {

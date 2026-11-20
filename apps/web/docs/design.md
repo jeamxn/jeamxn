@@ -53,3 +53,21 @@ Media samples are labeled “가상 데이터로 재구성한 화면”. Curated
 - Source frozen after the parent-requested budget correction; production/deployment and root metadata changes remain parent-owned.
 
 Final mailto correction: safeHref allows only the exact public core email mailto and rejects unknown addresses/query-bearing variants. Assistant email source does not open a new tab. Four unit tests, web typecheck/build, strict lint and boundary checks pass; source frozen again with no extra scope.
+
+## React Bits layer (2026-11-20)
+
+All 219 React Bits components were reviewed; eight are used, each where it answers something the
+visitor does. The scroll story, palette and type scale are unchanged.
+
+- PillNav: the desktop menu is a glass pill with a gliding highlight and a cobalt dot on the current page.
+- Magnet: the brand, the contact button, round project arrows, the next-story arrow and the footer mail button lean toward the pointer.
+- DotGrid: a quiet dot field behind the opening scene bends around the pointer and leaves with the scene.
+- ScrollVelocity: one band of project names between the story and the work list moves with scroll speed.
+- GlareHover: a sheen crosses the ara and Dipull screens in the direction the pointer moves.
+- ScrollReveal: the closing statement on the home page sharpens word by word as it is scrolled into view.
+- VariableProximity: the footer question gains weight and width near the pointer, using the site's own variable font.
+- Threads: fine cobalt lines drift behind the footer heading and part around the pointer.
+
+Rejected: SplitText/BlurText page-title entrances (they hide prerendered text until JS runs), card
+kits (SpotlightCard, MagicBento) that would turn stories into identical tiles, and cursor
+replacements. Reduced motion removes the dot field and threads and stills the rest.

@@ -182,34 +182,6 @@
   line-height: 24px;
   letter-spacing: -0.48px;
 }
-:where(.desktop-nav a) {
-  position: relative;
-  padding-block: 10px;
-  min-height: 44px;
-  display: inline-flex;
-  align-items: center;
-}
-:where(.desktop-nav a)::after {
-  content: "";
-  position: absolute;
-  bottom: 2px;
-  left: calc(50% - 2px);
-  width: 4px;
-  height: 4px;
-  min-height: 0;
-  padding: 0;
-  display: block;
-  border-radius: 50%;
-  background: currentColor;
-  opacity: 0;
-}
-:where(.desktop-nav a[aria-current="page"])::after {
-  opacity: 1;
-}
-:where(.desktop-nav a:hover) {
-  color: var(--color-cobalt);
-}
-
 :where(.mobile-menu-button) {
   display: none;
   margin-left: auto;
@@ -3738,5 +3710,206 @@
   .resume-name .resume-intro {
     font-size: 14px;
     line-height: 22px;
+  }
+}
+
+/* React Bits layer: a glass pill nav, magnetic targets, a scroll-speed marquee and
+   type that leans toward the pointer. Unlayered, so these win over the vendored
+   components' Tailwind utilities. */
+:where(.desktop-nav) {
+  gap: 10px;
+}
+:where(.brand-magnet) {
+  flex: none;
+}
+:where(.site-pill-nav) {
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  font-weight: 500;
+  letter-spacing: -0.42px;
+}
+:where(.site-pill-nav a:focus-visible) {
+  outline: 2px solid var(--color-cobalt);
+  outline-offset: 2px;
+}
+:where(.nav-contact-link) {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 44px;
+  padding-inline: 18px 14px;
+  border-radius: 999px;
+  background: var(--color-ink);
+  color: var(--color-paper);
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 21px;
+  letter-spacing: -0.42px;
+  transition: background 0.2s;
+}
+:where(.nav-contact-link:hover) {
+  background: var(--color-cobalt);
+}
+:where(.nav-contact-link:active) {
+  transform: scale(0.97);
+}
+:where(.nav-contact-link svg) {
+  transition: transform 0.25s var(--ease);
+}
+:where(.nav-contact-link:hover svg) {
+  transform: translate(2px, -2px);
+}
+
+:where(.home-marquee) {
+  overflow: hidden;
+  padding-block: 16px 36px;
+  color: var(--color-ink);
+}
+:where(.home-marquee-row + .home-marquee-row) {
+  margin-top: 2px;
+  color: #c4c8ce;
+}
+:where(.home-marquee-scroller) {
+  font-family: var(--font-display);
+  font-size: clamp(48px, 8.6vw, 124px);
+  font-weight: 640;
+  font-stretch: 92%;
+  line-height: 1.08;
+  letter-spacing: -0.055em;
+  filter: none;
+}
+:where(.home-marquee-row + .home-marquee-row .home-marquee-scroller) {
+  font-weight: 240;
+}
+:where(.home-marquee-item) {
+  display: inline-flex;
+  align-items: baseline;
+}
+:where(.home-marquee-star) {
+  margin-inline: 0.2em 0.12em;
+  color: var(--color-cobalt);
+  -webkit-text-fill-color: var(--color-cobalt);
+  -webkit-text-stroke: 0;
+}
+
+:where(.next-work-magnet) {
+  margin-left: auto;
+  flex: none;
+}
+:where(.next-work-arrow) {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  border: 1px solid var(--color-mist);
+  transition:
+    background 0.25s,
+    border-color 0.25s,
+    color 0.25s;
+}
+:where(.next-work:hover .next-work-arrow) {
+  background: var(--color-cobalt);
+  border-color: var(--color-cobalt);
+  color: white;
+}
+:where(.featured-glare) {
+  display: block;
+  border: 0;
+}
+:where(.round-arrow-magnet) {
+  flex: none;
+}
+:where(.home-about-reveal) {
+  margin: 0;
+}
+:where(.home-about-reveal-text) {
+  font-size: inherit;
+  line-height: inherit;
+  font-weight: inherit;
+  word-break: keep-all;
+  max-width: 9.5em;
+}
+
+:where(.site-footer) {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  border-radius: 28px 28px 0 0;
+  padding-top: clamp(72px, 11vw, 132px);
+}
+:where(.footer-threads) {
+  position: absolute;
+  inset: 0 0 auto;
+  height: min(520px, 78%);
+  z-index: -1;
+  pointer-events: none;
+  -webkit-mask-image: linear-gradient(#000 35%, transparent);
+  mask-image: linear-gradient(#000 35%, transparent);
+}
+:where(.footer-heading) {
+  align-items: flex-end;
+  margin-bottom: clamp(36px, 6vw, 72px);
+}
+:where(.footer-heading h2) {
+  font-family: var(--font-display);
+  font-size: clamp(38px, 7.2vw, 84px);
+  line-height: 1.12;
+  letter-spacing: -0.045em;
+  font-weight: 420;
+  word-break: keep-all;
+}
+:where(.footer-heading-line) {
+  display: block;
+}
+:where(.footer-magnet) {
+  flex: none;
+}
+:where(.footer-orbit) {
+  flex-direction: column;
+  gap: 2px;
+  width: clamp(112px, 13vw, 156px);
+  height: clamp(112px, 13vw, 156px);
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 21px;
+  letter-spacing: -0.42px;
+}
+:where(.footer-orbit:hover) {
+  transform: none;
+}
+:where(.footer-orbit:active) {
+  transform: scale(0.97);
+}
+:where(.footer-orbit svg) {
+  transition: transform 0.3s var(--ease);
+}
+:where(.footer-orbit:hover svg) {
+  transform: translate(3px, -3px);
+}
+@media (max-width: 600px) {
+  :where(.home-marquee) {
+    padding-block: 36px 12px;
+  }
+  :where(.site-footer) {
+    border-radius: 20px 20px 0 0;
+  }
+  :where(.footer-heading) {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  :where(.footer-magnet) {
+    align-self: flex-end;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  :where(.footer-threads) {
+    display: none;
+  }
+}
+@media print {
+  :where(.home-marquee, .footer-threads, .story-hero-field) {
+    display: none;
   }
 }

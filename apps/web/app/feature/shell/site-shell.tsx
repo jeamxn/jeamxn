@@ -1,7 +1,24 @@
 import { Icon } from "@jeamxn/icon";
 import { Modal } from "@jeamxn/ui";
-import { type ReactNode, useState } from "react";
-import { Link, NavLink, useLocation } from "react-router";
+import { type ComponentProps, type CSSProperties, type ReactNode, useRef, useState } from "react";
+import { Link, useLocation } from "react-router";
+import Magnet from "~/shared/reactbits/Magnet";
+import PillNav from "~/shared/reactbits/PillNav";
+import Threads from "~/shared/reactbits/Threads";
+import VariableProximity from "~/shared/reactbits/VariableProximity";
+
+const navItems = [
+  { label: "이력", href: "/resume" },
+  { label: "작업 기록", href: "/work" },
+];
+
+/* PillNav hands every item an href; internal ones stay client-side navigations. */
+function NavAnchor({ href = "/", ...props }: ComponentProps<"a">) {
+  if (!href.startsWith("/")) return <a href={href} {...props} />;
+  return <Link to={href} {...props} />;
+}
+
+const footerLines = ["함께 만들고 싶은", "제품이 있나요?"];
 
 export function SiteShell({
   children,
@@ -15,20 +32,52 @@ export function SiteShell({
   nameEn: string;
 }) {
   const [menuOpen, setMenuOpen] = useState(false);
-  const home = useLocation().pathname === "/";
+  const { pathname } = useLocation();
+  const home = pathname === "/";
+  const footerHeading = useRef<HTMLHeadingElement>(null);
+  const active = navItems.find(
+    (item) => pathname === item.href || pathname.startsWith(`${item.href}/`),
+  );
   return (
     <>
       <a className="skip-link" href="#main">
         본문으로 건너뛰기
       </a>
       <header className={`site-header container${home ? " site-header--home" : ""}`}>
-        <Link to="/" className="brand" translate="no" aria-label="최재민 홈">
-          jeamxn<span aria-hidden="true">*</span>
-        </Link>
-        <nav className="desktop-nav" aria-label="주 메뉴">
-          <NavLink to="/resume">이력</NavLink>
-          <NavLink to="/work">작업 기록</NavLink>
-        </nav>
+        <Magnet padding={36} magnetStrength={5} maxOffset={6} wrapperClassName="brand-magnet">
+          <Link to="/" className="brand" translate="no" aria-label="최재민 홈">
+            jeamxn<span aria-hidden="true">*</span>
+          </Link>
+        </Magnet>
+        <div className="desktop-nav">
+          <PillNav
+            items={navItems}
+            activeHref={active?.href ?? ""}
+            linkComponent={NavAnchor}
+            theme="light"
+            barColor="rgba(255, 255, 255, 0.62)"
+            highlightColor="#161616"
+            highlightTextColor="#ffffff"
+            textColor="#161616"
+            style={{ "--pn-dot": "#2459d3" } as CSSProperties}
+            layout="joined"
+            size="md"
+            surface="glass"
+            itemStyle="plain"
+            hoverEffect="glide"
+            indicator="dot"
+            collapse="never"
+            intro={false}
+            ariaLabel="주 메뉴"
+            className="site-pill-nav"
+          />
+          <Magnet padding={28} magnetStrength={4} maxOffset={8} wrapperClassName="nav-contact">
+            <a className="nav-contact-link" href={`mailto:${email}`}>
+              연락하기
+              <Icon name="arrow-up-right" size={16} />
+            </a>
+          </Magnet>
+        </div>
         <button
           type="button"
           className="mobile-menu-button icon-button"
@@ -47,16 +96,45 @@ export function SiteShell({
         {children}
       </main>
       <footer className="site-footer" id="contact">
-        <div className="container">
+        <div className="footer-threads" aria-hidden="true">
+          <Threads
+            color="#8fa6e8"
+            accentColor="#2459d3"
+            amplitude={1.1}
+            distance={0.25}
+            lineCount={44}
+            thickness={0.5}
+            speed={0.35}
+            brightness={1.05}
+            fade={0.35}
+            opacity={0.55}
+            enableMouseInteraction
+            parting={0.6}
+          />
+        </div>
+        <div className="container footer-inner">
           <div className="footer-heading">
-            <h2>
-              함께 만들고 싶은
-              <br />
-              제품이 있나요?
+            <h2 ref={footerHeading} aria-label={footerLines.join(" ")}>
+              {footerLines.map((line) => (
+                <span className="footer-heading-line" key={line} aria-hidden="true">
+                  <VariableProximity
+                    label={line}
+                    containerRef={footerHeading}
+                    fromFontVariationSettings="'wght' 420, 'wdth' 100"
+                    toFontVariationSettings="'wght' 880, 'wdth' 112"
+                    radius={150}
+                    falloff="gaussian"
+                    style={{ fontFamily: "inherit" }}
+                  />
+                </span>
+              ))}
             </h2>
-            <a className="footer-orbit" href={`mailto:${email}`} aria-label="이메일로 연락하기">
-              <Icon name="arrow-up-right" size={44} />
-            </a>
+            <Magnet padding={70} magnetStrength={3} maxOffset={22} wrapperClassName="footer-magnet">
+              <a className="footer-orbit" href={`mailto:${email}`} aria-label="이메일로 연락하기">
+                <span>메일 보내기</span>
+                <Icon name="arrow-up-right" size={28} />
+              </a>
+            </Magnet>
           </div>
           <a className="footer-email" href={`mailto:${email}`}>
             {email}

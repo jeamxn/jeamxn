@@ -1,6 +1,10 @@
 import type { Portfolio } from "@jeamxn/contract";
 import { Icon } from "@jeamxn/icon";
 import { Link } from "react-router";
+import GlareHover from "~/shared/reactbits/GlareHover";
+import Magnet from "~/shared/reactbits/Magnet";
+import ScrollReveal from "~/shared/reactbits/ScrollReveal";
+import ScrollVelocity from "~/shared/reactbits/ScrollVelocity";
 import { ProjectScene } from "~/shared/widget/project-scene";
 import { OtherWork } from "./other-work";
 import { ScrollStory } from "./scroll-story";
@@ -20,9 +24,34 @@ export function HomePage({ data }: { data: Portfolio }) {
     "ax-workflow",
     "ai-waf-monitoring",
   ].flatMap((id) => pfct?.sections?.find((section) => section.id === id) ?? []);
+  const marquee = (
+    <>
+      {["ara", "Dipull", "PFCT", "KT SAT"].map((name) => (
+        <span className="home-marquee-item" key={name} translate="no">
+          {name}
+          <span className="home-marquee-star">*</span>
+        </span>
+      ))}
+    </>
+  );
   return (
     <>
       <ScrollStory data={data} />
+      <div className="home-marquee" aria-hidden="true">
+        <ScrollVelocity
+          texts={[marquee, marquee]}
+          velocity={46}
+          numCopies={4}
+          damping={60}
+          stiffness={320}
+          velocityMapping={{ input: [0, 1200], output: [0, 4] }}
+          skewWithVelocity={1.2}
+          fadeEdges
+          className="home-marquee-text"
+          parallaxClassName="home-marquee-row"
+          scrollerClassName="home-marquee-scroller"
+        />
+      </div>
       <section id="work" className="selected-work container" aria-labelledby="work-title">
         <div className="section-intro">
           <h2 id="work-title">
@@ -46,15 +75,27 @@ export function HomePage({ data }: { data: Portfolio }) {
                 className="featured-image"
                 aria-label={`${project.name} 프로젝트 자세히 보기`}
               >
-                <ProjectScene project={project} />
+                <GlareHover
+                  width="100%"
+                  height="auto"
+                  background="transparent"
+                  borderRadius="3px"
+                  borderColor="transparent"
+                  glareColor="#ffffff"
+                  glareOpacity={0.42}
+                  glareSize={260}
+                  variant="sheen"
+                  transitionDuration={900}
+                  className="featured-glare"
+                >
+                  <ProjectScene project={project} />
+                </GlareHover>
               </Link>
               <div className="featured-copy">
                 <p className="project-period">{project.period}</p>
                 <Link to={`/work/${project.slug}`} className="project-name">
                   <h3 translate="no">{project.name}</h3>
-                  <span className="round-arrow">
-                    <Icon name="arrow-up-right" size={27} />
-                  </span>
+                  <RoundArrow />
                 </Link>
                 <p className="project-subtitle">{project.subtitle}</p>
                 <p className="project-summary">{project.summary}</p>
@@ -71,9 +112,7 @@ export function HomePage({ data }: { data: Portfolio }) {
               <p className="project-period">{pfct.period}</p>
               <Link to="/work/pfct" className="project-name">
                 <h3 translate="no">{pfct.name}</h3>
-                <span className="round-arrow">
-                  <Icon name="arrow-up-right" size={27} />
-                </span>
+                <RoundArrow />
               </Link>
               <p className="project-subtitle">동료들이 쓰는 어드민과 사내 AI를 만들어요.</p>
               <p className="project-summary">{pfct.lead ?? pfct.summary}</p>
@@ -103,9 +142,7 @@ export function HomePage({ data }: { data: Portfolio }) {
               <p className="project-period">{lecture.period}</p>
               <Link to={`/activity/${lecture.slug}`} className="project-name">
                 <h3 translate="no">KT SAT</h3>
-                <span className="round-arrow">
-                  <Icon name="arrow-up-right" size={27} />
-                </span>
+                <RoundArrow />
               </Link>
               <p className="project-subtitle">{lecture.title}</p>
               <p className="project-summary">{lecture.lead ?? lecture.description}</p>
@@ -133,13 +170,18 @@ export function HomePage({ data }: { data: Portfolio }) {
       </section>
       <section className="home-about container">
         <div>
-          <h2>
-            제가 만든 도구를
-            <br />
-            직접 쓰면서
-            <br />
-            다시 고쳐요.
-          </h2>
+          <ScrollReveal
+            baseOpacity={0.14}
+            baseRotation={0}
+            blurStrength={6}
+            stagger={0.08}
+            containerClassName="home-about-reveal"
+            textClassName="home-about-reveal-text"
+            rotationEnd="center center"
+            wordAnimationEnd="center center"
+          >
+            제가 만든 도구를 직접 쓰면서 다시 고쳐요.
+          </ScrollReveal>
           <Link className="text-link" to="/resume#introduction">
             저에 대해 더 보기 <Icon name="arrow-right" size={20} />
           </Link>
@@ -150,5 +192,15 @@ export function HomePage({ data }: { data: Portfolio }) {
         </div>
       </section>
     </>
+  );
+}
+
+function RoundArrow() {
+  return (
+    <Magnet padding={24} magnetStrength={3} maxOffset={10} wrapperClassName="round-arrow-magnet">
+      <span className="round-arrow">
+        <Icon name="arrow-up-right" size={27} />
+      </span>
+    </Magnet>
   );
 }

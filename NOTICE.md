@@ -18,3 +18,7 @@ No proprietary source or the references' licensed typefaces are redistributed.
 
 Third-party runtime/build libraries retain their respective licenses in installed
 packages and are managed with a frozen pnpm lockfile.
+
+## React Bits components
+
+`apps/web/app/shared/reactbits/` holds eight components copied from [React Bits](https://reactbits.dev) (DavidHDev/react-bits @ 701a8ac, TS + Tailwind variants): DotGrid, GlareHover, Magnet, PillNav, ScrollReveal, ScrollVelocity, Threads and VariableProximity. Copyright (c) 2026 David Haz, MIT + Commons Clause: used here as part of this website, not redistributed as a component pack. The files are kept as upstream wrote them (one change: VariableProximity no longer imports Roboto Flex from Google Fonts, because this site makes no third-party requests), so they are excluded from Biome; site-specific styling lives in `app.css`.
