@@ -4,11 +4,24 @@ import { Link } from "react-router";
 import { safeHref } from "~/shared/lib/meta";
 import { projectMedia, projectScreens } from "~/shared/lib/project-media";
 import { sitePath } from "~/shared/lib/site-path";
+import Magnet from "~/shared/reactbits/Magnet";
+import { Cover } from "~/shared/widget/cover";
+import { Outro } from "~/shared/widget/outro";
 import { ProductGallery } from "~/shared/widget/product-gallery";
 import { ProjectScene } from "~/shared/widget/project-scene";
 import { StoryReader } from "~/shared/widget/story-reader";
+import { WorkExtras } from "./work-extras";
 
-export function WorkPage({ project, next }: { project: Project; next?: Project }) {
+export function WorkPage({
+  project,
+  next,
+  order = 0,
+}: {
+  project: Project;
+  next?: Project;
+  /** Place in the list of records; decides which cover this record gets. */
+  order?: number;
+}) {
   const media = projectMedia[project.slug];
   const screens = projectScreens(project);
   return (
@@ -39,6 +52,9 @@ export function WorkPage({ project, next }: { project: Project; next?: Project }
       </header>
       {project.image && !screens.length ? (
         <ProjectScene key={project.slug} project={project} priority />
+      ) : null}
+      {!project.image && !screens.length ? (
+        <Cover key={project.slug} title={project.name} order={order} />
       ) : null}
       <div className="case-intro">
         {project.lead && <p className="case-lead">{project.lead}</p>}
@@ -104,6 +120,7 @@ export function WorkPage({ project, next }: { project: Project; next?: Project }
           <figcaption>{media.video.caption}</figcaption>
         </figure>
       )}
+      <WorkExtras slug={project.slug} />
       <section className="work-tools">
         <h2>사용한 기술</h2>
         <ul className="tags">
@@ -134,11 +151,21 @@ export function WorkPage({ project, next }: { project: Project; next?: Project }
           </div>
         </section>
       )}
+      <Outro order={order} />
       {next && (
         <Link to={`/work/${next.slug}`} className="next-work">
           <span>다음 이야기</span>
           <strong translate="no">{next.name}</strong>
-          <Icon name="arrow-up-right" size={48} />
+          <Magnet
+            padding={48}
+            magnetStrength={3}
+            maxOffset={14}
+            wrapperClassName="next-work-magnet"
+          >
+            <span className="next-work-arrow">
+              <Icon name="arrow-up-right" size={32} />
+            </span>
+          </Magnet>
         </Link>
       )}
     </article>

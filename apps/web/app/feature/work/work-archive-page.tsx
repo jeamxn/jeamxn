@@ -3,6 +3,7 @@ import { resumeProjects } from "@jeamxn/core";
 import { Icon } from "@jeamxn/icon";
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { Link, useLocation, useNavigationType, useSearchParams } from "react-router";
+import { typeDemos } from "~/shared/bits/demos-type";
 import {
   archiveRecords,
   collections,
@@ -10,7 +11,9 @@ import {
   projectRecordType,
   recordTypes,
 } from "~/shared/lib/work-archive";
+import { pick, Shelf } from "~/shared/widget/desk";
 
+const band = pick(typeDemos, ["CurvedLoop"]);
 const emptySearch = new URLSearchParams();
 const subscribeToHydration = () => () => {};
 const clientHydrationSnapshot = () => true;
@@ -108,6 +111,7 @@ export function WorkArchivePage({ data }: { data: Portfolio }) {
           </Link>
         </div>
       </header>
+      <Shelf demos={band} height={150} bare className="archive-band" />
       <section aria-labelledby="archive-results-title">
         <div className="archive-controls">
           <label className="archive-search" htmlFor="archive-search">

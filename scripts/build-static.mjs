@@ -22,6 +22,10 @@ if (base !== "/") {
   const nested = path.join(output, base.slice(1));
   try {
     await stat(path.join(nested, "index.html"));
+    // Under a basename React Router writes the empty app shell as the root index.html,
+    // which the copy below replaces with the real first page. Keep the shell: the 404
+    // page is built from it.
+    await cp(path.join(output, "index.html"), path.join(output, "__spa-fallback.html"));
     for (const entry of await readdir(nested))
       await cp(path.join(nested, entry), path.join(output, entry), { recursive: true });
     await rm(nested, { recursive: true });
@@ -51,9 +55,17 @@ await writeFile(
 );
 await writeFile(path.join(output, ".nojekyll"), "");
 // Actual 404 response on Pages; no SPA redirect hack or fake successful route.
+// The page is the app shell, so the router shows its own not-found screen (with the
+// React Bits FuzzyText mark) while the status stays 404. Without JavaScript the
+// noscript block carries the same message.
+const missingHead = `<meta name="robots" content="noindex">`;
+const missingBody = `<noscript><style>body{font-family:system-ui,sans-serif;background:#f7f7f7;color:#222;max-width:640px;margin:15vh auto;padding:24px;line-height:1.7}a{color:inherit}</style><h1>페이지를 찾지 못했어요</h1><p>주소를 확인하거나 첫 화면에서 다시 살펴보세요</p><a href="${escapeXml(base)}">첫 화면으로</a></noscript>`;
+const shell = await readFile(path.join(output, "__spa-fallback.html"), "utf8");
+if (!shell.includes("</head>") || !shell.includes("</body>"))
+  throw new Error("SPA fallback shell is missing head or body");
 await writeFile(
   path.join(output, "404.html"),
-  `<!doctype html><html lang="ko"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex"><title>페이지를 찾지 못했어요 | 최재민</title><style>body{font-family:system-ui,sans-serif;background:#f7f7f7;color:#222;max-width:640px;margin:15vh auto;padding:24px;line-height:1.7}a{color:inherit}</style><h1>페이지를 찾지 못했어요</h1><p>주소를 확인하거나 첫 화면에서 다시 살펴보세요</p><a href="${escapeXml(base)}">첫 화면으로</a></html>\n`,
+  shell.replace("</head>", `${missingHead}</head>`).replace("</body>", `${missingBody}</body>`),
 );
 // Never publish build-time server stubs, manifests, source maps or local research.
 await rm(path.join(output, ".vite"), { recursive: true, force: true });

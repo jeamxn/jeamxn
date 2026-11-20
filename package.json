@@ -16,6 +16,7 @@
     "test:e2e": "node scripts/verify-browser.mjs",
     "preview": "node scripts/serve-static.mjs",
     "test:pages": "node scripts/verify-pages.mjs",
+    "test:bits": "node scripts/verify-bits.mjs",
     "test:static": "node --test tests/*.test.mjs"
   },
   "devDependencies": {

@@ -1296,3 +1296,22 @@
     filter: none;
   }
 }
+
+/* A springy dot field sits behind the opening scene and leaves with it. */
+.scroll-story-person {
+  isolation: isolate;
+}
+.scroll-story:not([data-enhanced="true"]) .scroll-story-person {
+  position: relative;
+}
+.story-hero-field {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .story-hero-field {
+    display: none;
+  }
+}

@@ -15,6 +15,7 @@ import {
   storyScrollTarget,
 } from "~/shared/lib/scroll-story";
 import { sitePath } from "~/shared/lib/site-path";
+import DotGrid from "~/shared/reactbits/DotGrid";
 import { Portrait } from "~/shared/widget/portrait";
 import { StoryTools } from "./story-tools";
 import "./scroll-story.css";
@@ -328,6 +329,24 @@ export function ScrollStory({ data }: { data: Portfolio }) {
               data-chapter={chapter.id}
               {...panelProps(index)}
             >
+              {index === 0 && ready && (
+                <div className="story-hero-field" aria-hidden="true">
+                  <DotGrid
+                    dotSize={2.5}
+                    gap={26}
+                    baseColor="#dcdfe4"
+                    activeColor="#8fa6e8"
+                    proximity={170}
+                    strength={0.9}
+                    swell={1.1}
+                    glow={0}
+                    fade={0.7}
+                    intro={false}
+                    clickShock={false}
+                    paused={enhanced && beat !== 0}
+                  />
+                </div>
+              )}
               <div className="scroll-story-copy">
                 <p className="scroll-story-context" translate="no">
                   {index === 0 ? `제품을 만드는 ${profile.name}이에요.` : chapter.label}
