@@ -22,6 +22,10 @@ if (base !== "/") {
   const nested = path.join(output, base.slice(1));
   try {
     await stat(path.join(nested, "index.html"));
+    // Under a basename React Router writes the empty app shell as the root index.html,
+    // which the copy below replaces with the real first page. Keep the shell: the 404
+    // page is built from it.
+    await cp(path.join(output, "index.html"), path.join(output, "__spa-fallback.html"));
     for (const entry of await readdir(nested))
       await cp(path.join(nested, entry), path.join(output, entry), { recursive: true });
     await rm(nested, { recursive: true });
